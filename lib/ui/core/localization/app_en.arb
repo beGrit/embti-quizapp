@@ -1,0 +1,11 @@
+{
+  "loginTitle": "mbti",
+  "startWithPhone": "Start using the Phone",
+  "startWithEmail": "Start using the Email",
+  "startAsGuest": "Start as the Guest",
+  "navHome": "Home",
+  "navMe": "Me",
+  "desktopUnderDev": "Desktop Version is under development...",
+  "desktopHint": "Please access via mobile device for the full experience.",
+  "or": "or"
+}

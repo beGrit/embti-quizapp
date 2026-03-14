@@ -1,0 +1,102 @@
+[
+  {
+    "id": "1",
+    "type": "article",
+    "authorName": "Sarah",
+    "authorMbti": "ISTJ",
+    "createdAt": "2026-03-20T10:00:00Z",
+    "title": "Efficiency in Flutter: A Guide to the Command Pattern",
+    "summary": "How to structure your models using Freezed for maximum performance.",
+    "thumbnailUrl": "https://picsum.photos/id/1/200/300"
+  },
+  {
+    "id": "2",
+    "type": "article",
+    "authorName": "Lin",
+    "authorMbti": "INTP",
+    "createdAt": "2026-03-21T14:30:00Z",
+    "title": "Clean Architecture in Ningbo: Local Workflows",
+    "summary": "Adapting project handover documentation for large-scale Shanghai relocations.",
+    "thumbnailUrl": "https://picsum.photos/id/10/200/300"
+  },
+  {
+    "id": "3",
+    "type": "article",
+    "authorName": "Chen",
+    "authorMbti": "ESFJ",
+    "createdAt": "2026-03-22T09:15:00Z",
+    "title": "The Social Side of MBTI: Building Community",
+    "summary": "Integrating headless Drupal with Flutter to create a responsive social feed.",
+    "thumbnailUrl": "https://picsum.photos/id/20/200/300"
+  },
+  {
+    "id": "4",
+    "type": "article",
+    "authorName": "Monica",
+    "authorMbti": "ENTJ",
+    "createdAt": "2026-03-23T11:00:00Z",
+    "title": "Strategic Flutter Testing with Playwright",
+    "summary": "Automating end-to-end tests to ensure stable production releases.",
+    "thumbnailUrl": "https://picsum.photos/id/30/200/300"
+  },
+  {
+    "id": "5",
+    "type": "article",
+    "authorName": "Leo",
+    "authorMbti": "ISFP",
+    "createdAt": "2026-03-24T16:45:00Z",
+    "title": "Design Aesthetics in Material 3",
+    "summary": "Using elevated cards and custom slivers to create a high-end UI look.",
+    "thumbnailUrl": "https://picsum.photos/id/40/200/300"
+  },
+  {
+    "id": "6",
+    "type": "article",
+    "authorName": "Shengfeng",
+    "authorMbti": "INFJ",
+    "createdAt": "2026-03-25T20:00:00Z",
+    "title": "Deep Dive: The Ni-Ti Loop Explained",
+    "summary": "Understanding the cognitive functions behind your personality type.",
+    "thumbnailUrl": "https://picsum.photos/id/50/200/300"
+  },
+  {
+    "id": "7",
+    "type": "article",
+    "authorName": "Alex",
+    "authorMbti": "ENFP",
+    "createdAt": "2026-03-26T08:00:00Z",
+    "title": "Creative Coding: Beyond the Grid",
+    "summary": "Exploring the Ne-Si axis through generative art and Dart logic.",
+    "thumbnailUrl": "https://picsum.photos/id/60/200/300"
+  },
+  {
+    "id": "8",
+    "type": "article",
+    "authorName": "Jason",
+    "authorMbti": "ESTP",
+    "createdAt": "2026-03-27T12:30:00Z",
+    "title": "Fast-Paced Development: Sprinting to MVP",
+    "summary": "How to use GoRouter and Provider for rapid prototyping in Flutter.",
+    "thumbnailUrl": "https://picsum.photos/id/70/200/300"
+  },
+  {
+    "id": "9",
+    "type": "article",
+    "authorName": "Dr. Miller",
+    "authorMbti": "INTJ",
+    "createdAt": "2026-03-28T15:00:00Z",
+    "title": "The Architecture of Thought",
+    "summary": "Comparing software design patterns to human cognitive structures.",
+    "thumbnailUrl": "https://picsum.photos/id/80/200/300"
+  },
+  {
+    "id": "10",
+    "type": "article",
+    "authorName": "System",
+    "authorMbti": "ENTP",
+    "createdAt": "2026-03-29T10:00:00Z",
+    "title": "Career Growth for the Analytical Mind",
+    "summary": "Navigating the job market in Shanghai and Jiading's tech sector.",
+    "thumbnailUrl": "https://picsum.photos/id/90/200/300"
+  }
+]

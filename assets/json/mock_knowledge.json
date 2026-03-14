@@ -1,0 +1,12 @@
+[
+  {
+    "id": "3",
+    "type": "knowledge",
+    "authorName": "Pocky",
+    "authorMbti": "INTJ",
+    "createdAt": "2026-03-20T12:00:00Z",
+    "title": "The MBTI Handbook",
+    "category": "Book",
+    "iconPath": "assets/icons/book_icon.svg"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "loginTitle": "mbti",
+  "startWithPhone": "使用手机号登录",
+  "startWithEmail": "使用邮箱登录",
+  "startAsGuest": "以游客身份开始",
+  "navHome": "首页",
+  "navMe": "我的",
+  "desktopUnderDev": "桌面端版本正在开发中...",
+  "desktopHint": "请在手机端访问以获取完整体验。",
+  "or": "或者"
+}
