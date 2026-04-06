@@ -76,3 +76,33 @@ Map<String, dynamic> _$KnowledgeContentToJson(KnowledgeContent instance) =>
       'iconPath': instance.iconPath,
       'type': instance.$type,
     };
+
+BannerContent _$BannerContentFromJson(Map<String, dynamic> json) =>
+    BannerContent(
+      id: json['id'] as String,
+      authorName: json['authorName'] as String? ?? 'Unknown Author',
+      authorMbti: json['authorMbti'] as String? ?? 'XXXX',
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      mediaUrl: json['mediaUrl'] as String,
+      title: json['title'] as String,
+      mediaType: json['mediaType'] as String? ?? 'image',
+      linkUrl: json['linkUrl'] as String?,
+      isExternal: json['isExternal'] as bool? ?? false,
+      autoPlay: json['autoPlay'] as bool? ?? false,
+      $type: json['type'] as String?,
+    );
+
+Map<String, dynamic> _$BannerContentToJson(BannerContent instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'authorName': instance.authorName,
+      'authorMbti': instance.authorMbti,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'mediaUrl': instance.mediaUrl,
+      'title': instance.title,
+      'mediaType': instance.mediaType,
+      'linkUrl': instance.linkUrl,
+      'isExternal': instance.isExternal,
+      'autoPlay': instance.autoPlay,
+      'type': instance.$type,
+    };

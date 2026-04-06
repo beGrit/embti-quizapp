@@ -21,41 +21,39 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Articles (Recommended)',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Articles (Recommended)',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 200),
+        ),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 200),
+          child: Center(
             child: ListenableBuilder(
               listenable: widget.viewModel.loadArticles,
               builder: (context, _) {
                 if (widget.viewModel.loadArticles.running) {
-                  return const Center(child: CircularProgressIndicator());
+                  return CircularProgressIndicator();
                 }
 
                 if (widget.viewModel.loadArticles.error) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Failed to load articles'),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: widget.viewModel.loadArticles.execute,
-                          child: const Text('Try Again'),
-                        ),
-                      ],
-                    ),
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Failed to load articles'),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: widget.viewModel.loadArticles.execute,
+                        child: const Text('Try Again'),
+                      ),
+                    ],
                   );
                 }
 
@@ -83,8 +81,8 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
               },
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -112,12 +110,12 @@ class _ArticleItem extends StatelessWidget {
         children: [
           // 1. Image Thumbnail (Fixed Size)
           SizedBox(
-            width: 80,
-            height: 80,
+            width: 100,
+            height: 100,
             child: Image.network(
               article.thumbnailUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
+              errorBuilder: (context, error, stackTrace) =>
                   Container(color: colorScheme.surfaceContainerHighest),
             ),
           ),
@@ -125,30 +123,26 @@ class _ArticleItem extends StatelessWidget {
           // 2. Content Area
           Expanded(
             child: Container(
-              height: 80,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              height: 100,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     article.title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      height: 1.2,
-                    ),
+                    style: theme.textTheme.titleSmall,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-
-                  // Author Row (Refactored as a Styled Card)
+                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 6,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
+                      color: colorScheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
@@ -156,28 +150,23 @@ class _ArticleItem extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 8,
-                          backgroundColor: colorScheme.secondary,
+                          backgroundColor: colorScheme.tertiary,
                           child: Text(
                             article.authorMbti[0],
-                            style: TextStyle(
-                              fontSize: 8,
-                              color: colorScheme.onSecondary,
-                              fontWeight: FontWeight.bold,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onTertiary,
                             ),
                           ),
                         ),
                         const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            article.authorName,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSecondaryContainer,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 10,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          article.authorName,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onTertiaryContainer,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

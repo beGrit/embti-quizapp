@@ -2,6 +2,7 @@ class AppAssets {
   static const String articlesJson = 'assets/json/mock_articles.json';
   static const String videosJson = 'assets/json/mock_videos.json';
   static const String knowledgeJson = 'assets/json/mock_knowledge.json';
+  static const String bannersJson = 'assets/json/mock_banners.json';
 
   // Icons for Content Type C (Knowledge)
   static const String iconBook = 'assets/icons/book_icon.svg';

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "banner-1",
+    "type": "banner",
+    "authorName": "System",
+    "authorMbti": "INTJ",
+    "createdAt": "2026-04-01T08:00:00Z",
+    "title": "Welcome to EmoMBTI",
+    "mediaUrl": "https://picsum.photos/id/100/800/400",
+    "mediaType": "image",
+    "linkUrl": "https://flutter.dev",
+    "isExternal": true,
+    "autoPlay": false
+  },
+  {
+    "id": "banner-video-1",
+    "type": "banner",
+    "authorName": "Marketing",
+    "authorMbti": "ENFJ",
+    "createdAt": "2026-04-02T10:30:00Z",
+    "title": "Discover Your Inner Self",
+    "mediaUrl": "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+    "mediaType": "video",
+    "linkUrl": "/test/mbti-basic",
+    "isExternal": false,
+    "autoPlay": true
+  },
+  {
+    "id": "banner-2",
+    "type": "banner",
+    "authorName": "Editor",
+    "authorMbti": "ENFP",
+    "createdAt": "2026-04-02T12:00:00Z",
+    "title": "Explore your personality",
+    "mediaUrl": "https://picsum.photos/id/101/800/400",
+    "mediaType": "image",
+    "isExternal": false,
+    "autoPlay": false
+  },
+  {
+    "id": "banner-video-promo",
+    "type": "banner",
+    "authorName": "Community",
+    "authorMbti": "INFP",
+    "createdAt": "2026-04-03T09:15:00Z",
+    "title": "New Community Features",
+    "mediaUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "mediaType": "video",
+    "linkUrl": "https://github.com/pocky-lin",
+    "isExternal": true,
+    "autoPlay": false
+  }
+]

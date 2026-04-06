@@ -10,7 +10,7 @@ abstract class Model {
     return {
       'Content-Type': 'application/json',
       'Accept': 'application/vnd.api+json',
-      if (csrfToken != null) 'X-CSRF-Token': csrfToken,
+      csrfToken != null ? 'X-CSRF-Token' : '': csrfToken ?? '',
     };
   }
 }

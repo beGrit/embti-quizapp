@@ -14,7 +14,8 @@ class LocalDataService {
     final articles = await getArticleContents();
     final videos = await getVideoContents();
     final knowledge = await getKnowledgeContents();
-    final combined = [...articles, ...videos, ...knowledge];
+    final banners = await getBannerContents();
+    final combined = [...articles, ...videos, ...knowledge, ...banners];
     combined.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     return combined;
   }
@@ -34,6 +35,11 @@ class LocalDataService {
     return json
         .map<KnowledgeContent>((e) => KnowledgeContent.fromJson(e))
         .toList();
+  }
+
+  Future<List<BannerContent>> getBannerContents() async {
+    final json = await _loadStringAsset(AppAssets.bannersJson);
+    return json.map<BannerContent>((e) => BannerContent.fromJson(e)).toList();
   }
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {

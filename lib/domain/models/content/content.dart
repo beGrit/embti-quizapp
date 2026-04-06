@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'article_content.dart';
+part 'banner_content.dart';
 // Generated files for the entire library
 part 'content.freezed.dart';
 part 'content.g.dart';
@@ -12,12 +13,16 @@ sealed class Content with _$Content {
   const Content._(); // Required for custom getters/methods
 
   // Shared getters defined in the base sealed class
+  @override
   String get id;
+  @override
   String get authorName;
+  @override
   String get authorMbti;
+  @override
   DateTime get createdAt;
 
-  // 1. Article Implementation
+  // Article Implementation
   const factory Content.article({
     required String id,
     @Default('Unknown Author') String authorName,
@@ -28,7 +33,7 @@ sealed class Content with _$Content {
     @Default('') String thumbnailUrl,
   }) = ArticleContent;
 
-  // 2. Video Implementation
+  // Video Implementation
   const factory Content.video({
     required String id,
     required String authorName,
@@ -39,7 +44,7 @@ sealed class Content with _$Content {
     int? matchScore,
   }) = VideoContent;
 
-  // 3. Knowledge Implementation
+  // Knowledge Implementation
   const factory Content.knowledge({
     required String id,
     required String authorName,
@@ -49,6 +54,19 @@ sealed class Content with _$Content {
     required String category,
     required String iconPath,
   }) = KnowledgeContent;
+
+  const factory Content.banner({
+    required String id,
+    @Default('Unknown Author') String authorName,
+    @Default('XXXX') String authorMbti,
+    required DateTime createdAt,
+    required String mediaUrl,
+    required String title,
+    @Default('image') String mediaType,
+    String? linkUrl,
+    @Default(false) bool isExternal,
+    @Default(false) bool autoPlay,
+  }) = BannerContent;
 
   factory Content.fromJson(Map<String, dynamic> json) =>
       _$ContentFromJson(json);

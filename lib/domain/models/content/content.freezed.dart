@@ -27,6 +27,10 @@ Content _$ContentFromJson(
           return KnowledgeContent.fromJson(
             json
           );
+                case 'banner':
+          return BannerContent.fromJson(
+            json
+          );
         
           default:
             throw CheckedFromJsonException(
@@ -119,13 +123,14 @@ extension ContentPatterns on Content {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ArticleContent value)?  article,TResult Function( VideoContent value)?  video,TResult Function( KnowledgeContent value)?  knowledge,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ArticleContent value)?  article,TResult Function( VideoContent value)?  video,TResult Function( KnowledgeContent value)?  knowledge,TResult Function( BannerContent value)?  banner,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case ArticleContent() when article != null:
 return article(_that);case VideoContent() when video != null:
 return video(_that);case KnowledgeContent() when knowledge != null:
-return knowledge(_that);case _:
+return knowledge(_that);case BannerContent() when banner != null:
+return banner(_that);case _:
   return orElse();
 
 }
@@ -143,13 +148,14 @@ return knowledge(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ArticleContent value)  article,required TResult Function( VideoContent value)  video,required TResult Function( KnowledgeContent value)  knowledge,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ArticleContent value)  article,required TResult Function( VideoContent value)  video,required TResult Function( KnowledgeContent value)  knowledge,required TResult Function( BannerContent value)  banner,}){
 final _that = this;
 switch (_that) {
 case ArticleContent():
 return article(_that);case VideoContent():
 return video(_that);case KnowledgeContent():
-return knowledge(_that);}
+return knowledge(_that);case BannerContent():
+return banner(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -163,13 +169,14 @@ return knowledge(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ArticleContent value)?  article,TResult? Function( VideoContent value)?  video,TResult? Function( KnowledgeContent value)?  knowledge,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ArticleContent value)?  article,TResult? Function( VideoContent value)?  video,TResult? Function( KnowledgeContent value)?  knowledge,TResult? Function( BannerContent value)?  banner,}){
 final _that = this;
 switch (_that) {
 case ArticleContent() when article != null:
 return article(_that);case VideoContent() when video != null:
 return video(_that);case KnowledgeContent() when knowledge != null:
-return knowledge(_that);case _:
+return knowledge(_that);case BannerContent() when banner != null:
+return banner(_that);case _:
   return null;
 
 }
@@ -186,12 +193,13 @@ return knowledge(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)?  article,TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)?  video,TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)?  knowledge,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)?  article,TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)?  video,TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)?  knowledge,TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String mediaUrl,  String title,  String mediaType,  String? linkUrl,  bool isExternal,  bool autoPlay)?  banner,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ArticleContent() when article != null:
 return article(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.summary,_that.thumbnailUrl);case VideoContent() when video != null:
 return video(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.videoUrl,_that.isShortForm,_that.matchScore);case KnowledgeContent() when knowledge != null:
-return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);case _:
+return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);case BannerContent() when banner != null:
+return banner(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.mediaUrl,_that.title,_that.mediaType,_that.linkUrl,_that.isExternal,_that.autoPlay);case _:
   return orElse();
 
 }
@@ -209,12 +217,13 @@ return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)  article,required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)  video,required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)  knowledge,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)  article,required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)  video,required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)  knowledge,required TResult Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String mediaUrl,  String title,  String mediaType,  String? linkUrl,  bool isExternal,  bool autoPlay)  banner,}) {final _that = this;
 switch (_that) {
 case ArticleContent():
 return article(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.summary,_that.thumbnailUrl);case VideoContent():
 return video(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.videoUrl,_that.isShortForm,_that.matchScore);case KnowledgeContent():
-return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);}
+return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);case BannerContent():
+return banner(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.mediaUrl,_that.title,_that.mediaType,_that.linkUrl,_that.isExternal,_that.autoPlay);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -228,12 +237,13 @@ return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)?  article,TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)?  video,TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)?  knowledge,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String summary,  String thumbnailUrl)?  article,TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String videoUrl,  bool isShortForm,  int? matchScore)?  video,TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String title,  String category,  String iconPath)?  knowledge,TResult? Function( String id,  String authorName,  String authorMbti,  DateTime createdAt,  String mediaUrl,  String title,  String mediaType,  String? linkUrl,  bool isExternal,  bool autoPlay)?  banner,}) {final _that = this;
 switch (_that) {
 case ArticleContent() when article != null:
 return article(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.summary,_that.thumbnailUrl);case VideoContent() when video != null:
 return video(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.videoUrl,_that.isShortForm,_that.matchScore);case KnowledgeContent() when knowledge != null:
-return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);case _:
+return knowledge(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.title,_that.category,_that.iconPath);case BannerContent() when banner != null:
+return banner(_that.id,_that.authorName,_that.authorMbti,_that.createdAt,_that.mediaUrl,_that.title,_that.mediaType,_that.linkUrl,_that.isExternal,_that.autoPlay);case _:
   return null;
 
 }
@@ -490,6 +500,97 @@ as DateTime,title: null == title ? _self.title : title // ignore: cast_nullable_
 as String,category: null == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
 as String,iconPath: null == iconPath ? _self.iconPath : iconPath // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class BannerContent extends Content {
+  const BannerContent({required this.id, this.authorName = 'Unknown Author', this.authorMbti = 'XXXX', required this.createdAt, required this.mediaUrl, required this.title, this.mediaType = 'image', this.linkUrl, this.isExternal = false, this.autoPlay = false, final  String? $type}): $type = $type ?? 'banner',super._();
+  factory BannerContent.fromJson(Map<String, dynamic> json) => _$BannerContentFromJson(json);
+
+@override final  String id;
+@override@JsonKey() final  String authorName;
+@override@JsonKey() final  String authorMbti;
+@override final  DateTime createdAt;
+ final  String mediaUrl;
+ final  String title;
+@JsonKey() final  String mediaType;
+ final  String? linkUrl;
+@JsonKey() final  bool isExternal;
+@JsonKey() final  bool autoPlay;
+
+@JsonKey(name: 'type')
+final String $type;
+
+
+/// Create a copy of Content
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BannerContentCopyWith<BannerContent> get copyWith => _$BannerContentCopyWithImpl<BannerContent>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BannerContentToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BannerContent&&(identical(other.id, id) || other.id == id)&&(identical(other.authorName, authorName) || other.authorName == authorName)&&(identical(other.authorMbti, authorMbti) || other.authorMbti == authorMbti)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.mediaUrl, mediaUrl) || other.mediaUrl == mediaUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.mediaType, mediaType) || other.mediaType == mediaType)&&(identical(other.linkUrl, linkUrl) || other.linkUrl == linkUrl)&&(identical(other.isExternal, isExternal) || other.isExternal == isExternal)&&(identical(other.autoPlay, autoPlay) || other.autoPlay == autoPlay));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,authorName,authorMbti,createdAt,mediaUrl,title,mediaType,linkUrl,isExternal,autoPlay);
+
+@override
+String toString() {
+  return 'Content.banner(id: $id, authorName: $authorName, authorMbti: $authorMbti, createdAt: $createdAt, mediaUrl: $mediaUrl, title: $title, mediaType: $mediaType, linkUrl: $linkUrl, isExternal: $isExternal, autoPlay: $autoPlay)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BannerContentCopyWith<$Res> implements $ContentCopyWith<$Res> {
+  factory $BannerContentCopyWith(BannerContent value, $Res Function(BannerContent) _then) = _$BannerContentCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String authorName, String authorMbti, DateTime createdAt, String mediaUrl, String title, String mediaType, String? linkUrl, bool isExternal, bool autoPlay
+});
+
+
+
+
+}
+/// @nodoc
+class _$BannerContentCopyWithImpl<$Res>
+    implements $BannerContentCopyWith<$Res> {
+  _$BannerContentCopyWithImpl(this._self, this._then);
+
+  final BannerContent _self;
+  final $Res Function(BannerContent) _then;
+
+/// Create a copy of Content
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? authorName = null,Object? authorMbti = null,Object? createdAt = null,Object? mediaUrl = null,Object? title = null,Object? mediaType = null,Object? linkUrl = freezed,Object? isExternal = null,Object? autoPlay = null,}) {
+  return _then(BannerContent(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,authorName: null == authorName ? _self.authorName : authorName // ignore: cast_nullable_to_non_nullable
+as String,authorMbti: null == authorMbti ? _self.authorMbti : authorMbti // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,mediaUrl: null == mediaUrl ? _self.mediaUrl : mediaUrl // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,mediaType: null == mediaType ? _self.mediaType : mediaType // ignore: cast_nullable_to_non_nullable
+as String,linkUrl: freezed == linkUrl ? _self.linkUrl : linkUrl // ignore: cast_nullable_to_non_nullable
+as String?,isExternal: null == isExternal ? _self.isExternal : isExternal // ignore: cast_nullable_to_non_nullable
+as bool,autoPlay: null == autoPlay ? _self.autoPlay : autoPlay // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
