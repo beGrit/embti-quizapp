@@ -106,6 +106,8 @@ class SlideshowViewModel extends ChangeNotifier {
   void dispose() {
     // 3. Clean up listeners
     bannerViewModel.loadBanners.removeListener(_onLoadStatusChanged);
+    bannerViewModel.loadBanners.dispose();
+    bannerViewModel.dispose();
     _timer?.cancel();
     _pageController.dispose();
     super.dispose();

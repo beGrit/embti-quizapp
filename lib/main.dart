@@ -1,6 +1,7 @@
 import 'package:emombti/routing/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import 'main_dev.dart' as development;
 import 'ui/core/localization/app_localizations.dart';
@@ -34,7 +35,7 @@ class MainApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en'), Locale('zh')],
-      routerConfig: router(),
+      routerConfig: router(context.read()),
     );
   }
 }

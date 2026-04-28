@@ -1,8 +1,7 @@
 import 'package:emombti/models/user.dart';
 import 'package:flutter/material.dart';
 
-// This is the special import for the "hidden" generated files
-import '../l10n/app_localizations.dart';
+import '../ui/core/localization/app_localizations.dart';
 import '../ui/core/ui/form.dart';
 
 class LoginPage extends StatelessWidget {
