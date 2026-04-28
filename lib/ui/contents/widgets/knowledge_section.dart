@@ -29,32 +29,32 @@ class _KnowledgeHomeSectionState extends State<KnowledgeHomeSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 1. 栏目标题 (可选)
-        const Padding(
+        Padding(
           padding: EdgeInsets.all(16.0),
           child: Text(
             'Knowledge (Recommended)',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
-
-        // 2. 横向滚动区域
-        // 横向滚动：由内容撑开高度
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start, // 确保所有卡片顶部对齐
-            children: [
-              for (var book in bookData) ...[
-                KnowledgeItem(
-                  title: book['title'],
-                  imageUrl: book['image'],
-                  isAsset: book['isAsset'],
-                ),
-                const SizedBox(width: 12), // 每个卡片之间的间距
+        Padding(
+          padding: EdgeInsetsGeometry.symmetric(horizontal: 16.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var book in bookData) ...[
+                  KnowledgeItem(
+                    title: book['title'],
+                    imageUrl: book['image'],
+                    isAsset: book['isAsset'],
+                  ),
+                  const SizedBox(width: 8),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ],
@@ -85,20 +85,26 @@ class KnowledgeItem extends StatelessWidget {
         color: colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. 顶部：图片区域（带间距和居中）
           Padding(
-            padding: const EdgeInsets.only(top: 16.0), // 顶部留出一点距离
+            padding: const EdgeInsets.only(top: 8.0),
             child: Center(
               child: SizedBox(
-                width: 80.0, // 限制封面宽度为 80
+                width: 60.0,
                 child: AspectRatio(
-                  aspectRatio: 1 / 1.618, // 维持黄金比例
+                  aspectRatio: 1 / 1.618,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4), // 书籍本身的圆角可以小一点
+                    borderRadius: BorderRadius.circular(4),
                     child: Image.network(
                       imageUrl,
                       fit: BoxFit.cover,
@@ -117,9 +123,8 @@ class KnowledgeItem extends StatelessWidget {
             ),
           ),
 
-          // 2. 底部：书名区域
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
               title,
               textAlign: TextAlign.center, // 书名也建议居中对齐，视觉更统一

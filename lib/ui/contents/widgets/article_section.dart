@@ -34,7 +34,7 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
           ),
         ),
         ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 200),
+          constraints: const BoxConstraints(maxHeight: 230),
           child: Center(
             child: ListenableBuilder(
               listenable: widget.viewModel.loadArticles,
@@ -56,25 +56,30 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
                     ],
                   );
                 }
-
                 return ListenableBuilder(
                   listenable: widget.viewModel,
                   builder: (context, _) {
-                    return CustomScrollView(
-                      slivers: [
-                        SliverPadding(
-                          padding: const EdgeInsets.all(16),
-                          sliver: SliverList.builder(
-                            itemCount: widget.viewModel.articles.length,
-                            itemBuilder: (context, index) => _ArticleItem(
-                              key: ValueKey(
-                                widget.viewModel.articles[index].id,
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        await widget.viewModel.loadArticles.execute();
+                      },
+                      child: CustomScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.all(16),
+                            sliver: SliverList.builder(
+                              itemCount: widget.viewModel.articles.length,
+                              itemBuilder: (context, index) => _ArticleItem(
+                                key: ValueKey(
+                                  widget.viewModel.articles[index].id,
+                                ),
+                                article: widget.viewModel.articles[index],
                               ),
-                              article: widget.viewModel.articles[index],
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   },
                 );
