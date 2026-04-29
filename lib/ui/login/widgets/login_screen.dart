@@ -72,7 +72,7 @@ class _LoginFormViewState extends State<LoginFormView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 24),
-                const Center(child: LoginBannerImage()),
+                // const Center(child: LoginBannerImage()),
                 const SizedBox(height: 24),
 
                 TextFormField(

@@ -92,7 +92,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ArticleHomeSection(viewModel: ArticleViewModel(context.read())),
                 const SizedBox(height: 16),
                 VideoHomeSection(
-                  viewModel: VideoViewModel(context.read())..loadFirstVideo(),
+                  viewModel: VideoViewModel.forHome(repository: context.read())
+                    ..loadFirstVideo(),
                 ),
                 const SizedBox(height: 16),
                 KnowledgeHomeSection(),
