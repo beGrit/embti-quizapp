@@ -14,21 +14,21 @@ class LoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
-      body: LoginFormView(viewModel: LoginFormViewModel(context.read())),
+      body: LoginForm(viewModel: LoginFormViewModel(context.read())),
     );
   }
 }
 
-class LoginFormView extends StatefulWidget {
-  const LoginFormView({super.key, required this.viewModel});
+class LoginForm extends StatefulWidget {
+  const LoginForm({super.key, required this.viewModel});
 
   final LoginFormViewModel viewModel;
 
   @override
-  State<LoginFormView> createState() => _LoginFormViewState();
+  State<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormViewState extends State<LoginFormView> {
+class _LoginFormState extends State<LoginForm> {
   late final TextEditingController _emailController;
   late final TextEditingController _passwordController;
   final _formKey = GlobalKey<FormState>();
@@ -79,7 +79,9 @@ class _LoginFormViewState extends State<LoginFormView> {
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -92,7 +94,9 @@ class _LoginFormViewState extends State<LoginFormView> {
                   controller: _passwordController,
                   decoration: const InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
                     prefixIcon: Icon(Icons.lock_outline),
                   ),
                   obscureText: true,
@@ -102,47 +106,13 @@ class _LoginFormViewState extends State<LoginFormView> {
                 ),
                 const SizedBox(height: 24),
 
-                FilledButton(onPressed: _handleLogin, child: Text('Login')),
+                FilledButton.icon(
+                  onPressed: _handleLogin,
+                  icon: Icon(Icons.login),
+                  label: Text('Login'),
+                ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class LoginBannerImage extends StatefulWidget {
-  const LoginBannerImage({super.key});
-
-  @override
-  State<LoginBannerImage> createState() => _LoginBannerImageState();
-}
-
-class _LoginBannerImageState extends State<LoginBannerImage>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 15),
-    vsync: this,
-  )..repeat();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: RotationTransition(
-        turns: _controller,
-        child: ClipOval(
-          // Clips the child into a circle
-          child: Image.asset(
-            'assets/images/Cognitive_Functions.png',
-            fit: BoxFit.cover, // Use cover to ensure the circle is filled
           ),
         ),
       ),

@@ -8,11 +8,19 @@ class LoginFormViewModel extends ChangeNotifier {
 
   final AuthRepository _repository;
 
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
   Future<Result<void>> loginWithAccountAndPassword({
     required String email,
     required String password,
   }) async {
-    return await _repository.login(email: email, password: password);
+    _isLoading = true;
+    notifyListeners();
+    Result result = await _repository.login(email: email, password: password);
+    _isLoading = false;
+    notifyListeners();
+    return result;
   }
 
   @override
