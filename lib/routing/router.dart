@@ -1,26 +1,41 @@
 import 'package:emombti/ui/login/widgets/login_screen.dart';
+import 'package:emombti/ui/me/widgets/me_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../data/repositories/auth/auth_repository.dart';
 import '../routing/router_config.dart';
+import '../ui/contents/widgets/video_detail.dart';
 import '../ui/core/ui/nav_bottom.dart';
 import '../ui/home/widgets/home_screen.dart';
 import 'routes.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.home,
+  initialLocation: Routes.login,
   refreshListenable: authRepository,
   redirect: _redirect,
   routes: [
-    // Routes for normal
+    // Login Route
     GoRoute(
       path: Routes.login,
       builder: (context, state) => const LoginScreen(),
     ),
+    // Me Standalone Route
+    GoRoute(
+      path: Routes.meStandalone,
+      builder: (context, state) => const MeScreen(showBackButton: true),
+    ),
+    // Video Detail Route
+    GoRoute(
+      path: '${Routes.home}/video/:id',
+      builder: (context, state) {
+        final videoId = state.pathParameters['id'] ?? '';
+        return VideoDetailPage(videoId: videoId);
+      },
+    ),
 
-    // Routes for the bottom nav
+    // 带有底部导航栏的 Shell 路由
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return ScaffoldWithNav(
@@ -35,8 +50,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             ),
             BottomRouteConfig(
               path: Routes.me,
-              builder: (context, state) =>
-                  const Center(child: Text("About Me Screen")),
+              builder: (context, state) => const MeScreen(),
               icon: Icons.storage_outlined,
               selectedIcon: Icons.storage,
               label: 'Me',
@@ -59,8 +73,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           routes: [
             GoRoute(
               path: Routes.me,
-              builder: (context, state) =>
-                  const Center(child: Text("About Me Screen")),
+              builder: (context, state) => const MeScreen(),
             ),
           ],
         ),

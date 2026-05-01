@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../routing/routes.dart';
 import '../../core/ui/speech.dart';
+import '../../core/ui/widgets/avatar.dart';
 
 class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   const HomeAppBar({
@@ -84,29 +87,35 @@ class _HomeAppBarState extends State<HomeAppBar> {
   List<Widget> _buildActions(ThemeData theme, ColorScheme colorScheme) {
     return [
       Padding(
-        padding: const EdgeInsets.only(right: 8.0),
+        padding: const EdgeInsets.only(right: 12.0),
         child: Center(
-          child: Material(
-            elevation: 4.0,
-            shape: const CircleBorder(),
-            shadowColor: theme.shadowColor,
-            clipBehavior: Clip.antiAlias,
-            child: CircleAvatar(
-              radius: 18,
-              backgroundColor: colorScheme.primaryContainer,
-              backgroundImage: widget.avatarUrl != null
-                  ? NetworkImage(widget.avatarUrl!)
-                  : null,
-              child: widget.avatarUrl == null
-                  ? Text(
-                      'SF',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    )
-                  : null,
+          child: GestureDetector(
+            // HitTestBehavior.opaque ensures the transparent parts of the
+            // "cloud" border also trigger the navigation.
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              context.push(Routes.meStandalone);
+            },
+            child: MusicVisualizerAvatar(
+              size: 46,
+              isPlaying: true,
+              child: CircleAvatar(
+                radius: 18,
+                backgroundColor: colorScheme.primaryContainer,
+                backgroundImage: widget.avatarUrl != null
+                    ? NetworkImage(widget.avatarUrl!)
+                    : null,
+                child: widget.avatarUrl == null
+                    ? Text(
+                        'SF',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      )
+                    : null,
+              ),
             ),
           ),
         ),

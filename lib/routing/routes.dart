@@ -3,4 +3,5 @@ abstract final class Routes {
   static const logout = '/logout';
   static const home = '/';
   static const me = '/me';
+  static const meStandalone = '/me-standalone';
 }
