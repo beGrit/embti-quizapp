@@ -9,6 +9,7 @@ import '../../contents/view_models/video_viewmodel.dart';
 import '../../contents/widgets/article_section.dart';
 import '../../contents/widgets/slideshow_section.dart';
 import '../../contents/widgets/video_section.dart';
+import '../../core/ui/widgets/advertising.dart';
 import '../widgets/home_appbar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -26,6 +27,25 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_handleScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _triggerAd();
+    });
+  }
+
+  void _triggerAd() {
+    // Delay for 3 seconds before showing the ad
+    Future.delayed(const Duration(seconds: 3), () {
+      // Check if the widget is still "mounted"
+      // This prevents the ad from popping up if the user left the screen already
+      if (!mounted) return;
+
+      FullScreenAd.show(
+        context,
+        title: "Premium MBTI",
+        content: "Covering 80% of your screen to show you the best deals!",
+        imageUrl: "https://via.placeholder.com/600x800/blue/white?text=Big+Ad",
+      );
+    });
   }
 
   void _handleScroll() {
