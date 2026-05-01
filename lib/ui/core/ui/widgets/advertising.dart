@@ -151,8 +151,8 @@ class _FullScreenAdState extends State<FullScreenAd>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final adHeight = size.height * 0.5;
+    final size = MediaQuery.sizeOf(context);
+    final adHeight = size.height * 0.5; // 1/2 height
     final closeThreshold = adHeight / 2;
 
     return Scaffold(
@@ -162,7 +162,6 @@ class _FullScreenAdState extends State<FullScreenAd>
         child: GestureDetector(
           onVerticalDragUpdate: (details) {
             setState(() {
-              // Dragging down increases _dragOffset
               _dragOffset = (_dragOffset + details.delta.dy).clamp(
                 0.0,
                 adHeight,
@@ -173,15 +172,12 @@ class _FullScreenAdState extends State<FullScreenAd>
             if (_dragOffset > closeThreshold) {
               Navigator.of(context).pop();
             } else {
-              // BOUNCE: Resetting offset triggers AnimatedContainer's curve
-              setState(() {
-                _dragOffset = 0;
-              });
+              setState(() => _dragOffset = 0);
             }
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 500),
-            curve: Curves.elasticOut, // The "Bounce" feel
+            curve: Curves.easeOutQuint,
             transform: Matrix4.translationValues(0, _dragOffset, 0),
             height: adHeight,
             width: double.infinity,
@@ -190,7 +186,7 @@ class _FullScreenAdState extends State<FullScreenAd>
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(32),
               ),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 10,
@@ -198,17 +194,20 @@ class _FullScreenAdState extends State<FullScreenAd>
                 ),
               ],
             ),
-            child: _buildContent(theme: Theme.of(context)),
+            // Pass the calculated height down
+            child: _buildContent(theme: Theme.of(context), maxHeight: adHeight),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildContent({required ThemeData theme}) {
+  Widget _buildContent({required ThemeData theme, required double maxHeight}) {
     return Column(
+      // Ensure the column doesn't try to be larger than its parent
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // Swipe handle
+        // 1. Fixed Swipe Handle
         Container(
           margin: const EdgeInsets.symmetric(vertical: 12),
           width: 40,
@@ -218,47 +217,43 @@ class _FullScreenAdState extends State<FullScreenAd>
             borderRadius: BorderRadius.circular(2),
           ),
         ),
+        // 2. Constrained Content Area
         Expanded(
           child: SingleChildScrollView(
-            // Prevent internal scrolling from eating the swipe-down gesture
-            physics: const NeverScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            // Switch to AlwaysScrollable if content overflows 50% height
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             child: Column(
               children: [
-                const SizedBox(height: 10),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Image.network(
                     widget.imageUrl,
-                    height: 280,
+                    // Dynamic image height relative to the dialog height
+                    height: maxHeight * 0.45,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    // FIX: Gracefully handle Handshake/Network errors
                     errorBuilder: (context, error, stackTrace) => Container(
-                      height: 280,
+                      height: maxHeight * 0.45,
                       color: Colors.grey[200],
-                      child: const Icon(
-                        Icons.broken_image,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
+                      child: const Icon(Icons.broken_image, size: 50),
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 Text(
                   widget.title,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   widget.content,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
