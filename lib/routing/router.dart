@@ -1,14 +1,15 @@
+import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/routing/router_config.dart';
+import 'package:emombti/ui/contents/widgets/video_detail.dart';
+import 'package:emombti/ui/core/ui/nav_bottom.dart';
+import 'package:emombti/ui/core/ui/widgets/under_development.dart';
+import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../data/repositories/auth/auth_repository.dart';
-import '../routing/router_config.dart';
-import '../ui/contents/widgets/video_detail.dart';
-import '../ui/core/ui/nav_bottom.dart';
-import '../ui/home/widgets/home_screen.dart';
 import 'routes.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
@@ -35,7 +36,6 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       },
     ),
 
-    // 带有底部导航栏的 Shell 路由
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return ScaffoldWithNav(
@@ -49,6 +49,30 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               label: 'Home',
             ),
             BottomRouteConfig(
+              path: Routes.social,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Social'),
+              icon: Icons.people_outline,
+              selectedIcon: Icons.people,
+              label: 'Social',
+            ),
+            BottomRouteConfig(
+              path: Routes.connections,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Conn'),
+              icon: Icons.hub_outlined,
+              selectedIcon: Icons.hub,
+              label: 'Conn',
+            ),
+            BottomRouteConfig(
+              path: Routes.messaging,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Mess'),
+              icon: Icons.chat_bubble_outline,
+              selectedIcon: Icons.chat_bubble,
+              label: 'Mess',
+            ),
+            BottomRouteConfig(
               path: Routes.me,
               builder: (context, state) => const MeScreen(),
               icon: Icons.storage_outlined,
@@ -59,7 +83,6 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         );
       },
       branches: [
-        // Home Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -68,7 +91,33 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             ),
           ],
         ),
-        // Me Branch
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.social,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Social'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.connections,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Conn'),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.messaging,
+              builder: (context, state) =>
+                  const UnderDevelopmentScreen(title: 'Mes'),
+            ),
+          ],
+        ),
         StatefulShellBranch(
           routes: [
             GoRoute(
