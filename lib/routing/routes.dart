@@ -7,4 +7,7 @@ abstract final class Routes {
   static const String social = '/social';
   static const String connections = '/connections';
   static const String messaging = '/messaging';
+  static const String content = '/content';
+  static const String article = '/content/article';
+  static const String video = '/content/video';
 }

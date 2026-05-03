@@ -27,4 +27,43 @@ class ArticleViewModel extends ChangeNotifier {
 
     return result;
   }
+
+  @override
+  void dispose() {
+    loadArticles.dispose();
+    super.dispose();
+  }
+}
+
+class ArticleDetailViewModel extends ChangeNotifier {
+  ArticleDetailViewModel({
+    required ArticleContentRepository repository,
+    required this.articleId,
+  }) : _repository = repository {
+    loadArticleContent = Command0<ArticleContent?>(_loadArticle);
+  }
+
+  final String articleId;
+  final ArticleContentRepository _repository;
+
+  // The current article state
+  ArticleContent _article = ArticleContent(
+    id: '',
+    title: '',
+    createdAt: DateTime.now(),
+  );
+  ArticleContent get article => _article;
+
+  late Command0<ArticleContent?> loadArticleContent;
+
+  Future<Result<ArticleContent?>> _loadArticle() async {
+    final result = await _repository.getById(articleId);
+
+    if (result is Ok<ArticleContent>) {
+      _article = result.value;
+      notifyListeners();
+    }
+
+    return result;
+  }
 }

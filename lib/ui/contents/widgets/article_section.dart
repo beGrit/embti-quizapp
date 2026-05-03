@@ -1,6 +1,9 @@
+import 'package:emombti/ui/contents/widgets/content_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../domain/models/content/content.dart';
+import '../../../routing/routes.dart';
 import '../view_models/article_viewmodel.dart';
 
 class ArticleHomeSection extends StatefulWidget {
@@ -75,6 +78,11 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
                                   widget.viewModel.articles[index].id,
                                 ),
                                 article: widget.viewModel.articles[index],
+                                onTap: () {
+                                  context.push(
+                                    '${Routes.article}/${widget.viewModel.articles[index].id}',
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -93,11 +101,20 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
 }
 
 class _ArticleItem extends StatelessWidget {
-  const _ArticleItem({super.key, required this.article});
+  const _ArticleItem({super.key, required this.article, required this.onTap});
   final ArticleContent article;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: _buildContent(context),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -183,5 +200,50 @@ class _ArticleItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class ArticleDetailScreen extends StatefulWidget {
+  const ArticleDetailScreen({super.key, required this.viewModel});
+
+  final ArticleDetailViewModel viewModel;
+
+  @override
+  State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
+}
+
+class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.viewModel.loadArticleContent.execute();
+    _scrollController = ScrollController();
+  }
+
+  late ScrollController _scrollController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: ContentAppBar(title: 'Article'),
+      body: _buildBody(context),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [_buildArticleDetail(context)],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticleDetail(BuildContext context) {
+    return Text(widget.viewModel.articleId);
   }
 }
