@@ -3,6 +3,7 @@ import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:emombti/ui/social/widgets/social.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../../../domain/models/content/content.dart';
 import '../../../routing/routes.dart';
@@ -555,7 +556,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 SliverPadding(
                   padding: EdgeInsets.all(16),
                   sliver: CommentSectionWidget(
-                    viewModel: CommentSectionViewModel()..fetchComments('1'),
+                    viewModel: CommentSectionViewModel(
+                      repository: context.read(),
+                    )..fetchComments('1'),
                   ),
                 ),
               ],

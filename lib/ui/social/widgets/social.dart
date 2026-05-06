@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:emombti/domain/models/social/social.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,41 +13,42 @@ class InteractionBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // We use ChangeNotifierProvider.value because the VM is already created
     return ChangeNotifierProvider.value(
       value: viewModel,
       child: Consumer<InteractionViewModel>(
         builder: (context, vm, _) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 8.0,
-              horizontal: 16.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildActionButton(
-                  icon: vm.meta.isLiked ? Icons.favorite : Icons.favorite,
-                  color: vm.meta.isLiked ? Colors.red : Colors.grey,
-                  label: '${vm.meta.likesCount}',
-                  onTap: vm.toggleLike,
-                ),
-                const SizedBox(width: 20),
-                _buildActionButton(
-                  icon: Icons.star,
-                  color: Colors.orange,
-                  label: 'Star',
-                  onTap: null,
-                ),
-                const SizedBox(width: 20),
-                const SizedBox(width: 20),
-                _buildActionButton(
-                  icon: Icons.share_outlined,
-                  label: '${vm.meta.sharesCount}',
-                  onTap: () {},
-                ),
-              ],
-            ),
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 5,
+            children: [
+              _buildActionButton(
+                // Use favorite_border when not liked for better visual feedback
+                icon: vm.meta.isLiked ? Icons.favorite : Icons.favorite_border,
+                color: vm.meta.isLiked
+                    ? Colors.red
+                    : Theme.of(context).colorScheme.secondary,
+                label: '${vm.meta.likesCount} Likes',
+                onTap: vm.toggleLike,
+              ),
+              _buildActionButton(
+                icon: vm.meta.isFavorited ? Icons.star : Icons.star_border,
+                color: vm.meta.isFavorited
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.secondary,
+                label: '${vm.meta.favoritesCount} Favorites',
+                onTap: vm.toggleFavorite,
+              ),
+              _buildActionButton(
+                icon: Icons.chat_bubble_outline,
+                label: '${vm.meta.commentsCount} Comments',
+                onTap: null,
+              ),
+              _buildActionButton(
+                icon: Icons.share_outlined,
+                label: '${vm.meta.sharesCount} Shares',
+                onTap: null,
+              ),
+            ],
           );
         },
       ),
@@ -59,12 +63,20 @@ class InteractionBarWidget extends StatelessWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(width: 4),
-          Text(label),
-        ],
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -107,12 +119,99 @@ class CommentSectionWidget extends StatelessWidget {
 
           return SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              return Text(vm.comments[index].content);
+              final comment = vm.comments[index];
+              return CommentItem(comment: comment, onLike: null);
             }, childCount: vm.comments.length),
           );
         },
       ),
     );
+  }
+}
+
+class CommentItem extends StatelessWidget {
+  final Comment comment;
+  final VoidCallback? onLike;
+
+  const CommentItem({super.key, required this.comment, this.onLike});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          radius: 20,
+          backgroundColor: colorScheme.primaryContainer,
+          backgroundImage: comment.authorAvatarUrl != null
+              ? NetworkImage(comment.authorAvatarUrl!)
+              : null,
+          child: comment.authorAvatarUrl == null
+              ? Text(comment.authorName[0].toUpperCase())
+              : null,
+        ),
+        const SizedBox(width: 8),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header: Name • MBTI • Time
+              Row(
+                children: [
+                  Text(
+                    comment.authorName,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      comment.authorMbti,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    _formatDate(comment.createdAt),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+
+              // Comment Text
+              Text(comment.content, style: theme.textTheme.bodySmall),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    // Quick helper for time ago - you can use the 'timeago' package here instead
+    final duration = DateTime.now().difference(date);
+    if (duration.inMinutes < 60) return '${duration.inMinutes}m';
+    if (duration.inHours < 24) return '${duration.inHours}h';
+    return '${date.month}/${date.day}';
   }
 }
 
@@ -141,13 +240,13 @@ class _StickyInputBarWidgetState extends State<StickyInputBarWidget> {
       padding: EdgeInsets.only(
         left: 12,
         right: 12,
-        top: 8,
-        bottom: MediaQuery.of(context).padding.bottom + 4,
+        top: 4,
+        bottom: math.max(MediaQuery.of(context).padding.bottom - 12, 4.0),
       ),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
+        color: colorScheme.surfaceBright,
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant, width: 0.5),
+          top: BorderSide(color: colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: Row(
@@ -158,7 +257,7 @@ class _StickyInputBarWidgetState extends State<StickyInputBarWidget> {
               decoration: InputDecoration(
                 hintText: 'Add a comment...',
                 filled: true,
-                fillColor: colorScheme.surface,
+                fillColor: colorScheme.surfaceContainerHighest,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,

@@ -1,3 +1,5 @@
+import 'package:emombti/data/repositories/social/social_repository.dart';
+import 'package:emombti/data/repositories/social/social_repository_local.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
@@ -34,6 +36,9 @@ List<SingleChildWidget> get providersLocal {
       create: (context) =>
           VideoContentRepositoryLocal(localDataService: context.read())
               as VideoContentRepository,
+    ),
+    Provider<SocialRepository>(
+      create: (context) => SocialRepositoryLocal() as SocialRepository,
     ),
     Provider<PolicyService>(create: (context) => LocalPolicyService()),
   ];

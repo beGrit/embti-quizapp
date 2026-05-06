@@ -2,7 +2,6 @@ import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/routing/router_config.dart';
 import 'package:emombti/ui/contents/view_models/article_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/article_section.dart';
-import 'package:emombti/ui/contents/widgets/video_detail.dart';
 import 'package:emombti/ui/core/ui/nav_bottom.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
@@ -33,8 +32,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: '${Routes.video}/:id',
       builder: (context, state) {
-        final videoId = state.pathParameters['id'] ?? '';
-        return VideoDetailPage(videoId: videoId);
+        return const UnderDevelopmentScreen(title: 'Video Detail');
       },
     ),
     GoRoute(

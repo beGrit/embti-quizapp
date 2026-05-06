@@ -1,3 +1,4 @@
+import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/domain/models/social/social.dart';
 import 'package:flutter/foundation.dart';
 
@@ -27,6 +28,11 @@ class InteractionViewModel extends ChangeNotifier {
 }
 
 class CommentSectionViewModel extends ChangeNotifier {
+  final SocialRepository _repository;
+
+  CommentSectionViewModel({required SocialRepository repository})
+    : _repository = repository;
+
   List<Comment> _comments = [];
   bool _isLoading = false;
 
@@ -34,23 +40,21 @@ class CommentSectionViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchComments(String relatedId) async {
+    if (_isLoading) return; // Prevent duplicate calls
+
     _isLoading = true;
     notifyListeners();
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 1));
-    _comments = List.generate(
-      100,
-      (index) => Comment(
-        id: '$index',
-        content: 'Comment $index on $relatedId',
-        userId: '1',
-        createdAt: DateTime.now(),
-      ),
-    );
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      // Use the repository instead of generating data locally
+      _comments = await _repository.getComments(relatedId);
+    } catch (e) {
+      // Handle errors here (e.g., logging)
+      print("Error fetching comments: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
 
