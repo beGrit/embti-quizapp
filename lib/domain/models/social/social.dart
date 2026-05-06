@@ -5,10 +5,11 @@ part 'social.g.dart';
 
 @freezed
 sealed class SocialMeta with _$SocialMeta {
-  // 必须添加这个私有构造函数，并且去掉 abstract 关键字
   const SocialMeta._();
 
   const factory SocialMeta({
+    required String id,
+    required String relatedId,
     @Default(0) int likesCount,
     @Default(false) bool isLiked,
     @Default(0) int favoritesCount,

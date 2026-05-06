@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SocialMeta {
 
- int get likesCount; bool get isLiked; int get favoritesCount; bool get isFavorited; int get sharesCount; List<Comment> get comments; int get commentsCount;
+ String get id; String get relatedId; int get likesCount; bool get isLiked; int get favoritesCount; bool get isFavorited; int get sharesCount; List<Comment> get comments; int get commentsCount;
 /// Create a copy of SocialMeta
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SocialMetaCopyWith<SocialMeta> get copyWith => _$SocialMetaCopyWithImpl<SocialM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SocialMeta&&(identical(other.likesCount, likesCount) || other.likesCount == likesCount)&&(identical(other.isLiked, isLiked) || other.isLiked == isLiked)&&(identical(other.favoritesCount, favoritesCount) || other.favoritesCount == favoritesCount)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.sharesCount, sharesCount) || other.sharesCount == sharesCount)&&const DeepCollectionEquality().equals(other.comments, comments)&&(identical(other.commentsCount, commentsCount) || other.commentsCount == commentsCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SocialMeta&&(identical(other.id, id) || other.id == id)&&(identical(other.relatedId, relatedId) || other.relatedId == relatedId)&&(identical(other.likesCount, likesCount) || other.likesCount == likesCount)&&(identical(other.isLiked, isLiked) || other.isLiked == isLiked)&&(identical(other.favoritesCount, favoritesCount) || other.favoritesCount == favoritesCount)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.sharesCount, sharesCount) || other.sharesCount == sharesCount)&&const DeepCollectionEquality().equals(other.comments, comments)&&(identical(other.commentsCount, commentsCount) || other.commentsCount == commentsCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,likesCount,isLiked,favoritesCount,isFavorited,sharesCount,const DeepCollectionEquality().hash(comments),commentsCount);
+int get hashCode => Object.hash(runtimeType,id,relatedId,likesCount,isLiked,favoritesCount,isFavorited,sharesCount,const DeepCollectionEquality().hash(comments),commentsCount);
 
 @override
 String toString() {
-  return 'SocialMeta(likesCount: $likesCount, isLiked: $isLiked, favoritesCount: $favoritesCount, isFavorited: $isFavorited, sharesCount: $sharesCount, comments: $comments, commentsCount: $commentsCount)';
+  return 'SocialMeta(id: $id, relatedId: $relatedId, likesCount: $likesCount, isLiked: $isLiked, favoritesCount: $favoritesCount, isFavorited: $isFavorited, sharesCount: $sharesCount, comments: $comments, commentsCount: $commentsCount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SocialMetaCopyWith<$Res>  {
   factory $SocialMetaCopyWith(SocialMeta value, $Res Function(SocialMeta) _then) = _$SocialMetaCopyWithImpl;
 @useResult
 $Res call({
- int likesCount, bool isLiked, int favoritesCount, bool isFavorited, int sharesCount, List<Comment> comments, int commentsCount
+ String id, String relatedId, int likesCount, bool isLiked, int favoritesCount, bool isFavorited, int sharesCount, List<Comment> comments, int commentsCount
 });
 
 
@@ -65,9 +65,11 @@ class _$SocialMetaCopyWithImpl<$Res>
 
 /// Create a copy of SocialMeta
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? likesCount = null,Object? isLiked = null,Object? favoritesCount = null,Object? isFavorited = null,Object? sharesCount = null,Object? comments = null,Object? commentsCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? relatedId = null,Object? likesCount = null,Object? isLiked = null,Object? favoritesCount = null,Object? isFavorited = null,Object? sharesCount = null,Object? comments = null,Object? commentsCount = null,}) {
   return _then(_self.copyWith(
-likesCount: null == likesCount ? _self.likesCount : likesCount // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,relatedId: null == relatedId ? _self.relatedId : relatedId // ignore: cast_nullable_to_non_nullable
+as String,likesCount: null == likesCount ? _self.likesCount : likesCount // ignore: cast_nullable_to_non_nullable
 as int,isLiked: null == isLiked ? _self.isLiked : isLiked // ignore: cast_nullable_to_non_nullable
 as bool,favoritesCount: null == favoritesCount ? _self.favoritesCount : favoritesCount // ignore: cast_nullable_to_non_nullable
 as int,isFavorited: null == isFavorited ? _self.isFavorited : isFavorited // ignore: cast_nullable_to_non_nullable
@@ -156,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String relatedId,  int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SocialMeta() when $default != null:
-return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);case _:
+return $default(_that.id,_that.relatedId,_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);case _:
   return orElse();
 
 }
@@ -177,10 +179,10 @@ return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String relatedId,  int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)  $default,) {final _that = this;
 switch (_that) {
 case _SocialMeta():
-return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);}
+return $default(_that.id,_that.relatedId,_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -194,10 +196,10 @@ return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String relatedId,  int likesCount,  bool isLiked,  int favoritesCount,  bool isFavorited,  int sharesCount,  List<Comment> comments,  int commentsCount)?  $default,) {final _that = this;
 switch (_that) {
 case _SocialMeta() when $default != null:
-return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);case _:
+return $default(_that.id,_that.relatedId,_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavorited,_that.sharesCount,_that.comments,_that.commentsCount);case _:
   return null;
 
 }
@@ -209,9 +211,11 @@ return $default(_that.likesCount,_that.isLiked,_that.favoritesCount,_that.isFavo
 @JsonSerializable()
 
 class _SocialMeta extends SocialMeta {
-  const _SocialMeta({this.likesCount = 0, this.isLiked = false, this.favoritesCount = 0, this.isFavorited = false, this.sharesCount = 0, final  List<Comment> comments = const [], this.commentsCount = 0}): _comments = comments,super._();
+  const _SocialMeta({required this.id, required this.relatedId, this.likesCount = 0, this.isLiked = false, this.favoritesCount = 0, this.isFavorited = false, this.sharesCount = 0, final  List<Comment> comments = const [], this.commentsCount = 0}): _comments = comments,super._();
   factory _SocialMeta.fromJson(Map<String, dynamic> json) => _$SocialMetaFromJson(json);
 
+@override final  String id;
+@override final  String relatedId;
 @override@JsonKey() final  int likesCount;
 @override@JsonKey() final  bool isLiked;
 @override@JsonKey() final  int favoritesCount;
@@ -239,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SocialMeta&&(identical(other.likesCount, likesCount) || other.likesCount == likesCount)&&(identical(other.isLiked, isLiked) || other.isLiked == isLiked)&&(identical(other.favoritesCount, favoritesCount) || other.favoritesCount == favoritesCount)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.sharesCount, sharesCount) || other.sharesCount == sharesCount)&&const DeepCollectionEquality().equals(other._comments, _comments)&&(identical(other.commentsCount, commentsCount) || other.commentsCount == commentsCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SocialMeta&&(identical(other.id, id) || other.id == id)&&(identical(other.relatedId, relatedId) || other.relatedId == relatedId)&&(identical(other.likesCount, likesCount) || other.likesCount == likesCount)&&(identical(other.isLiked, isLiked) || other.isLiked == isLiked)&&(identical(other.favoritesCount, favoritesCount) || other.favoritesCount == favoritesCount)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.sharesCount, sharesCount) || other.sharesCount == sharesCount)&&const DeepCollectionEquality().equals(other._comments, _comments)&&(identical(other.commentsCount, commentsCount) || other.commentsCount == commentsCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,likesCount,isLiked,favoritesCount,isFavorited,sharesCount,const DeepCollectionEquality().hash(_comments),commentsCount);
+int get hashCode => Object.hash(runtimeType,id,relatedId,likesCount,isLiked,favoritesCount,isFavorited,sharesCount,const DeepCollectionEquality().hash(_comments),commentsCount);
 
 @override
 String toString() {
-  return 'SocialMeta(likesCount: $likesCount, isLiked: $isLiked, favoritesCount: $favoritesCount, isFavorited: $isFavorited, sharesCount: $sharesCount, comments: $comments, commentsCount: $commentsCount)';
+  return 'SocialMeta(id: $id, relatedId: $relatedId, likesCount: $likesCount, isLiked: $isLiked, favoritesCount: $favoritesCount, isFavorited: $isFavorited, sharesCount: $sharesCount, comments: $comments, commentsCount: $commentsCount)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$SocialMetaCopyWith<$Res> implements $SocialMetaCopyWith<$
   factory _$SocialMetaCopyWith(_SocialMeta value, $Res Function(_SocialMeta) _then) = __$SocialMetaCopyWithImpl;
 @override @useResult
 $Res call({
- int likesCount, bool isLiked, int favoritesCount, bool isFavorited, int sharesCount, List<Comment> comments, int commentsCount
+ String id, String relatedId, int likesCount, bool isLiked, int favoritesCount, bool isFavorited, int sharesCount, List<Comment> comments, int commentsCount
 });
 
 
@@ -276,9 +280,11 @@ class __$SocialMetaCopyWithImpl<$Res>
 
 /// Create a copy of SocialMeta
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? likesCount = null,Object? isLiked = null,Object? favoritesCount = null,Object? isFavorited = null,Object? sharesCount = null,Object? comments = null,Object? commentsCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? relatedId = null,Object? likesCount = null,Object? isLiked = null,Object? favoritesCount = null,Object? isFavorited = null,Object? sharesCount = null,Object? comments = null,Object? commentsCount = null,}) {
   return _then(_SocialMeta(
-likesCount: null == likesCount ? _self.likesCount : likesCount // ignore: cast_nullable_to_non_nullable
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,relatedId: null == relatedId ? _self.relatedId : relatedId // ignore: cast_nullable_to_non_nullable
+as String,likesCount: null == likesCount ? _self.likesCount : likesCount // ignore: cast_nullable_to_non_nullable
 as int,isLiked: null == isLiked ? _self.isLiked : isLiked // ignore: cast_nullable_to_non_nullable
 as bool,favoritesCount: null == favoritesCount ? _self.favoritesCount : favoritesCount // ignore: cast_nullable_to_non_nullable
 as int,isFavorited: null == isFavorited ? _self.isFavorited : isFavorited // ignore: cast_nullable_to_non_nullable

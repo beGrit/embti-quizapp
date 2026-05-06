@@ -7,6 +7,8 @@ part of 'social.dart';
 // **************************************************************************
 
 _SocialMeta _$SocialMetaFromJson(Map<String, dynamic> json) => _SocialMeta(
+  id: json['id'] as String,
+  relatedId: json['relatedId'] as String,
   likesCount: (json['likesCount'] as num?)?.toInt() ?? 0,
   isLiked: json['isLiked'] as bool? ?? false,
   favoritesCount: (json['favoritesCount'] as num?)?.toInt() ?? 0,
@@ -22,6 +24,8 @@ _SocialMeta _$SocialMetaFromJson(Map<String, dynamic> json) => _SocialMeta(
 
 Map<String, dynamic> _$SocialMetaToJson(_SocialMeta instance) =>
     <String, dynamic>{
+      'id': instance.id,
+      'relatedId': instance.relatedId,
       'likesCount': instance.likesCount,
       'isLiked': instance.isLiked,
       'favoritesCount': instance.favoritesCount,

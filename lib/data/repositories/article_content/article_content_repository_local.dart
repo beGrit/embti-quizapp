@@ -7,7 +7,7 @@ import 'article_content_repository.dart';
 /// Reads from [LocalDataService] (asset). Create/update/delete are not implemented.
 class ArticleContentRepositoryLocal extends ArticleContentRepository {
   ArticleContentRepositoryLocal({LocalDataService? localDataService})
-      : _localDataService = localDataService ?? LocalDataService();
+    : _localDataService = localDataService ?? LocalDataService();
 
   final LocalDataService _localDataService;
 
@@ -24,9 +24,7 @@ class ArticleContentRepositoryLocal extends ArticleContentRepository {
   @override
   Future<Result<ArticleContent?>> getById(String id) async {
     try {
-      final list = await _localDataService.getArticleContents();
-      final match = list.where((c) => c.id == id).firstOrNull;
-      return Result.ok(match);
+      return Result.ok(await _localDataService.getArticleContentById(id));
     } on Exception catch (e) {
       return Result.error(e);
     }

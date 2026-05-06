@@ -27,6 +27,7 @@ dependencies:
   shared_preferences: ^2.3.5
   speech_to_text: ^6.6.2
   video_player: ^2.11.1
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -46,6 +47,7 @@ flutter:
   assets:
     - assets/json/
     - assets/images/
+    - assets/policies/
   generate: true
 
 flutter_launcher_icons:

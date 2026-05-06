@@ -25,6 +25,16 @@ class LocalDataService {
     return json.map<ArticleContent>((e) => ArticleContent.fromJson(e)).toList();
   }
 
+  Future<ArticleContent?> getArticleContentById(String id) async {
+    final articles = await getArticleContents();
+
+    try {
+      return articles.firstWhere((article) => article.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   Future<List<VideoContent>> getVideoContents() async {
     final json = await _loadStringAsset(AppAssets.videosJson);
     return json.map<VideoContent>((e) => VideoContent.fromJson(e)).toList();

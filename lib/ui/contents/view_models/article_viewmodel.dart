@@ -59,8 +59,10 @@ class ArticleDetailViewModel extends ChangeNotifier {
   Future<Result<ArticleContent?>> _loadArticle() async {
     final result = await _repository.getById(articleId);
 
-    if (result is Ok<ArticleContent>) {
-      _article = result.value;
+    if (result is Ok<ArticleContent?>) {
+      _article =
+          result.value ??
+          ArticleContent(id: '', title: '', createdAt: DateTime.now());
       notifyListeners();
     }
 

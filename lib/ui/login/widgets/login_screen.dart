@@ -1,3 +1,4 @@
+import 'package:emombti/ui/core/ui/widgets/policy.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -59,8 +60,9 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    ThemeData theme = Theme.of(context);
     return Align(
-      alignment: Alignment.topCenter,
+      alignment: Alignment.center,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
         child: SingleChildScrollView(
@@ -111,9 +113,93 @@ class _LoginFormState extends State<LoginForm> {
                   icon: Icon(Icons.login),
                   label: Text('Login'),
                 ),
+
+                // ... 在 FilledButton.icon 之后
+                const SizedBox(height: 16),
+
+                Center(
+                  child: Text.rich(
+                    TextSpan(
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      children: [
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: GestureDetector(
+                            onTap: () => _showPolicyModal(context, 'terms'),
+                            child: Text(
+                              'Terms',
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const TextSpan(text: ' & '),
+                        WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: GestureDetector(
+                            onTap: () => _showPolicyModal(context, 'privacy'),
+                            child: Text(
+                              'Privacy',
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showPolicyModal(BuildContext context, String type) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true, // 确保不会被刘海屏遮挡
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.9,
+        maxChildSize: 0.9,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (context, scrollController) => Column(
+          children: [
+            // 顶部的控制条
+            Container(
+              margin: const EdgeInsets.all(12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              type == 'privacy' ? '隐私政策' : '服务协议',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const Divider(),
+            Expanded(
+              // 这里使用你之前定义的 Widget
+              child: PolicyWebView(policyType: type),
+            ),
+          ],
         ),
       ),
     );

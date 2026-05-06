@@ -10,6 +10,8 @@ import '../data/repositories/banner_content/banner_content_repository_local.dart
 import '../data/repositories/video_content/video_content_repository.dart';
 import '../data/repositories/video_content/video_content_repository_local.dart';
 import '../data/services/local/local_data_service.dart';
+import '../data/services/local/local_policy_service.dart';
+import '../data/services/policy_service.dart';
 
 List<SingleChildWidget> _sharedProviders = [];
 
@@ -33,6 +35,7 @@ List<SingleChildWidget> get providersLocal {
           VideoContentRepositoryLocal(localDataService: context.read())
               as VideoContentRepository,
     ),
+    Provider<PolicyService>(create: (context) => LocalPolicyService()),
   ];
 }
 
