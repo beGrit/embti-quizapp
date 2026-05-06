@@ -107,15 +107,7 @@ class CommentSectionWidget extends StatelessWidget {
 
           return SliverList(
             delegate: SliverChildBuilderDelegate((context, index) {
-              return Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    left: BorderSide(color: Colors.grey),
-                    right: BorderSide(color: Colors.grey),
-                  ),
-                ),
-                child: Text(vm.comments[index].content),
-              );
+              return Text(vm.comments[index].content);
             }, childCount: vm.comments.length),
           );
         },

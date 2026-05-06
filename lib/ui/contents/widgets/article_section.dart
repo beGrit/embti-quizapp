@@ -428,8 +428,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Divider(),
               ],
             ),
           ),
@@ -476,9 +474,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
                 ),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                  width: 1,
+                border: Border(
+                  top: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
+                  left: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
+                  right: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
                 ),
               ),
               padding: const EdgeInsets.all(16.0),
@@ -499,57 +507,62 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
   List<Widget> _buildSocial(BuildContext context) {
     return [
-      SliverPadding(
-        padding: const EdgeInsets.all(16.0),
-        sliver: SliverMainAxisGroup(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: Colors.grey.shade300),
-                    left: BorderSide(color: Colors.grey.shade300),
-                    right: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: InteractionBarWidget(
-                  viewModel: InteractionViewModel(
-                    SocialMeta(id: '1', relatedId: '1'),
-                  ),
-                ),
+      DecoratedSliver(
+        decoration: BoxDecoration(
+          color: Theme.of(context)
+              .colorScheme
+              .surfaceContainer, // This colors the entire area including padding
+        ),
+        sliver: SliverPadding(
+          padding: const EdgeInsets.all(16.0),
+          sliver: DecoratedSliver(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.5),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-
-            // 评论区（这里假设评论区内部是 SliverList）
-            // 注意：如果想让列表也有边框，通常需要为每个 Item 绘制左右边框
-            CommentSectionWidget(
-              viewModel: CommentSectionViewModel()..fetchComments('1'),
-            ),
-
-            // 使用一个带底部边框的装饰
-            SliverToBoxAdapter(
-              child: Container(
-                height: 12,
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey.shade300),
-                    left: BorderSide(color: Colors.grey.shade300),
-                    right: BorderSide(color: Colors.grey.shade300),
-                  ),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(12),
+            sliver: SliverMainAxisGroup(
+              slivers: [
+                // 1. Top Section (Interaction Bar)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: InteractionBarWidget(
+                      viewModel: InteractionViewModel(
+                        SocialMeta(id: '1', relatedId: '1'),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Divider(),
+                  ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.all(16),
+                  sliver: CommentSectionWidget(
+                    viewModel: CommentSectionViewModel()..fetchComments('1'),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      const SliverToBoxAdapter(child: SizedBox(height: 80)),
     ];
   }
 }
