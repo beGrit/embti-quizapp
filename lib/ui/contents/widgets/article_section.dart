@@ -1,9 +1,7 @@
-import 'package:emombti/domain/models/social/social.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:emombti/ui/social/widgets/social.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 import '../../../domain/models/content/content.dart';
 import '../../../routing/routes.dart';
@@ -207,9 +205,14 @@ class _ArticleItem extends StatelessWidget {
 }
 
 class ArticleDetailScreen extends StatefulWidget {
-  const ArticleDetailScreen({super.key, required this.viewModel});
+  const ArticleDetailScreen({
+    super.key,
+    required this.viewModel,
+    required this.socialViewModel,
+  });
 
   final ArticleDetailViewModel viewModel;
+  final SocialViewModel socialViewModel;
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -221,7 +224,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     super.initState();
     widget.viewModel.loadArticleContent.execute();
     _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     _headerHeight = 260.0;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+    widget.viewModel.dispose();
   }
 
   late double _headerHeight;
@@ -238,30 +249,56 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     );
   }
 
+  void _onScroll() {
+    final vm = widget.socialViewModel.commentSectionVM;
+
+    // 1. Status Guard: prevent calls if loading, no more data, or not attached
+    if (!_scrollController.hasClients || vm.isLoading || !vm.hasMore) return;
+
+    final currentScroll = _scrollController.position.pixels;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+
+    if (currentScroll >= maxScroll - 5.0) {
+      vm.loadNextPage();
+    }
+  }
+
   Widget _buildPage(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          // child: Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Container(
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                _buildAppBar(context),
-                _buildArticleBody(context),
-                ..._buildSocial(context),
-              ],
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
+            // physics: ClampingScrollPhysics(),
+            // physics: PageScrollPhysics(),
+            controller: _scrollController,
+            slivers: [
+              _ArticleAppBar(
+                headerHeight: _headerHeight,
+                viewModel: widget.viewModel,
+              ),
+              _ArticleBody(viewModel: widget.viewModel),
+              _ArticleSocial(viewModel: widget.socialViewModel),
+            ],
           ),
-          // ),
         ),
-        StickyInputBarWidget(viewModel: StickyInputViewModel()),
+        StickyInputBarWidget(viewModel: widget.socialViewModel.stickyInputVM),
       ],
     );
   }
+}
 
-  Widget _buildAppBar(BuildContext context) {
+class _ArticleAppBar extends StatelessWidget {
+  const _ArticleAppBar({required double headerHeight, required this.viewModel})
+    : _headerHeight = headerHeight;
+
+  final ArticleDetailViewModel viewModel;
+  final double _headerHeight;
+
+  @override
+  Widget build(BuildContext context) {
     return SliverAppBar(
       expandedHeight: _headerHeight,
       stretch: true,
@@ -296,7 +333,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     CircleAvatar(
                       radius: 20,
                       backgroundImage: NetworkImage(
-                        widget.viewModel.article.thumbnailUrl,
+                        viewModel.article.thumbnailUrl,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -319,7 +356,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   ],
                 ),
               ),
-              background: _buildArticleHeader(context),
+              background: _ArticleHeader(viewModel: viewModel),
               stretchModes: const [
                 StretchMode.zoomBackground,
                 StretchMode.blurBackground,
@@ -330,21 +367,28 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       ),
     );
   }
+}
 
-  Widget _buildArticleHeader(BuildContext context) {
+class _ArticleHeader extends StatelessWidget {
+  const _ArticleHeader({required this.viewModel});
+
+  final ArticleDetailViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return ListenableBuilder(
-      listenable: widget.viewModel.loadArticleContent,
+      listenable: viewModel.loadArticleContent,
       builder: (context, _) {
-        if (widget.viewModel.loadArticleContent.running) {
+        if (viewModel.loadArticleContent.running) {
           return const Padding(
             padding: EdgeInsets.all(16.0),
             child: CircularProgressIndicator(),
           );
         }
-        if (widget.viewModel.loadArticleContent.error) {
+        if (viewModel.loadArticleContent.error) {
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -352,7 +396,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 const Text('Failed to load article content'),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: widget.viewModel.loadArticleContent.execute,
+                  onPressed: viewModel.loadArticleContent.execute,
                   child: const Text('Try Again'),
                 ),
               ],
@@ -367,7 +411,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.viewModel.article.title,
+                  viewModel.article.title,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
@@ -392,7 +436,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         radius: 20,
                         backgroundColor: colorScheme.outlineVariant,
                         backgroundImage: NetworkImage(
-                          widget.viewModel.article.thumbnailUrl,
+                          viewModel.article.thumbnailUrl,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -401,13 +445,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.viewModel.article.authorName,
+                              viewModel.article.authorName,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             Text(
-                              widget.viewModel.article.createdAt.toString(),
+                              viewModel.article.createdAt.toString(),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -436,19 +480,26 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       },
     );
   }
+}
 
-  Widget _buildArticleBody(BuildContext context) {
+class _ArticleBody extends StatelessWidget {
+  const _ArticleBody({required this.viewModel});
+
+  final ArticleDetailViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: ListenableBuilder(
-        listenable: widget.viewModel.loadArticleContent,
+        listenable: viewModel.loadArticleContent,
         builder: (context, _) {
-          if (widget.viewModel.loadArticleContent.running) {
+          if (viewModel.loadArticleContent.running) {
             return const Padding(
               padding: EdgeInsets.all(16.0),
               child: CircularProgressIndicator(),
             );
           }
-          if (widget.viewModel.loadArticleContent.error) {
+          if (viewModel.loadArticleContent.error) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -456,7 +507,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   const Text('Failed to load article content'),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: widget.viewModel.loadArticleContent.execute,
+                    onPressed: viewModel.loadArticleContent.execute,
                     child: const Text('Try Again'),
                   ),
                 ],
@@ -494,7 +545,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               child: Column(
                 children: [
                   Text(
-                    widget.viewModel.article.summary,
+                    viewModel.article.summary,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -505,67 +556,66 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       ),
     );
   }
+}
 
-  List<Widget> _buildSocial(BuildContext context) {
-    return [
-      DecoratedSliver(
-        decoration: BoxDecoration(
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainer, // This colors the entire area including padding
-        ),
-        sliver: SliverPadding(
-          padding: const EdgeInsets.all(16.0),
-          sliver: DecoratedSliver(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-                topRight: Radius.circular(16),
+class _ArticleSocial extends StatelessWidget {
+  const _ArticleSocial({required this.viewModel});
+
+  final SocialViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedSliver(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+      ),
+      sliver: SliverPadding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        sliver: DecoratedSliver(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.5),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.5),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            sliver: SliverMainAxisGroup(
-              slivers: [
-                // 1. Top Section (Interaction Bar)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: InteractionBarWidget(
-                      viewModel: InteractionViewModel(
-                        SocialMeta(id: '1', relatedId: '1'),
-                      ),
-                    ),
+            ],
+          ),
+          sliver: SliverMainAxisGroup(
+            slivers: [
+              // 1. Top Section (Interaction Bar)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: InteractionBarWidget(
+                    viewModel: viewModel.interactionVM..init(),
                   ),
                 ),
+              ),
 
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Divider(),
-                  ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Divider(),
                 ),
-                SliverPadding(
-                  padding: EdgeInsets.all(16),
-                  sliver: CommentSectionWidget(
-                    viewModel: CommentSectionViewModel(
-                      repository: context.read(),
-                    )..fetchComments('1'),
-                  ),
+              ),
+              SliverPadding(
+                padding: EdgeInsets.all(16),
+                sliver: CommentSectionWidget(
+                  viewModel: viewModel.commentSectionVM..init(),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-    ];
+    );
   }
 }

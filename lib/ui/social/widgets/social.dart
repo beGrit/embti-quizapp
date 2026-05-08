@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:emombti/domain/models/social/social.dart';
+import 'package:emombti/utils/number_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,33 +22,44 @@ class InteractionBarWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 5,
             children: [
-              _buildActionButton(
-                // Use favorite_border when not liked for better visual feedback
-                icon: vm.meta.isLiked ? Icons.favorite : Icons.favorite_border,
-                color: vm.meta.isLiked
-                    ? Colors.red
-                    : Theme.of(context).colorScheme.secondary,
-                label: '${vm.meta.likesCount} Likes',
-                onTap: vm.toggleLike,
-              ),
-              _buildActionButton(
-                icon: vm.meta.isFavorited ? Icons.star : Icons.star_border,
-                color: vm.meta.isFavorited
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.secondary,
-                label: '${vm.meta.favoritesCount} Favorites',
-                onTap: vm.toggleFavorite,
-              ),
-              _buildActionButton(
-                icon: Icons.chat_bubble_outline,
-                label: '${vm.meta.commentsCount} Comments',
-                onTap: null,
-              ),
-              _buildActionButton(
-                icon: Icons.share_outlined,
-                label: '${vm.meta.sharesCount} Shares',
-                onTap: null,
-              ),
+              if (vm.meta == null)
+                const CircularProgressIndicator()
+              else ...[
+                _buildActionButton(
+                  icon: vm.meta!.isLiked
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  count: vm.meta!.likesCount,
+                  suffix: ' Likes',
+                  color: vm.meta!.isLiked
+                      ? Colors.red
+                      : Theme.of(context).colorScheme.secondary,
+                  onTap: viewModel.toggleLike,
+                ),
+                _buildActionButton(
+                  icon: vm.meta!.isFavorited ? Icons.star : Icons.star_border,
+                  count: vm.meta!.favoritesCount,
+                  suffix: ' Favorites',
+                  color: vm.meta!.isFavorited
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary,
+                  onTap: viewModel.toggleFavorite,
+                ),
+                _buildActionButton(
+                  icon: Icons.chat_bubble_outline,
+                  count: vm.meta!.commentsCount,
+                  suffix: ' Comments',
+                  color: Theme.of(context).colorScheme.secondary,
+                  onTap: null,
+                ),
+                _buildActionButton(
+                  icon: Icons.share_outlined,
+                  count: vm.meta!.sharesCount,
+                  suffix: ' Shares',
+                  color: Theme.of(context).colorScheme.secondary,
+                  onTap: null,
+                ),
+              ],
             ],
           );
         },
@@ -57,7 +69,8 @@ class InteractionBarWidget extends StatelessWidget {
 
   Widget _buildActionButton({
     required IconData icon,
-    required String label,
+    int? count,
+    String? suffix,
     VoidCallback? onTap,
     Color? color,
   }) {
@@ -65,16 +78,19 @@ class InteractionBarWidget extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, color: color, size: 32),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-            ),
+            // Only render the spacing and text if count is not null
+            if (count != null) ...[
+              Text(
+                '${NumberFormatter.formatSocialCount(count)}${suffix ?? ""}',
+                style: TextStyle(fontSize: 9),
+              ),
+            ] else
+              Text(suffix ?? "", style: TextStyle(fontSize: 10)),
           ],
         ),
       ),
@@ -95,33 +111,71 @@ class CommentSectionWidget extends StatelessWidget {
         builder: (context, vm, _) {
           if (vm.isLoading) {
             return const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
             );
           }
 
-          if (vm.comments.isEmpty) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.chat_bubble_outline, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text(
-                  'No comments yet.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+          if (vm.dataItems.isEmpty) {
+            return SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 64.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      'No comments yet.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    Text(
+                      'Be the first to share your thoughts!',
+                      style: TextStyle(fontSize: 14, color: Colors.blueGrey),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Be the first to share your thoughts!',
-                  style: TextStyle(fontSize: 14, color: Colors.blueGrey),
-                ),
-              ],
+              ),
             );
           }
 
           return SliverList(
-            delegate: SliverChildBuilderDelegate((context, index) {
-              final comment = vm.comments[index];
-              return CommentItem(comment: comment, onLike: null);
-            }, childCount: vm.comments.length),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                if (index == vm.dataItems.length && !vm.hasMore) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Text(
+                        'No more comments',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ),
+                  );
+                }
+
+                if (index == vm.dataItems.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+
+                final comment = vm.dataItems[index];
+                return CommentItem(comment: comment, onLike: null);
+              },
+              childCount:
+                  vm.dataItems.length +
+                  (vm.isFetchingMore || !vm.hasMore ? 1 : 0),
+            ),
           );
         },
       ),

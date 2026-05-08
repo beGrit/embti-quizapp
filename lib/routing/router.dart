@@ -7,6 +7,7 @@ import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
+import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           viewModel: ArticleDetailViewModel(
             repository: context.read(),
             articleId: articleId,
+          ),
+          socialViewModel: SocialViewModel(
+            repository: context.read(),
+            relatedId: articleId,
           ),
         );
       },

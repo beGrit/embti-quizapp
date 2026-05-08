@@ -1,75 +1,200 @@
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/domain/models/social/social.dart';
+import 'package:emombti/ui/core/ui/view_models/paging.dart';
 import 'package:flutter/foundation.dart';
 
-class InteractionViewModel extends ChangeNotifier {
-  SocialMeta _meta;
-  InteractionViewModel(this._meta);
+class SocialViewModel extends ChangeNotifier {
+  final SocialRepository _repository;
+  final String relatedId;
 
-  SocialMeta get meta => _meta;
+  late final InteractionViewModel interactionVM;
+  late final CommentSectionViewModel commentSectionVM;
+  late final StickyInputViewModel stickyInputVM;
 
-  void toggleLike() {
-    _meta = _meta.copyWith(
-      isLiked: !_meta.isLiked,
-      likesCount: _meta.isLiked ? _meta.likesCount - 1 : _meta.likesCount + 1,
-    );
-    notifyListeners();
+  bool _isLoading = true;
+  bool get isLoading => _isLoading;
+
+  SocialViewModel({
+    required SocialRepository repository,
+    required this.relatedId,
+  }) : _repository = repository {
+    _init();
   }
 
-  void toggleFavorite() {
-    _meta = _meta.copyWith(
-      isFavorited: !_meta.isFavorited,
-      favoritesCount: _meta.isFavorited
-          ? _meta.favoritesCount - 1
-          : _meta.favoritesCount + 1,
-    );
-    notifyListeners();
+  Future<void> _init() async {
+    try {
+      _isLoading = true;
+      interactionVM = InteractionViewModel(
+        repository: _repository,
+        relatedId: relatedId,
+      );
+
+      commentSectionVM = CommentSectionViewModel(
+        repository: _repository,
+        relatedId: relatedId,
+      );
+
+      stickyInputVM = StickyInputViewModel(
+        repository: _repository,
+        relatedId: relatedId,
+      );
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      debugPrint("Failed to initialize SocialViewModel: $e");
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    interactionVM?.dispose();
+    commentSectionVM.dispose();
+    stickyInputVM.dispose();
+    super.dispose();
   }
 }
 
-class CommentSectionViewModel extends ChangeNotifier {
+class InteractionViewModel extends ChangeNotifier {
   final SocialRepository _repository;
+  final String relatedId;
 
-  CommentSectionViewModel({required SocialRepository repository})
-    : _repository = repository;
-
-  List<Comment> _comments = [];
+  SocialMeta? _meta;
   bool _isLoading = false;
 
-  List<Comment> get comments => _comments;
+  InteractionViewModel({
+    required SocialRepository repository,
+    required this.relatedId,
+  }) : _repository = repository;
+
+  SocialMeta? get meta => _meta;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchComments(String relatedId) async {
-    if (_isLoading) return; // Prevent duplicate calls
+  Future<void> init() async {
+    if (_isLoading) return;
 
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Use the repository instead of generating data locally
-      _comments = await _repository.getComments(relatedId);
+      _meta = await _repository.getSocialMeta(relatedId);
     } catch (e) {
-      // Handle errors here (e.g., logging)
-      print("Error fetching comments: $e");
+      debugPrint("Error initializing InteractionViewModel: $e");
+      // Handle error state if necessary
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
-}
 
-class StickyInputViewModel extends ChangeNotifier {
-  String _currentText = '';
+  void toggleLike() {
+    if (_meta == null) return;
 
-  void updateText(String val) {
-    _currentText = val;
+    final isLiked = !_meta!.isLiked;
+    _meta = _meta!.copyWith(
+      isLiked: isLiked,
+      likesCount: isLiked ? _meta!.likesCount + 1 : _meta!.likesCount - 1,
+    );
     notifyListeners();
   }
 
-  Future<void> submitComment(String relatedId) async {
-    if (_currentText.trim().isEmpty) return;
-    // Logic to post comment
-    _currentText = '';
+  void toggleFavorite() {
+    if (_meta == null) return;
+
+    final isFav = !_meta!.isFavorited;
+    _meta = _meta!.copyWith(
+      isFavorited: isFav,
+      favoritesCount: isFav
+          ? _meta!.favoritesCount + 1
+          : _meta!.favoritesCount - 1,
+    );
     notifyListeners();
+  }
+}
+
+class CommentSectionViewModel extends ChangeNotifier with PagingMixin<Comment> {
+  final SocialRepository _repository;
+  final String relatedId;
+
+  CommentSectionViewModel({
+    required SocialRepository repository,
+    required this.relatedId,
+  }) : _repository = repository;
+
+  bool get isEmpty => dataItems.isEmpty && !isLoading;
+
+  List<Comment> get comments => dataItems;
+
+  Future<void> init() async {
+    await refreshData();
+  }
+
+  @override
+  Future<List<Comment>> loadData(int page, int pageSize) {
+    return _repository.getCommentsByPage(
+      relatedId,
+      page: page,
+      pageSize: pageSize,
+    );
+  }
+
+  Future<void> toggleLike(String commentId) async {
+    try {
+      final index = dataItems.indexWhere((c) => c.id == commentId);
+      if (index != -1) {
+        final comment = dataItems[index];
+        final isLiked = !comment.isLiked;
+
+        dataItems[index] = comment.copyWith(
+          isLiked: isLiked,
+          likesCount: isLiked ? comment.likesCount + 1 : comment.likesCount - 1,
+        );
+        notifyListeners();
+
+        // Note: You would usually call the repository here to persist the like
+      }
+    } catch (e) {
+      debugPrint("Toggle Like Error: $e");
+    }
+  }
+
+  /// Handles local UI update when a new comment is submitted
+  void onCommentPosted(Comment newComment) {
+    dataItems.insert(0, newComment);
+    notifyListeners();
+  }
+}
+
+class StickyInputViewModel extends ChangeNotifier {
+  final SocialRepository _repository;
+  final String relatedId;
+
+  bool _isSubmitting = false;
+
+  StickyInputViewModel({
+    required SocialRepository repository,
+    required this.relatedId,
+  }) : _repository = repository;
+
+  bool get isSubmitting => _isSubmitting;
+
+  Future<void> submitComment(String commentText) async {
+    commentText = commentText.trim();
+    if (commentText.isEmpty || _isSubmitting) return;
+
+    try {
+      _isSubmitting = true;
+      notifyListeners();
+
+      // Uses the internal relatedId
+      await _repository.postComment(relatedId, commentText);
+    } catch (e) {
+      debugPrint("Submit Comment Error: $e");
+    } finally {
+      _isSubmitting = false;
+      notifyListeners();
+    }
   }
 }

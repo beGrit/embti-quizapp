@@ -17,12 +17,13 @@ class ScaffoldWithNav extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final bool isDesktop = size.width >= 600;
     final bool isExtended = size.width >= 1000;
-
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Row(
         children: [
           if (isDesktop)
             NavigationRail(
+              backgroundColor: colorScheme.surfaceContainer,
               extended: isExtended,
               selectedIndex: navigationShell.currentIndex,
               onDestinationSelected: (index) => navigationShell.goBranch(index),
