@@ -30,6 +30,7 @@ dependencies:
   webview_flutter: ^4.10.0
   mobile_scanner: ^5.1.0
   sensors_plus: ^6.1.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
