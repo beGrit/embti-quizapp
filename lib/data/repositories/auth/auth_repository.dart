@@ -14,6 +14,8 @@ abstract class AuthRepository extends ChangeNotifier {
   /// Perform login
   Future<Result<void>> login({required String email, required String password});
 
+  Future<Result<void>> loginWithWechat();
+
   /// Perform logout
   Future<Result<void>> logout();
 }

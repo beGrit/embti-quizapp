@@ -1,3 +1,4 @@
+import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:flutter/material.dart';
 
 class MeViewModel extends ChangeNotifier {
@@ -6,16 +7,19 @@ class MeViewModel extends ChangeNotifier {
   String userEmail = "explorer@emombti.com";
   String mbtiType = "INFP";
 
+  MeViewModel(this._repository);
+
+  final AuthRepository _repository;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   void updateProfile() {
-    // Logic to update user data
     notifyListeners();
   }
 
   void logout() {
-    // Call your AuthRepository logout logic here
-    debugPrint("User logging out...");
+    _repository.logout();
+    notifyListeners();
   }
 }

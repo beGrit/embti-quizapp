@@ -1,38 +1,75 @@
+import 'package:emombti/ui/login/widgets/login_paint.dart';
 import 'package:flutter/material.dart';
 
-class LoginBannerImage extends StatefulWidget {
-  const LoginBannerImage({super.key});
+class LoginLogo extends StatefulWidget {
+  const LoginLogo({super.key});
 
   @override
-  State<LoginBannerImage> createState() => _LoginBannerImageState();
+  State<LoginLogo> createState() => _LoginLogoState();
 }
 
-class _LoginBannerImageState extends State<LoginBannerImage>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    duration: const Duration(seconds: 15),
-    vsync: this,
-  )..repeat();
-
+class _LoginLogoState extends State<LoginLogo> {
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: RotationTransition(
-        turns: _controller,
-        child: ClipOval(
-          // Clips the child into a circle
-          child: Image.asset(
-            'assets/images/Cognitive_Functions.png',
-            fit: BoxFit.cover, // Use cover to ensure the circle is filled
+    return Container(
+      height: 120,
+      width: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .4),
+            blurRadius: 10,
+            offset: const Offset(0, 8),
           ),
-        ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: Image.asset('assets/images/logo_2.png', fit: BoxFit.cover),
+      ),
+    );
+  }
+}
+
+class AnimatedLoginLogo extends StatefulWidget {
+  const AnimatedLoginLogo({super.key});
+
+  @override
+  State<AnimatedLoginLogo> createState() => _AnimatedLoginLogoState();
+}
+
+class _AnimatedLoginLogoState extends State<AnimatedLoginLogo> {
+  double _currentHeight = 200.0;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        setState(() {
+          _currentHeight = 400.0;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 3000),
+      curve: Curves.elasticOut,
+      height: _currentHeight,
+      width: double.infinity,
+      alignment: Alignment.center,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [AvatarCirclePaint(), LoginLogo()],
       ),
     );
   }

@@ -1,33 +1,31 @@
+import 'package:emombti/routing/routes.dart';
+import 'package:emombti/ui/qr_code/widgets/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../view_models/me_viewmodel.dart';
 
-class MeScreen extends StatelessWidget {
-  final bool showBackButton;
-
+class MeScreen extends StatefulWidget {
   const MeScreen({super.key, this.showBackButton = false});
 
+  final bool showBackButton;
+
+  @override
+  State<StatefulWidget> createState() => _MeScreenState();
+}
+
+class _MeScreenState extends State<MeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    // We wrap the screen in a ChangeNotifierProvider if it's not provided globally
+    final ColorScheme colorScheme = theme.colorScheme;
     return ChangeNotifierProvider(
-      create: (_) => MeViewModel(),
+      create: (_) => MeViewModel(context.read()),
       child: Consumer<MeViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text("Profile"),
-              automaticallyImplyLeading: showBackButton,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => debugPrint("Settings pressed"),
-                ),
-              ],
-            ),
+            appBar: _MeScreenAppBar(showBackButton: widget.showBackButton),
             body: SingleChildScrollView(
               child: Column(
                 children: [
@@ -105,4 +103,47 @@ class MeScreen extends StatelessWidget {
       onTap: onTap,
     );
   }
+}
+
+class _MeScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final bool showBackButton;
+
+  const _MeScreenAppBar({required this.showBackButton});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    return AppBar(
+      backgroundColor: colorScheme.surfaceContainer,
+      // title: const Text("Profile"),
+      automaticallyImplyLeading: showBackButton,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.qr_code_scanner),
+          onPressed: () => _openScanner(context),
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings_outlined),
+          onPressed: () => context.push(Routes.settings),
+        ),
+      ],
+    );
+  }
+
+  void _openScanner(BuildContext context) async {
+    final String? result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const QRCodeScanner()),
+    );
+
+    if (result != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('扫描结果: $result')));
+    }
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(60);
 }

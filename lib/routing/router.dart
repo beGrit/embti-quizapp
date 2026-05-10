@@ -5,8 +5,10 @@ import 'package:emombti/ui/contents/widgets/article_section.dart';
 import 'package:emombti/ui/core/ui/nav_bottom.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
+import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
+import 'package:emombti/ui/settings/widgets/settings_screen.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,16 +17,22 @@ import 'package:provider/provider.dart';
 import 'routes.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.login,
+  initialLocation: Routes.home,
   refreshListenable: authRepository,
   redirect: _redirect,
   routes: [
     // Login Route
     GoRoute(
       path: Routes.login,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) =>
+          LoginScreen(viewModel: LoginViewModel(repository: context.read())),
     ),
     // Me Standalone Route
+    GoRoute(
+      path: Routes.settings,
+      builder: (context, state) => const SettingsScreen(),
+    ),
+    // Settings Route
     GoRoute(
       path: Routes.meStandalone,
       builder: (context, state) => const MeScreen(showBackButton: true),

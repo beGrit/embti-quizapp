@@ -46,4 +46,16 @@ class AuthRepositoryDev extends AuthRepository {
 
     return const Result.ok(null);
   }
+
+  @override
+  Future<Result<void>> loginWithWechat() async {
+    // Save to disk to persist login state
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_authKey, true);
+
+    _isLoggedIn = true;
+    notifyListeners();
+
+    return const Result.ok(null);
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:emombti/routing/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,11 @@ import 'ui/core/localization/app_localizations.dart';
 import 'ui/core/themes/theme.dart';
 import 'ui/core/themes/theme_util.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   development.main();
 }
 
