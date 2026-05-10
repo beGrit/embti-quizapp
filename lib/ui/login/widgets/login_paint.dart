@@ -187,7 +187,7 @@ class BubbleExplosionPainter extends CustomPainter {
 
     // 绘制碎片层
     for (var p in particles) {
-      final pPaint = Paint()..color = p.color.withOpacity(p.opacity);
+      final pPaint = Paint()..color = p.color.withValues(alpha: p.opacity);
       canvas.drawCircle(p.position, p.size, pPaint);
     }
 
@@ -210,14 +210,17 @@ class BubbleExplosionPainter extends CustomPainter {
           }
           // 气泡逐渐消失并略微放大（像破裂前的膨胀）
           final paint = Paint()
-            ..color = (oldNodes[i]['color'] as Color).withOpacity(1.0 - t);
+            ..color = (oldNodes[i]['color'] as Color).withValues(
+              alpha: 1.0 - t,
+            );
           canvas.drawCircle(pos, 30 * (1.0 + t * 0.2), paint);
         } else if (t == 0) {
           // 还没轮到爆炸的显示原样
           canvas.drawCircle(
             pos,
             30,
-            Paint()..color = (oldNodes[i]['color'] as Color).withOpacity(0.8),
+            Paint()
+              ..color = (oldNodes[i]['color'] as Color).withValues(alpha: 0.8),
           );
           _drawLabel(canvas, pos, oldNodes[i]['label'], 1.0);
         }
@@ -238,7 +241,7 @@ class BubbleExplosionPainter extends CustomPainter {
             center + Offset(math.cos(angle) * radius, math.sin(angle) * radius);
 
         final paint = Paint()
-          ..color = (newNodes[i]['color'] as Color).withOpacity(0.8 * t);
+          ..color = (newNodes[i]['color'] as Color).withValues(alpha: 0.8 * t);
         canvas.drawCircle(pos, 30 * t, paint);
         if (t > 0.5) _drawLabel(canvas, pos, newNodes[i]['label'], t);
       }
@@ -250,7 +253,7 @@ class BubbleExplosionPainter extends CustomPainter {
       text: TextSpan(
         text: text,
         style: TextStyle(
-          color: Colors.white.withOpacity(opacity),
+          color: Colors.white.withValues(alpha: opacity),
           fontSize: 12,
           fontWeight: FontWeight.bold,
         ),

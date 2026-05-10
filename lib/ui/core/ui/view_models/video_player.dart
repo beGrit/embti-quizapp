@@ -116,8 +116,9 @@ class AdvancedVideoPlayerViewModel extends VideoPlayerViewModel {
 
   void _advancedListener() {
     final currentController = _controller;
-    if (currentController == null || !currentController.value.isInitialized)
+    if (currentController == null || !currentController.value.isInitialized) {
       return;
+    }
 
     final value = currentController.value;
     bool needsUpdate = false;
@@ -151,9 +152,8 @@ class AdvancedVideoPlayerViewModel extends VideoPlayerViewModel {
     notifyListeners();
   }
 
-  /// Specific Advanced Function (Optional)
   void share() {
-    print("Sharing video: ${_controller?.dataSource}");
+    debugPrint("Sharing video: ${_controller?.dataSource}");
   }
 
   @override

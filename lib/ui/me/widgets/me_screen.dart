@@ -19,7 +19,6 @@ class _MeScreenState extends State<MeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
     return ChangeNotifierProvider(
       create: (_) => MeViewModel(context.read()),
       child: Consumer<MeViewModel>(

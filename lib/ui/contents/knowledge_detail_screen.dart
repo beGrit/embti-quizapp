@@ -35,7 +35,7 @@ class KnowledgeDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.shadow.withOpacity(0.2),
+                        color: colorScheme.shadow.withValues(alpha: 0.2),
                         blurRadius: 15,
                         offset: const Offset(0, 8),
                       ),

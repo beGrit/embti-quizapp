@@ -111,7 +111,7 @@ class KnowledgeItem extends StatelessWidget {
           border: Border.all(color: colorScheme.outlineVariant),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.1),
+              color: colorScheme.shadow.withValues(alpha: .1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

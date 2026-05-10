@@ -11,9 +11,6 @@ class MeViewModel extends ChangeNotifier {
 
   final AuthRepository _repository;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
   void updateProfile() {
     notifyListeners();
   }

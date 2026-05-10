@@ -55,7 +55,7 @@ class AdvertisingBottomSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.3),
+              color: Colors.grey.withValues(alpha: .3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -213,7 +213,7 @@ class _FullScreenAdState extends State<FullScreenAd>
           width: 40,
           height: 4,
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: .3),
             borderRadius: BorderRadius.circular(2),
           ),
         ),

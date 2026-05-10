@@ -50,7 +50,7 @@ class SocialViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    interactionVM?.dispose();
+    interactionVM.dispose();
     commentSectionVM.dispose();
     stickyInputVM.dispose();
     super.dispose();

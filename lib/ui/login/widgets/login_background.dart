@@ -147,7 +147,7 @@ class BackgroundItemsPainter extends CustomPainter {
 
     // 3. 绘制背景连接线 (可选)
     final Paint linePaint = Paint()
-      ..color = Colors.grey.withOpacity(0.2)
+      ..color = Colors.grey.withValues(alpha: 0.2)
       ..strokeWidth = 1;
 
     // 绘制圆环路径线
@@ -164,7 +164,11 @@ class BackgroundItemsPainter extends CustomPainter {
       final color = node['color'] as Color;
 
       // 绘制圆形背景
-      canvas.drawCircle(center, 30, Paint()..color = color.withOpacity(0.8));
+      canvas.drawCircle(
+        center,
+        30,
+        Paint()..color = color.withValues(alpha: 0.8),
+      );
 
       // 绘制文字
       final textPainter = TextPainter(

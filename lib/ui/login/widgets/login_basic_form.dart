@@ -72,9 +72,11 @@ class _LoginFormState extends State<LoginForm> {
                   child: Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surface.withOpacity(0.85),
+                      color: theme.colorScheme.surface.withValues(alpha: 0.85),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Form(
                       key: _formKey,

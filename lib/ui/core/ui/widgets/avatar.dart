@@ -56,13 +56,13 @@ class _MusicVisualizerAvatarState extends State<MusicVisualizerAvatar>
                 shape: BoxShape.circle,
                 gradient: SweepGradient(
                   colors: [
-                    Colors.white.withOpacity(0.0),
-                    Colors.blue.withOpacity(0.4),
-                    Colors.white.withOpacity(
-                      0.9,
+                    Colors.white.withValues(alpha: 0.0),
+                    Colors.blue.withValues(alpha: 0.4),
+                    Colors.white.withValues(
+                      alpha: 0.9,
                     ), // The "bright" edge of the cloud
-                    Colors.lightBlueAccent.withOpacity(0.3),
-                    Colors.white.withOpacity(0.0),
+                    Colors.lightBlueAccent.withValues(alpha: 0.3),
+                    Colors.white.withValues(alpha: 0.0),
                   ],
                   stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
                 ),
@@ -78,7 +78,7 @@ class _MusicVisualizerAvatarState extends State<MusicVisualizerAvatar>
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blueAccent.withOpacity(0.15),
+                  color: Colors.blueAccent.withValues(alpha: 0.15),
                   blurRadius: 10,
                   spreadRadius: 2,
                 ),
