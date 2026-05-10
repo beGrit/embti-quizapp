@@ -1,3 +1,4 @@
+import 'package:emombti/data/services/notification_service.dart';
 import 'package:emombti/ui/contents/view_models/banner_viewmodel.dart';
 import 'package:emombti/ui/contents/view_models/slideshow_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/knowledge_section.dart';
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.addListener(_handleScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _triggerAd();
+      context.read<NotificationService>().startTestCron();
     });
   }
 

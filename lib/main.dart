@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'data/services/notification_service.dart';
 import 'main_dev.dart' as development;
 import 'ui/core/localization/app_localizations.dart';
 import 'ui/core/themes/theme.dart';
@@ -23,6 +24,12 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
+
+    // Initialize notification service and request permissions
+    final notificationService = context.read<NotificationService>();
+    notificationService.init().then((_) {
+      notificationService.requestPermissions();
+    });
 
     MaterialTheme theme = MaterialTheme(
       createTextTheme(context, "Noto Sans", "Noto Sans"),
