@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../../../config/assets.dart';
 import '../../../domain/models/content/content.dart';
+import '../../../domain/models/quiz/personality_models.dart';
 
 class LocalDataService {
   Future<List<Content>> getMockFeed() async {
@@ -50,6 +51,18 @@ class LocalDataService {
   Future<List<BannerContent>> getBannerContents() async {
     final json = await _loadStringAsset(AppAssets.bannersJson);
     return json.map<BannerContent>((e) => BannerContent.fromJson(e)).toList();
+  }
+
+  Future<List<Survey>> getQuizzes() async {
+    final json = await _loadStringAsset(AppAssets.quizzesJson);
+    return json.map<Survey>((e) => Survey.fromJson(e)).toList();
+  }
+
+  Future<List<AssessmentResult>> getAssessmentResults() async {
+    final json = await _loadStringAsset(AppAssets.assessmentResultsJson);
+    return json
+        .map<AssessmentResult>((e) => AssessmentResult.fromJson(e))
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {

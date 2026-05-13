@@ -1,0 +1,20 @@
+[
+  {
+    "scores": [
+      { "axis": 0, "value": 0.75 },
+      { "axis": 1, "value": 0.30 },
+      { "axis": 2, "value": 0.85 },
+      { "axis": 3, "value": 0.45 }
+    ],
+    "timestamp": "2023-11-20T10:30:00Z"
+  },
+  {
+    "scores": [
+      { "axis": 0, "value": 0.20 },
+      { "axis": 1, "value": 0.65 },
+      { "axis": 2, "value": 0.40 },
+      { "axis": 3, "value": 0.90 }
+    ],
+    "timestamp": "2023-11-21T15:45:00Z"
+  }
+]

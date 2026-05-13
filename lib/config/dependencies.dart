@@ -1,3 +1,5 @@
+import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
+import 'package:emombti/data/repositories/quiz/quiz_repository_local.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository_local.dart';
 import 'package:emombti/data/services/local/local_notification_service.dart';
@@ -41,6 +43,11 @@ List<SingleChildWidget> get providersLocal {
     ),
     Provider<SocialRepository>(
       create: (context) => SocialRepositoryLocal() as SocialRepository,
+    ),
+    Provider<QuizRepository>(
+      create: (context) =>
+          QuizRepositoryLocal(localDataService: context.read())
+              as QuizRepository,
     ),
     Provider<PolicyService>(create: (context) => LocalPolicyService()),
     Provider<NotificationService>(

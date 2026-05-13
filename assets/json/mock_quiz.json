@@ -1,0 +1,36 @@
+[
+  {
+    "id": "mbti_basic",
+    "title": "Standard Personality Assessment",
+    "questions": [
+      {
+        "id": "q1",
+        "text": "You enjoy vibrant social events.",
+        "axis": 0,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q2",
+        "text": "You focus on the big picture rather than details.",
+        "axis": 1,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q3",
+        "text": "Logic is more important than heart in decisions.",
+        "axis": 2,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q4",
+        "text": "You prefer having a detailed plan.",
+        "axis": 3,
+        "isReversed": false,
+        "weight": 1.0
+      }
+    ]
+  }
+]

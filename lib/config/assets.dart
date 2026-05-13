@@ -4,6 +4,9 @@ class AppAssets {
   static const String knowledgeJson = 'assets/json/mock_knowledge.json';
   static const String bannersJson = 'assets/json/mock_banners.json';
 
+  static const String quizzesJson = 'assets/json/mock_quiz.json';
+  static const String assessmentResultsJson = 'assets/json/mock_assessment_result.json';
+
   // Icons for Content Type C (Knowledge)
   static const String iconBook = 'assets/icons/book_icon.svg';
   static const String iconDoc = 'assets/icons/doc_icon.svg';
