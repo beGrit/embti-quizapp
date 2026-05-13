@@ -1,4 +1,5 @@
 import 'package:emombti/routing/routes.dart';
+import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/qr_code/widgets/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -111,12 +112,9 @@ class _MeScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    return AppBar(
-      backgroundColor: colorScheme.surfaceContainer,
-      // title: const Text("Profile"),
-      automaticallyImplyLeading: showBackButton,
+    return StandardAppBar(
+      title: "Profile",
+      leading: showBackButton ? const BackButton() : null,
       actions: [
         IconButton(
           icon: const Icon(Icons.qr_code_scanner),
@@ -144,5 +142,5 @@ class _MeScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(60);
+  Size get preferredSize => const Size.fromHeight(50);
 }
