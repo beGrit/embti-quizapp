@@ -2,7 +2,7 @@ import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/routing/router_config.dart';
 import 'package:emombti/ui/contents/view_models/article_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/article_section.dart';
-import 'package:emombti/ui/core/ui/nav_bottom.dart';
+import 'package:emombti/ui/core/ui/widgets/nav_bottom.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';

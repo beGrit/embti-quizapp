@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routing/routes.dart';
-import '../../core/ui/speech.dart';
 import '../../core/ui/widgets/avatar.dart';
+import '../../core/ui/widgets/speech.dart';
 
 class HomeAppBar extends StatefulWidget implements PreferredSizeWidget {
   const HomeAppBar({
@@ -96,9 +96,8 @@ class _HomeAppBarState extends State<HomeAppBar> {
             onTap: () {
               context.push(Routes.meStandalone);
             },
-            child: MusicVisualizerAvatar(
+            child: AppBarAvatar(
               size: 46,
-              isPlaying: true,
               child: CircleAvatar(
                 radius: 18,
                 backgroundColor: colorScheme.primaryContainer,
