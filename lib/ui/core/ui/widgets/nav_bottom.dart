@@ -18,7 +18,9 @@ class ScaffoldWithNav extends StatelessWidget {
     final bool isDesktop = size.width >= 600;
     final bool isExtended = size.width >= 1000;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
+      extendBody: true,
       body: Row(
         children: [
           if (isDesktop)
@@ -59,17 +61,37 @@ class ScaffoldWithNav extends StatelessWidget {
       // Only show bottom nav on mobile
       bottomNavigationBar: isDesktop
           ? null
-          : NavigationBar(
-              selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: (index) => navigationShell.goBranch(index),
-              destinations: [
-                for (final route in routeBottom)
-                  NavigationDestination(
-                    icon: Icon(route.icon),
-                    selectedIcon: Icon(route.selectedIcon),
-                    label: route.label,
+          : NavigationBarTheme(
+              data: NavigationBarThemeData(
+                // backgroundColor: Colors.transparent,
+                // shadowColor: Colors.transparent,
+                // indicatorColor: Colors.transparent,
+                indicatorShape: null,
+                iconTheme: WidgetStateProperty.all(
+                  const IconThemeData(size: 24),
+                ),
+                labelTextStyle: WidgetStateProperty.all(
+                  textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-              ],
+                ),
+                labelPadding: EdgeInsets.zero,
+              ),
+              child: NavigationBar(
+                height: 60,
+                selectedIndex: navigationShell.currentIndex,
+                onDestinationSelected: (index) =>
+                    navigationShell.goBranch(index),
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                destinations: [
+                  for (final route in routeBottom)
+                    NavigationDestination(
+                      icon: Icon(route.icon),
+                      selectedIcon: Icon(route.selectedIcon),
+                      label: route.label,
+                    ),
+                ],
+              ),
             ),
     );
   }

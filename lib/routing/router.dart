@@ -8,6 +8,8 @@ import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
+import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
+import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
 import 'package:emombti/ui/settings/widgets/settings_screen.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -82,12 +84,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               label: 'Social',
             ),
             BottomRouteConfig(
-              path: Routes.connections,
-              builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Conn'),
+              path: Routes.quizLanding,
+              builder: (context, state) => QuizLandingScreen(
+                viewModel: QuizLandingViewModel(repository: context.read()),
+              ),
               icon: Icons.hub_outlined,
               selectedIcon: Icons.hub,
-              label: 'Conn',
+              label: 'Quiz',
             ),
             BottomRouteConfig(
               path: Routes.messaging,
@@ -128,9 +131,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.connections,
-              builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Conn'),
+              path: Routes.quizLanding,
+              builder: (context, state) => QuizLandingScreen(
+                viewModel: QuizLandingViewModel(repository: context.read()),
+              ),
             ),
           ],
         ),

@@ -5,6 +5,7 @@ abstract final class Routes {
   static const me = '/me';
   static const meStandalone = '/me-standalone';
   static const settings = '/settings';
+  static const String quizLanding = '/quiz_landing';
   static const String social = '/social';
   static const String connections = '/connections';
   static const String messaging = '/messaging';
