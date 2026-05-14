@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../../../config/assets.dart';
 import '../../../domain/models/content/content.dart';
-import '../../../domain/models/quiz/personality_models.dart';
+import '../../../domain/models/quiz/survey_models.dart';
 
 class LocalDataService {
   Future<List<Content>> getMockFeed() async {

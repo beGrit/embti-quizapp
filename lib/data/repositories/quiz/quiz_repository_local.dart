@@ -1,27 +1,28 @@
-import 'package:emombti/domain/models/quiz/personality_models.dart';
+import 'package:emombti/domain/models/quiz/survey_models.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../services/local/local_data_service.dart';
+import '../../services/local/local_data_sqlite_service.dart';
 import 'quiz_repository.dart';
 
-/// A local implementation of [QuizRepository] that handles data in-memory or
-/// via local persistent storage (e.g., Hive, SharedPreferences, or SQLite).
+/// Local [QuizRepository]: surveys from assets, submissions in SQLite.
 class QuizRepositoryLocal extends QuizRepository {
-  // Mock internal storage for demonstration.
-  // In a production app, replace these with a local database service.
-  QuizRepositoryLocal({LocalDataService? localDataService})
-    : _localDataService = localDataService ?? LocalDataService();
+  QuizRepositoryLocal({
+    LocalDataService? localDataService,
+    LocalDataSqliteService? localDataSqliteService,
+  }) : _localDataService = localDataService ?? LocalDataService(),
+       _localDataSqliteService =
+           localDataSqliteService ?? LocalDataSqliteService();
 
   final LocalDataService _localDataService;
-  final List<AssessmentResult> _history = [];
+  final LocalDataSqliteService _localDataSqliteService;
 
   @override
   Future<List<Survey>> getAvailableSurveys() async {
     try {
       return await _localDataService.getQuizzes();
     } catch (e) {
-      // In a real application, consider more robust error handling or logging
-      // In a real application, consider more robust error handling
-      print('Error loading surveys: $e');
+      debugPrint('Error loading surveys: $e');
       return [];
     }
   }
@@ -44,36 +45,29 @@ class QuizRepositoryLocal extends QuizRepository {
       throw Exception('Survey with ID ${response.surveyId} not found.');
     }
 
-    // Utilize the PersonalityEngine logic provided in personality_models.dart
-    final result = PersonalityEngine.process(survey, response);
+    final result = AssessmentResult(
+      surveyFlowId: response.surveyFlowId,
+      scores: <AxisScore>[],
+      timestamp: DateTime.now(),
+    );
 
-    // Save to local history
-    _history.insert(0, result);
-
-    // TODO: Persist to disk here (e.g., await _storage.save(result))
+    await _localDataSqliteService.saveSubmission(response, result);
 
     return result;
   }
 
   @override
   Future<List<AssessmentResult>> getAssessmentHistory() async {
-    if (_history.isEmpty) {
-      try {
-        final results = await _localDataService.getAssessmentResults();
-        _history.addAll(results);
-      } catch (e) {
-        // Handle or log error if the asset is missing or malformed
-        print('Error loading assessment history: $e');
-      }
+    try {
+      return await _localDataSqliteService.getAllAssessmentResults();
+    } catch (e) {
+      debugPrint('Error loading assessment history: $e');
+      return [];
     }
-    return List.unmodifiable(
-      _history..sort((a, b) => b.timestamp.compareTo(a.timestamp)),
-    );
   }
 
   @override
   Future<void> clearHistory() async {
-    _history.clear();
-    // TODO: Clear disk storage
+    await _localDataSqliteService.clearAssessmentHistory();
   }
 }

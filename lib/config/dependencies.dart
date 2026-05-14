@@ -1,7 +1,10 @@
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository_local.dart';
+import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
+import 'package:emombti/data/repositories/quiz/survey_flow_repository_local.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository_local.dart';
+import 'package:emombti/data/services/local/local_data_sqlite_service.dart';
 import 'package:emombti/data/services/local/local_notification_service.dart';
 import 'package:emombti/data/services/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +29,7 @@ List<SingleChildWidget> get providersLocal {
     ..._sharedProviders,
     ChangeNotifierProvider.value(value: AuthRepositoryDev() as AuthRepository),
     Provider<LocalDataService>.value(value: LocalDataService()),
+    Provider<LocalDataSqliteService>.value(value: LocalDataSqliteService()),
     Provider<ArticleContentRepository>(
       create: (context) =>
           ArticleContentRepositoryLocal(localDataService: context.read())
@@ -46,8 +50,14 @@ List<SingleChildWidget> get providersLocal {
     ),
     Provider<QuizRepository>(
       create: (context) =>
-          QuizRepositoryLocal(localDataService: context.read())
+          QuizRepositoryLocal(
+                localDataService: context.read(),
+                localDataSqliteService: context.read(),
+              )
               as QuizRepository,
+    ),
+    Provider<SurveyFlowRepository>(
+      create: (context) => SurveyFlowRepositoryLocal() as SurveyFlowRepository,
     ),
     Provider<PolicyService>(create: (context) => LocalPolicyService()),
     Provider<NotificationService>(

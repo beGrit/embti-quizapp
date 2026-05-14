@@ -20,7 +20,6 @@ class ScaffoldWithNav extends StatelessWidget {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     TextTheme textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      extendBody: true,
       body: Row(
         children: [
           if (isDesktop)

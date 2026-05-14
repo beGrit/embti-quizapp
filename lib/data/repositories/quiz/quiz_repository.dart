@@ -1,4 +1,4 @@
-import 'package:emombti/domain/models/quiz/personality_models.dart';
+import 'package:emombti/domain/models/quiz/survey_models.dart';
 
 /// Repository interface for managing personality quizzes and results.
 abstract class QuizRepository {

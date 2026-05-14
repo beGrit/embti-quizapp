@@ -28,8 +28,8 @@ class StandardAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leading,
       title: Text(
         title,
-        style: theme.textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w500,
         ),
       ),
       centerTitle: true,

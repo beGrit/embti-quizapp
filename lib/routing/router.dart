@@ -9,7 +9,9 @@ import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
 import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
+import 'package:emombti/ui/quiz/view_models/survey_flow_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
+import 'package:emombti/ui/quiz/widgets/survey_flow.dart';
 import 'package:emombti/ui/settings/widgets/settings_screen.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -62,6 +64,29 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         );
       },
     ),
+    // Survey Flow Route
+    GoRoute(
+      path: '${Routes.surveyFlow}',
+      builder: (context, state) {
+        final surveyId = state.uri.queryParameters['surveyId'] ?? '';
+        final flowId = state.uri.queryParameters['flowId'] ?? '';
+        return SurveyFlowScreen(
+          viewModel: SurveyFlowViewModel(
+            surveyFlowRepository: context.read(),
+            quizRepository: context.read(),
+            flowId: flowId,
+            surveyId: surveyId,
+          ),
+        );
+      },
+    ),
+    // Survey Result Route
+    GoRoute(
+      path: '${Routes.surveyResult}/:id',
+      builder: (context, state) {
+        return const UnderDevelopmentScreen(title: 'Survey Result');
+      },
+    ),
 
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -86,7 +111,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             BottomRouteConfig(
               path: Routes.quizLanding,
               builder: (context, state) => QuizLandingScreen(
-                viewModel: QuizLandingViewModel(repository: context.read()),
+                viewModel: QuizLandingViewModel(
+                  repository: context.read(),
+                  surveyFlowRepository: context.read(),
+                ),
               ),
               icon: Icons.hub_outlined,
               selectedIcon: Icons.hub,
@@ -133,7 +161,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             GoRoute(
               path: Routes.quizLanding,
               builder: (context, state) => QuizLandingScreen(
-                viewModel: QuizLandingViewModel(repository: context.read()),
+                viewModel: QuizLandingViewModel(
+                  repository: context.read(),
+                  surveyFlowRepository: context.read(),
+                ),
               ),
             ),
           ],

@@ -6,6 +6,8 @@ abstract final class Routes {
   static const meStandalone = '/me-standalone';
   static const settings = '/settings';
   static const String quizLanding = '/quiz_landing';
+  static const String surveyFlow = '/quiz/survey_flow';
+  static const String surveyResult = '/quiz/result';
   static const String social = '/social';
   static const String connections = '/connections';
   static const String messaging = '/messaging';
