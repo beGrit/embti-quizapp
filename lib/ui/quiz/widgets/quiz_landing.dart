@@ -146,7 +146,7 @@ class _SurveyFlowListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -162,9 +162,8 @@ class _SurveyFlowListBody extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () => viewModel.setSelectionMode(
-                  !viewModel.selectionMode,
-                ),
+                onPressed: () =>
+                    viewModel.setSelectionMode(!viewModel.selectionMode),
                 child: Text(viewModel.selectionMode ? 'Done' : 'Select'),
               ),
             ],
@@ -240,9 +239,7 @@ class _SurveyFlowListBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: Text(
-                'Delete selected (${viewModel.selectedFlowCount})',
-              ),
+              child: Text('Delete selected (${viewModel.selectedFlowCount})'),
             ),
           ],
           const SizedBox(height: 8),
@@ -305,9 +302,7 @@ class _SurveyFlowTile extends StatelessWidget {
         : '$pct% complete';
 
     final content = Material(
-      color: theme.colorScheme.surfaceContainerHighest.withValues(
-        alpha: 0.35,
-      ),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
       child: InkWell(
         onTap: selectionMode ? onToggleSelection : onTap,
         child: Padding(
