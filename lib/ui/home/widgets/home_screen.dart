@@ -2,6 +2,7 @@ import 'package:emombti/data/services/notification_service.dart';
 import 'package:emombti/ui/contents/view_models/banner_viewmodel.dart';
 import 'package:emombti/ui/contents/view_models/slideshow_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/knowledge_section.dart';
+import 'package:emombti/ui/home/widgets/survey_flow_progress_fab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +85,19 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-      body: _buildBody(context),
+      body: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          _buildBody(context),
+          Positioned(
+            right: 16,
+            bottom:
+                MediaQuery.paddingOf(context).bottom +
+                (MediaQuery.sizeOf(context).width >= 600 ? 16.0 : 32.0),
+            child: const SurveyFlowProgressFab(),
+          ),
+        ],
+      ),
     );
   }
 

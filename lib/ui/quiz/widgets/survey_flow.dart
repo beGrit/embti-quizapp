@@ -36,7 +36,7 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
         if (widget.viewModel.load.completed) {
           return Scaffold(
             appBar: StandardAppBar(
-              title: 'Quiz Flow',
+              title: 'Quiz',
               leading: Row(
                 children: [
                   IconButton(
