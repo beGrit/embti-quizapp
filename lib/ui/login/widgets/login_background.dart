@@ -85,7 +85,6 @@ class _GravityCanvasBackgroundState extends State<GravityCanvasBackground>
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 100),
               curve: Curves.easeOutCubic,
-              // 使用叠加后的坐标
               transform: Matrix4.translationValues(finalX, finalY, 0),
               child: Stack(
                 children: [
@@ -93,7 +92,7 @@ class _GravityCanvasBackgroundState extends State<GravityCanvasBackground>
                     child: Transform.scale(
                       scale: 2,
                       child: Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images/bg3.avif',
                         fit: BoxFit.cover,
                       ),
                     ),

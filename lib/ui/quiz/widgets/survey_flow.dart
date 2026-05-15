@@ -27,6 +27,12 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
   }
 
   @override
+  void didUpdateWidget(covariant SurveyFlowScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.viewModel.load.execute();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 

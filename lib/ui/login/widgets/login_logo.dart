@@ -1,4 +1,3 @@
-import 'package:emombti/ui/login/widgets/login_paint.dart';
 import 'package:flutter/material.dart';
 
 class LoginLogo extends StatefulWidget {
@@ -31,7 +30,7 @@ class _LoginLogoState extends State<LoginLogo> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
-        child: Image.asset('assets/images/logo_2.png', fit: BoxFit.cover),
+        child: Image.asset('assets/images/logo_v3.png', fit: BoxFit.cover),
       ),
     );
   }
@@ -69,7 +68,10 @@ class _AnimatedLoginLogoState extends State<AnimatedLoginLogo> {
       alignment: Alignment.center,
       child: Stack(
         alignment: Alignment.center,
-        children: [AvatarCirclePaint(), LoginLogo()],
+        children: [
+          // AvatarCirclePaint(),
+          LoginLogo(),
+        ],
       ),
     );
   }
