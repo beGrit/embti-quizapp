@@ -1,4 +1,3 @@
-import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
@@ -75,9 +74,6 @@ class _ExploreScreenState extends State<ExploreScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    MaterialTheme materialTheme = MaterialTheme(
-      createTextTheme(context, "Noto Sans", "Noto Sans"),
-    );
 
     final vm = widget.viewModel;
 

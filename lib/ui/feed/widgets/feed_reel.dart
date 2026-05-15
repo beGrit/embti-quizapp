@@ -97,7 +97,7 @@ class _ReelPageState extends State<_ReelPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint('init: ' + widget.index.toString());
+    debugPrint('init: ${widget.index}');
     if (_inPreloadWindow) {
       _startLoad();
     }
@@ -105,7 +105,7 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   void didUpdateWidget(covariant _ReelPage oldWidget) {
-    debugPrint('didUpdateWidget: ' + widget.index.toString());
+    debugPrint('didUpdateWidget: ${widget.index}');
     super.didUpdateWidget(oldWidget);
     final wasActive = widget.index == oldWidget.currentIndex;
     if (wasActive && !_isActive) {
@@ -121,7 +121,7 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   void dispose() {
-    debugPrint('dispose: ' + widget.index.toString());
+    debugPrint('dispose: ${widget.index}');
     _controller?.removeListener(_onControllerUpdate);
     _controller?.dispose();
     super.dispose();
@@ -210,7 +210,7 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('build: ' + widget.index.toString());
+    debugPrint('build: ${widget.index}');
     final padding = MediaQuery.paddingOf(context);
     final theme = Theme.of(context);
 

@@ -73,7 +73,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     ),
     // Survey Flow Route
     GoRoute(
-      path: '${Routes.surveyFlow}',
+      path: Routes.surveyFlow,
       builder: (context, state) {
         final surveyId = state.uri.queryParameters['surveyId'] ?? '';
         final flowId = state.uri.queryParameters['flowId'] ?? '';
