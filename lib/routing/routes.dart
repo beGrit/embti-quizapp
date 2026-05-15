@@ -9,6 +9,7 @@ abstract final class Routes {
   static const String surveyFlow = '/quiz/survey_flow';
   static const String surveyResult = '/quiz/result';
   static const String social = '/social';
+  static const String explore = '/explore';
   static const String connections = '/connections';
   static const String messaging = '/messaging';
   static const String content = '/content';

@@ -1,9 +1,11 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/routing/router_config.dart';
+import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/contents/view_models/article_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/article_section.dart';
-import 'package:emombti/ui/core/ui/widgets/nav_bottom.dart';
+import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
+import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
+import 'package:emombti/ui/explore/widgets/explore_screen.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
@@ -90,47 +92,30 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
 
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return ScaffoldWithNav(
+        return AppLayout(
           navigationShell: navigationShell,
           routeBottom: [
-            BottomRouteConfig(
-              path: Routes.home,
-              builder: (context, state) => const HomeScreen(),
+            NavigationConfig(
               icon: Icons.explore_outlined,
               selectedIcon: Icons.explore,
               label: 'Home',
             ),
-            BottomRouteConfig(
-              path: Routes.social,
-              builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Social'),
+            NavigationConfig(
               icon: Icons.people_outline,
               selectedIcon: Icons.people,
-              label: 'Social',
+              label: 'Explore',
             ),
-            BottomRouteConfig(
-              path: Routes.quizLanding,
-              builder: (context, state) => QuizLandingScreen(
-                viewModel: QuizLandingViewModel(
-                  repository: context.read(),
-                  surveyFlowRepository: context.read(),
-                ),
-              ),
+            NavigationConfig(
               icon: Icons.hub_outlined,
               selectedIcon: Icons.hub,
               label: 'Quiz',
             ),
-            BottomRouteConfig(
-              path: Routes.messaging,
-              builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Mess'),
+            NavigationConfig(
               icon: Icons.chat_bubble_outline,
               selectedIcon: Icons.chat_bubble,
               label: 'Mess',
             ),
-            BottomRouteConfig(
-              path: Routes.me,
-              builder: (context, state) => const MeScreen(),
+            NavigationConfig(
               icon: Icons.storage_outlined,
               selectedIcon: Icons.storage,
               label: 'Me',
@@ -150,9 +135,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.social,
+              path: Routes.explore,
               builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Social'),
+                  ExploreScreen(viewModel: ExploreViewModel()),
             ),
           ],
         ),

@@ -2,12 +2,11 @@ import 'package:emombti/routing/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'data/services/notification_service.dart';
 import 'main_dev.dart' as development;
 import 'ui/core/localization/app_localizations.dart';
-import 'ui/core/themes/theme.dart';
 import 'ui/core/themes/theme_util.dart';
 
 void main() async {
@@ -18,27 +17,37 @@ void main() async {
   development.main();
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  _MainAppState();
+  late final GoRouter _routerConfig;
+  late final ThemeData _themeData;
+
+  @override
+  void initState() {
+    super.initState();
+    _routerConfig = router(context.read());
+    _themeData = context.read<ThemeController>().currentTheme;
+  }
+
+  @override
+  void dispose() {
+    _routerConfig.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
-
-    // Initialize notification service and request permissions
-    final notificationService = context.read<NotificationService>();
-    notificationService.init().then((_) {
-      notificationService.requestPermissions();
-    });
-
-    MaterialTheme theme = MaterialTheme(
-      createTextTheme(context, "Noto Sans", "Noto Sans"),
-    );
-
     return MaterialApp.router(
       title: 'eMBTI',
       debugShowCheckedModeBanner: false,
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      theme: _themeData,
       themeMode: ThemeMode.system,
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -47,7 +56,7 @@ class MainApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en'), Locale('zh')],
-      routerConfig: router(context.read()),
+      routerConfig: _routerConfig,
     );
   }
 }

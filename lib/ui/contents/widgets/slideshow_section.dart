@@ -84,6 +84,16 @@ class _BannerMediaCard extends StatefulWidget {
 }
 
 class _BannerMediaCardState extends State<_BannerMediaCard> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   bool _isHovered = false;
 
   @override

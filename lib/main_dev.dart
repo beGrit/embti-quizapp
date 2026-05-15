@@ -15,5 +15,5 @@ import 'main.dart';
 void main() {
   Logger.root.level = Level.ALL;
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MultiProvider(providers: providersLocal, child: const MainApp()));
+  runApp(MultiProvider(providers: providersLocal, child: MainApp()));
 }

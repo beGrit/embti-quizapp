@@ -10,7 +10,6 @@ class KnowledgeHomeSection extends StatefulWidget {
 }
 
 class _KnowledgeHomeSectionState extends State<KnowledgeHomeSection> {
-  // 模拟数据列表
   final List<Map<String, dynamic>> bookData = [
     {
       'title': 'The Great Gatsby',

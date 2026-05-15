@@ -1,4 +1,4 @@
-import 'package:emombti/data/services/notification_service.dart';
+import 'package:emombti/data/services/advertising_service.dart';
 import 'package:emombti/ui/contents/view_models/banner_viewmodel.dart';
 import 'package:emombti/ui/contents/view_models/slideshow_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/knowledge_section.dart';
@@ -11,7 +11,6 @@ import '../../contents/view_models/video_viewmodel.dart';
 import '../../contents/widgets/article_section.dart';
 import '../../contents/widgets/slideshow_section.dart';
 import '../../contents/widgets/video_section.dart';
-import '../../core/ui/widgets/advertising.dart';
 import '../widgets/home_appbar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,24 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _scrollController.addListener(_handleScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _triggerAd();
-      context.read<NotificationService>().startTestCron();
-    });
-  }
-
-  void _triggerAd() {
-    // Delay for 3 seconds before showing the ad
-    Future.delayed(const Duration(seconds: 3), () {
-      // Check if the widget is still "mounted"
-      // This prevents the ad from popping up if the user left the screen already
-      if (!mounted) return;
-
-      FullScreenAd.show(
-        context,
-        title: "Premium MBTI",
-        content: "Covering 80% of your screen to show you the best deals!",
-        imageUrl: "https://via.placeholder.com/600x800/blue/white?text=Big+Ad",
-      );
+      AdvertisingService advertisingService = context
+          .read<AdvertisingService>();
+      advertisingService.showAd(context);
     });
   }
 
@@ -124,7 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 // Articles Section
-                ArticleHomeSection(viewModel: ArticleViewModel(context.read())),
+                ArticleHomeSection(
+                  viewModel: ArticleViewModel(context.read())
+                    ..loadArticles.execute(),
+                ),
                 const SizedBox(height: 16),
                 VideoHomeSection(
                   viewModel: VideoViewModel.forHome(repository: context.read())

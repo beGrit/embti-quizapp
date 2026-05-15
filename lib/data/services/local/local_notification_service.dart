@@ -40,6 +40,8 @@ class LocalNotificationService implements NotificationService {
     );
 
     _isInitialized = true;
+
+    startTestCron();
   }
 
   @override

@@ -20,7 +20,6 @@ class _ArticleHomeSectionState extends State<ArticleHomeSection> {
   @override
   void initState() {
     super.initState();
-    widget.viewModel.loadArticles.execute();
   }
 
   @override
