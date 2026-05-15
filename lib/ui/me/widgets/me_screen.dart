@@ -34,7 +34,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final screenSize = MediaQuery.of(context).size;
 
@@ -112,13 +111,9 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                           borderRadius: BorderRadius.circular(
                                             46,
                                           ),
-                                          child:
-                                              viewModel.avatarUrl != null &&
-                                                  viewModel
-                                                      .avatarUrl!
-                                                      .isNotEmpty
+                                          child: viewModel.avatarUrl.isNotEmpty
                                               ? Image.network(
-                                                  viewModel.avatarUrl!,
+                                                  viewModel.avatarUrl,
                                                   width: 92,
                                                   height: 92,
                                                   fit: BoxFit.cover,
