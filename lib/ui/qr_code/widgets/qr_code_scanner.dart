@@ -1,5 +1,9 @@
+import 'package:emombti/ui/core/themes/theme_util.dart';
+import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:provider/provider.dart';
 
 class QRCodeScanner extends StatefulWidget {
   const QRCodeScanner({super.key});
@@ -9,84 +13,101 @@ class QRCodeScanner extends StatefulWidget {
 }
 
 class _QRCodeScannerState extends State<QRCodeScanner> {
-  // 控制器：可以控制闪光灯、摄像头切换等
-  final MobileScannerController controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.normal,
-    facing: CameraFacing.back,
-    torchEnabled: false,
-  );
+  @override
+  void initState() {
+    super.initState();
+    controller = MobileScannerController(
+      detectionSpeed: DetectionSpeed.noDuplicates,
+      facing: CameraFacing.back,
+      torchEnabled: false,
+    );
+    controller.start();
+  }
+
+  late final MobileScannerController controller;
 
   @override
   void dispose() {
+    controller.stop();
     controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('扫一扫'),
-        actions: [
-          // 切换手电筒
-          IconButton(
-            icon: ValueListenableBuilder(
-              valueListenable: controller,
-              builder: (context, state, child) {
-                final TorchState torchState = state.torchState;
-                switch (torchState) {
-                  case TorchState.off:
-                    return const Icon(Icons.flash_off, color: Colors.grey);
-                  case TorchState.on:
-                    return const Icon(Icons.flash_on, color: Colors.yellow);
-                  case TorchState.auto:
-                    return const Icon(Icons.flash_off, color: Colors.grey);
-                  case TorchState.unavailable:
-                    return const Icon(Icons.flash_off, color: Colors.grey);
-                }
+    ThemeController themeController = context.read<ThemeController>();
+    return Theme(
+      data: themeController.materialTheme.dark(),
+      child: Scaffold(
+        appBar: StandardAppBar(
+          title: 'Scanner',
+          actions: [
+            // 切换手电筒
+            IconButton(
+              icon: ValueListenableBuilder(
+                valueListenable: controller,
+                builder: (context, state, child) {
+                  final TorchState torchState = state.torchState;
+                  switch (torchState) {
+                    case TorchState.off:
+                      return const Icon(Icons.flash_off, color: Colors.grey);
+                    case TorchState.on:
+                      return const Icon(Icons.flash_on, color: Colors.yellow);
+                    case TorchState.auto:
+                      return const Icon(Icons.flash_off, color: Colors.grey);
+                    case TorchState.unavailable:
+                      return const Icon(Icons.flash_off, color: Colors.grey);
+                  }
+                },
+              ),
+              onPressed: () => controller.toggleTorch(),
+            ),
+            // 切换前后摄像头
+            IconButton(
+              icon: ValueListenableBuilder(
+                valueListenable: controller,
+                builder: (context, state, child) {
+                  return Icon(
+                    state.cameraDirection == CameraFacing.front
+                        ? Icons.camera_front
+                        : Icons.camera_rear,
+                  );
+                },
+              ),
+              onPressed: () => controller.switchCamera(),
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            MobileScanner(
+              controller: controller,
+              onDetect: (capture) {
+                _onDetect(capture);
               },
             ),
-            onPressed: () => controller.toggleTorch(),
-          ),
-          // 切换前后摄像头
-          // IconButton(
-          //   icon: ValueListenableBuilder(
-          //     valueListenable: controller.cameraFacingState,
-          //     builder: (context, state, child) {
-          //       return Icon(
-          //         state == CameraFacing.front
-          //             ? Icons.camera_front
-          //             : Icons.camera_rear,
-          //       );
-          //     },
-          //   ),
-          //   onPressed: () => controller.switchCamera(),
-          // ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          // 1. 扫描层
-          MobileScanner(
-            controller: controller,
-            onDetect: (capture) {
-              final List<Barcode> barcodes = capture.barcodes;
-              if (barcodes.isNotEmpty) {
-                final String? code = barcodes.first.rawValue;
-                if (code != null) {
-                  debugPrint('扫描到内容: $code');
-                  // 扫描成功后，通常停止扫描并返回结果
-                  controller.stop();
-                  Navigator.pop(context, code);
-                }
-              }
-            },
-          ),
-          // 2. 覆盖层（扫描框 UI）
-          _buildOverlay(context),
-        ],
+            _buildOverlay(context),
+          ],
+        ),
       ),
     );
+  }
+
+  bool _hasScanned = false;
+
+  void _onDetect(BarcodeCapture capture) {
+    debugPrint('_onDetect');
+    if (_hasScanned) return;
+
+    final String? code = capture.barcodes.first.rawValue;
+
+    if (code != null) {
+      _hasScanned = true;
+
+      if (context.canPop()) {
+        context.pop(code);
+      }
+    }
   }
 
   Widget _buildOverlay(BuildContext context) {

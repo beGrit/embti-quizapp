@@ -1,6 +1,5 @@
 import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
-import 'package:emombti/ui/qr_code/widgets/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -129,15 +128,17 @@ class _MeScreenAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _openScanner(BuildContext context) async {
-    final String? result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const QRCodeScanner()),
-    );
+    final messenger = ScaffoldMessenger.of(context);
 
-    if (result != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('扫描结果: $result')));
+    final String? result = await context.push<String>(Routes.qRCodeScanner);
+
+    if (result != null && result.isNotEmpty) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Qr Scanner Result: $result'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 
