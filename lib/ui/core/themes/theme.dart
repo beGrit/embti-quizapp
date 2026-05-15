@@ -384,3 +384,88 @@ class ColorFamily {
   final Color colorContainer;
   final Color onColorContainer;
 }
+
+class ContainerBoxDecorationExtension
+    extends ThemeExtension<ContainerBoxDecorationExtension> {
+  final BoxDecoration decoration;
+
+  const ContainerBoxDecorationExtension({required this.decoration});
+
+  @override
+  ContainerBoxDecorationExtension copyWith({BoxDecoration? decoration}) {
+    return ContainerBoxDecorationExtension(
+      decoration: decoration ?? this.decoration,
+    );
+  }
+
+  @override
+  ContainerBoxDecorationExtension lerp(
+    ThemeExtension<ContainerBoxDecorationExtension>? other,
+    double t,
+  ) {
+    if (other is! ContainerBoxDecorationExtension) return this;
+    return ContainerBoxDecorationExtension(
+      decoration: BoxDecoration.lerp(decoration, other.decoration, t)!,
+    );
+  }
+}
+
+class AppContainerStyles {
+  // Style A: Soft Shadow (Xiaohongshu style)
+  static ContainerBoxDecorationExtension standard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ContainerBoxDecorationExtension(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          // BoxShadow(
+          //   color: Theme.of(
+          //     context,
+          //   ).colorScheme.onSurface.withValues(alpha: (0.05)),
+          //   blurRadius: 10,
+          //   offset: const Offset(0, 4),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  // Style A: Soft Shadow (Xiaohongshu style)
+  static ContainerBoxDecorationExtension soft(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ContainerBoxDecorationExtension(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: (0.05)),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Style B: Elevated
+  static ContainerBoxDecorationExtension elevated(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ContainerBoxDecorationExtension(
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.onSurface.withValues(alpha: 0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -8,11 +8,10 @@ import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class QuizLandingScreen extends StatefulWidget {
-  const QuizLandingScreen({super.key, required this.viewModel});
-
-  final QuizLandingViewModel viewModel;
+  const QuizLandingScreen({super.key});
 
   @override
   State<QuizLandingScreen> createState() => _QuizLandingScreenState();
@@ -20,27 +19,32 @@ class QuizLandingScreen extends StatefulWidget {
 
 class _QuizLandingScreenState extends State<QuizLandingScreen> {
   late final Listenable _listenable;
+  late final QuizLandingViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
+    viewModel = QuizLandingViewModel(
+      repository: context.read(),
+      surveyFlowRepository: context.read(),
+    );
     _listenable = Listenable.merge([
-      widget.viewModel,
-      widget.viewModel.load,
-      widget.viewModel.startAssessment,
+      viewModel,
+      viewModel.load,
+      viewModel.startAssessment,
     ]);
-    widget.viewModel.startAssessment.addListener(_onStartAssessmentChanged);
-    widget.viewModel.load.execute();
+    viewModel.startAssessment.addListener(_onStartAssessmentChanged);
+    viewModel.load.execute();
   }
 
   @override
   void dispose() {
-    widget.viewModel.startAssessment.removeListener(_onStartAssessmentChanged);
+    viewModel.startAssessment.removeListener(_onStartAssessmentChanged);
     super.dispose();
   }
 
   void _onStartAssessmentChanged() {
-    final result = widget.viewModel.startAssessment.result;
+    final result = viewModel.startAssessment.result;
     if (result is Ok<Map<String, String>>) {
       unawaited(_pushSurveyFlow(result.value));
     }
@@ -50,7 +54,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
     await context.push(
       Uri(path: Routes.surveyFlow, queryParameters: queryParameters).toString(),
     );
-    if (mounted) widget.viewModel.load.execute();
+    if (mounted) viewModel.load.execute();
   }
 
   @override
@@ -74,7 +78,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
       body: ListenableBuilder(
         listenable: _listenable,
         builder: (context, child) {
-          final vm = widget.viewModel;
+          final vm = viewModel;
           final initialLoading =
               vm.load.running && vm.surveys.isEmpty && vm.surveyFlows.isEmpty;
 

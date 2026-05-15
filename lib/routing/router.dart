@@ -11,7 +11,6 @@ import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
 import 'package:emombti/ui/qr_code/widgets/qr_code_scanner.dart';
-import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
 import 'package:emombti/ui/quiz/view_models/survey_flow_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow.dart';
@@ -150,12 +149,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           routes: [
             GoRoute(
               path: Routes.quizLanding,
-              builder: (context, state) => QuizLandingScreen(
-                viewModel: QuizLandingViewModel(
-                  repository: context.read(),
-                  surveyFlowRepository: context.read(),
-                ),
-              ),
+              builder: (context, state) => QuizLandingScreen(),
             ),
           ],
         ),

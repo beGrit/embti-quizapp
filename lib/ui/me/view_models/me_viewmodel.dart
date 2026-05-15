@@ -6,6 +6,8 @@ class MeViewModel extends ChangeNotifier {
   String userName = "MBTI Explorer";
   String userEmail = "explorer@emombti.com";
   String mbtiType = "INFP";
+  String avatarUrl =
+      'https://cdn.pixabay.com/photo/2026/05/04/08/30/08-30-41-961_1280.jpg';
 
   MeViewModel(this._repository);
 

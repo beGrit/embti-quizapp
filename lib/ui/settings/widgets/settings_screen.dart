@@ -1,3 +1,5 @@
+import 'package:emombti/ui/core/themes/theme.dart';
+import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -6,25 +8,38 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    TextTheme textTheme = Theme.of(context).textTheme;
     final List<Map<String, dynamic>> settingsData = [
       {
-        'header': '账号',
+        'header': 'Account',
         'items': [
-          {'title': '账号与安全', 'icon': Icons.security_outlined},
-          {'title': '隐私设置', 'icon': Icons.lock_outlined},
+          {'title': 'Account & Security', 'icon': Icons.security_outlined},
+          {'title': 'Privacy Settings', 'icon': Icons.lock_outlined},
         ],
       },
       {
-        'header': '通用',
+        'header': 'General',
         'items': [
-          {'title': '通用设置', 'icon': Icons.settings_suggest_outlined},
-          {'title': '通知设置', 'icon': Icons.notifications_outlined},
+          {
+            'title': 'General Settings',
+            'icon': Icons.settings_suggest_outlined,
+          },
+          {
+            'title': 'Notification Settings',
+            'icon': Icons.notifications_outlined,
+          },
+        ],
+      },
+      {
+        'header': '',
+        'items': [
+          {'title': 'Logout', 'icon': Icons.notifications_outlined},
         ],
       },
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('设置')),
+      appBar: StandardAppBar(title: 'Settings'),
       backgroundColor: colorScheme.surface,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -35,42 +50,56 @@ class SettingsScreen extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // if (section['header'] != null && section['header'].isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 5,
+                  ),
                   child: Text(
                     section['header'],
-                    style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 Container(
-                  color: colorScheme.surfaceContainer,
-                  child: Column(
-                    children: (section['items'] as List).map((item) {
-                      return Column(
-                        children: [
-                          ListTile(
-                            leading: Icon(
-                              item['icon'],
-                              color: colorScheme.onSurfaceVariant,
+                  decoration: AppContainerStyles.standard(context).decoration,
+                  padding: EdgeInsets.all(5),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Column(
+                      children: (section['items'] as List).map((item) {
+                        return Column(
+                          children: [
+                            ListTile(
+                              leading: Icon(
+                                item['icon'],
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              title: Text(
+                                item['title'],
+                                style: textTheme.bodyMedium,
+                              ),
+                              trailing: Icon(
+                                Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              onTap: () {
+                                debugPrint("Clicked: ${item['title']}");
+                              },
                             ),
-                            title: Text(
-                              item['title'],
-                              style: TextStyle(color: colorScheme.onSurface),
-                            ),
-                            trailing: Icon(
-                              Icons.chevron_right,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            onTap: () {},
-                          ),
-                          if (item != section['items'].last)
-                            Padding(
-                              padding: EdgeInsets.only(left: 50, right: 50),
-                              child: Divider(color: colorScheme.outlineVariant),
-                            ),
-                        ],
-                      );
-                    }).toList(),
+                            if (item != section['items'].last)
+                              Padding(
+                                padding: EdgeInsets.only(left: 50, right: 50),
+                                child: Divider(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                              ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
               ],
