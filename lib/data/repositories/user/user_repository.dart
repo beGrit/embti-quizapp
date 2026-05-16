@@ -8,4 +8,7 @@ abstract class UserRepository {
 
   /// Saves or updates core user information.
   Future<Result<void>> saveUser(User user);
+
+  /// Updates the user's avatar.
+  Future<Result<String>> updateAvatar(String id, List<int> bytes, String filename);
 }

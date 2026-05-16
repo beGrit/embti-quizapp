@@ -1,0 +1,100 @@
+import 'package:emombti/data/services/pocketbase/pocketbase_model_extension.dart';
+import 'package:emombti/utils/result.dart';
+import 'package:flutter/material.dart';
+
+import '../view_models/me_viewmodel.dart';
+
+class MeScreenAvatar extends StatelessWidget {
+  const MeScreenAvatar({super.key, required this.viewModel});
+
+  final MeViewModel viewModel;
+
+  Future<void> _onAvatarTap(BuildContext context) async {
+    final result = await viewModel.pickAndUploadAvatar();
+
+    if (context.mounted) {
+      if (result is Error) {
+        // We only show snackbar if it's a real error (not just user cancelling)
+        final errorStr = result.toString();
+        if (!errorStr.contains('No image selected')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update avatar: $errorStr')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Avatar updated successfully')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final user = viewModel.user;
+    final userName = user?.name ?? "MBTI Explorer";
+
+    final String avatarUrl = viewModel.remoteFileService
+        .getFileUrl(
+          user?.id,
+          UserPocketBaseX.collectionId,
+          UserPocketBaseX.collectionName,
+          user?.avatar,
+        )
+        .toString();
+
+    return GestureDetector(
+      onTap: () => _onAvatarTap(context),
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 46,
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(46),
+              child: viewModel.isUpdatingAvatar
+                  ? const CircularProgressIndicator()
+                  : avatarUrl.isNotEmpty && user?.avatar != null
+                  ? Image.network(
+                      avatarUrl,
+                      width: 92,
+                      height: 92,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildInitialsFallback(theme, userName),
+                    )
+                  : _buildInitialsFallback(theme, userName),
+            ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: const Icon(
+                Icons.camera_alt,
+                size: 16,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInitialsFallback(ThemeData theme, String userName) {
+    return Center(
+      child: Text(
+        userName.isNotEmpty ? userName[0] : "",
+        style: theme.textTheme.headlineMedium,
+      ),
+    );
+  }
+}

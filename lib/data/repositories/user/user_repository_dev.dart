@@ -1,4 +1,5 @@
 import 'package:emombti/data/services/pocketbase/pocketbase_service.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../domain/models/user/user.dart';
 import '../../../utils/result.dart';
@@ -32,6 +33,24 @@ class UserRepositoryDev implements UserRepository {
         },
       );
       return const Result.ok(null);
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<String>> updateAvatar(
+    String id,
+    List<int> bytes,
+    String filename,
+  ) async {
+    try {
+      final record = await _pbService.client.collection('users').update(
+        id,
+        files: [http.MultipartFile.fromBytes('avatar', bytes, filename: filename)],
+      );
+      final newUser = User.fromJson(record.toJson());
+      return Result.ok(newUser.avatar ?? '');
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }

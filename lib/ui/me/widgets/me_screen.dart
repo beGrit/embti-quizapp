@@ -1,5 +1,5 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/services/pocketbase/pocketbase_model_extension.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/data/services/remote_file_service.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../view_models/me_viewmodel.dart';
+import 'me_screen_avatar.dart';
 
 class MeScreen extends StatefulWidget {
   const MeScreen({super.key, this.showBackButton = false});
@@ -43,6 +44,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     return ChangeNotifierProvider<MeViewModel>(
       create: (_) => MeViewModel(
         context.read<AuthRepository>(),
+        context.read<UserRepository>(),
         context.read<RemoteFileService>(),
       ),
       builder: (context, _) {
@@ -52,14 +54,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
         final userName = user?.name ?? "MBTI Explorer";
         final userEmail = user?.email ?? "explorer@emombti.com";
         const mbtiType = "INFP"; // Mock for now
-        final String avatarUrl = viewModel.remoteFileService
-            .getFileUrl(
-              user?.id,
-              UserPocketBaseX.collectionId,
-              UserPocketBaseX.collectionName,
-              user?.avatar,
-            )
-            .toString();
 
         return Scaffold(
           body: DefaultTabController(
@@ -119,34 +113,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const SizedBox(height: kToolbarHeight),
-                                    CircleAvatar(
-                                      radius: 46,
-                                      backgroundColor:
-                                          theme.colorScheme.primaryContainer,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(46),
-                                        child: avatarUrl.isNotEmpty
-                                            ? Image.network(
-                                                avatarUrl,
-                                                width: 92,
-                                                height: 92,
-                                                fit: BoxFit.cover,
-                                                errorBuilder:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) => _buildInitialsFallback(
-                                                      theme,
-                                                      userName,
-                                                    ),
-                                              )
-                                            : _buildInitialsFallback(
-                                                theme,
-                                                userName,
-                                              ),
-                                      ),
-                                    ),
+                                    MeScreenAvatar(viewModel: viewModel),
                                     const SizedBox(height: 12),
                                     Text(
                                       userName,
@@ -390,15 +357,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
         ),
         const SizedBox(height: 50),
       ]),
-    );
-  }
-
-  Widget _buildInitialsFallback(ThemeData theme, String userName) {
-    return Center(
-      child: Text(
-        userName.isNotEmpty ? userName[0] : "",
-        style: theme.textTheme.headlineMedium,
-      ),
     );
   }
 
