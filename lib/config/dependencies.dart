@@ -1,3 +1,5 @@
+import 'package:emombti/data/repositories/chat/chat_repository.dart';
+import 'package:emombti/data/repositories/chat/chat_repository_dev.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository_local.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
@@ -61,6 +63,9 @@ List<SingleChildWidget> get providersLocal {
     ),
     Provider<UserRepository>(
       create: (context) => UserRepositoryDev(pbService: context.read()),
+    ),
+    Provider<ChatRepository>(
+      create: (context) => ChatRepositoryDev(pbService: context.read()),
     ),
     Provider<ArticleContentRepository>(
       create: (context) =>

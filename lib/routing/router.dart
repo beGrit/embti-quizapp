@@ -1,5 +1,8 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/routing/navigation_config.dart';
+import 'package:emombti/ui/chat/widgets/room_detail_screen.dart';
+import 'package:emombti/ui/chat/widgets/rooms_screen.dart';
 import 'package:emombti/ui/contents/view_models/article_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/article_section.dart';
 import 'package:emombti/ui/core/ui/widgets/layout.dart';
@@ -97,7 +100,13 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         return const UnderDevelopmentScreen(title: 'Survey Result');
       },
     ),
-
+    GoRoute(
+      path: '${Routes.chatRooms}/:id',
+      builder: (context, state) {
+        final room = state.extra as Room;
+        return RoomDetailScreen(room: room);
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return AppLayout(
@@ -160,9 +169,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.messaging,
-              builder: (context, state) =>
-                  const UnderDevelopmentScreen(title: 'Mes'),
+              path: Routes.chatRooms,
+              builder: (context, state) => RoomsScreen(),
             ),
           ],
         ),

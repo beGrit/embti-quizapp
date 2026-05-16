@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MeViewModel extends ChangeNotifier {
-  MeViewModel(this._authRepository, this._userRepository, this._fileService) {
-    _authRepository.addListener(notifyListeners);
-  }
+  MeViewModel(this._authRepository, this._userRepository, this._fileService);
 
   final AuthRepository _authRepository;
   final UserRepository _userRepository;
@@ -75,11 +73,5 @@ class MeViewModel extends ChangeNotifier {
 
   void logout() {
     _authRepository.logout();
-  }
-
-  @override
-  void dispose() {
-    _authRepository.removeListener(notifyListeners);
-    super.dispose();
   }
 }

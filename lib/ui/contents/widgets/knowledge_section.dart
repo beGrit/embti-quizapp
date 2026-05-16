@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../knowledge_detail_screen.dart';
+import 'knowledge_detail_screen.dart';
 
 class KnowledgeHomeSection extends StatefulWidget {
   const KnowledgeHomeSection({super.key});

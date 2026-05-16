@@ -676,6 +676,85 @@
     "system": false
   },
   {
+    "id": "room_members",
+    "listRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "viewRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "createRule": "@request.auth.id != ''",
+    "updateRule": null,
+    "deleteRule": "@request.auth.id != '' && user_id = @request.auth.id",
+    "name": "room_members",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "help": "",
+        "hidden": false,
+        "id": "text_rm_id",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "0jpxv562ntc60bk",
+        "help": "The room the user belongs to",
+        "hidden": false,
+        "id": "rel_rm_room",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "room_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "cascadeDelete": true,
+        "collectionId": "_pb_users_auth_",
+        "help": "The user inside the room",
+        "hidden": false,
+        "id": "rel_rm_user",
+        "maxSelect": 1,
+        "minSelect": 1,
+        "name": "user_id",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "date_rm_created",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "date_rm_updated",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_room_user_unique` ON `room_members` (`room_id`, `user_id`)"
+    ],
+    "system": false
+  },
+  {
     "id": "0jpxv562ntc60bk",
     "listRule": "",
     "viewRule": "",
