@@ -96,10 +96,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        border: Border(top: BorderSide(color: theme.dividerColor, width: 0.5)),
-      ),
+      decoration: BoxDecoration(color: theme.cardColor),
       child: SafeArea(
         child: Row(
           children: [
@@ -107,7 +104,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerLow,
+                  color: theme.colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
@@ -131,18 +128,18 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                       icon: const Icon(Icons.image_outlined, size: 20),
                       onPressed: () {},
                     ),
+                    IconButton(
+                      icon: Icon(
+                        _controller.text.isEmpty ? Icons.mic_none : Icons.send,
+                      ),
+                      color: _controller.text.isEmpty
+                          ? theme.colorScheme.onSurfaceVariant
+                          : theme.colorScheme.primary,
+                      onPressed: () => _handleSend(viewModel),
+                    ),
                   ],
                 ),
               ),
-            ),
-            IconButton(
-              icon: Icon(
-                _controller.text.isEmpty ? Icons.mic_none : Icons.send,
-              ),
-              color: _controller.text.isEmpty
-                  ? theme.colorScheme.onSurfaceVariant
-                  : theme.colorScheme.primary,
-              onPressed: () => _handleSend(viewModel),
             ),
           ],
         ),

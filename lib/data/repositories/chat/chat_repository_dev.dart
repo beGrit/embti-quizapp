@@ -6,7 +6,6 @@ import 'package:emombti/utils/result.dart';
 
 import 'chat_repository.dart';
 
-/// [ChatRepository] implementation using PocketBase.
 class ChatRepositoryDev implements ChatRepository {
   ChatRepositoryDev({required PocketBaseService pbService})
     : _pbService = pbService;
@@ -45,8 +44,6 @@ class ChatRepositoryDev implements ChatRepository {
     required int perPage,
   }) async {
     try {
-      // Fetches a paginated list of rooms.
-      // Expands room members (with user details) and messages.
       final result = await _pbService.client
           .collection('rooms')
           .getList(
@@ -120,12 +117,10 @@ class ChatRepositoryDev implements ChatRepository {
     try {
       final Map<String, dynamic> body = message.toJson();
 
-      // Remove system-managed fields to let PocketBase generate them
       body.remove('id');
       body.remove('created');
       body.remove('updated');
 
-      // Ensure necessary fields like createdAt are populated
       body['createdAt'] ??= DateTime.now().toIso8601String();
 
       final record = await _pbService.client
@@ -142,13 +137,11 @@ class ChatRepositoryDev implements ChatRepository {
     final controller = StreamController<Message>();
 
     _pbService.client.collection('messages').subscribe('*', (e) {
-      if (e.action == 'create' && e.record != null) {
-        final message = Message.fromJson(e.record!.toJson());
-        if (message.roomId == roomId) {
-          controller.add(message);
-        }
+      final message = Message.fromJson(e.record!.toJson());
+      if (message.roomId == roomId) {
+        controller.add(message);
       }
-    });
+    }, filter: 'room_id = "$roomId" && @action = "create"');
 
     controller.onCancel = () {
       _pbService.client.collection('messages').unsubscribe('*');

@@ -12,57 +12,60 @@ class RoomDetailViewModel extends ChangeNotifier {
     required AuthRepository authRepository,
     required ChatRepository chatRepository,
   }) : _authRepository = authRepository,
-       _chatRepository = chatRepository;
+       _chatRepository = chatRepository {
+    _initMessagePipeline();
+  }
 
   final Room room;
   final AuthRepository _authRepository;
   final ChatRepository _chatRepository;
 
-  List<Message> _messages = [];
+  final List<Message> _messages = [];
+  bool _isLoading = false;
 
+  bool get isLoading => _isLoading;
   String? get currentUserId => _authRepository.user?.id;
 
-  /// Stream that loads initial history and then listens for real-time updates.
-  Stream<List<Message>> get messagesStream async* {
-    // Load initial history if empty
-    if (_messages.isEmpty) {
-      final result = await _chatRepository.getMessages(room.id);
-      if (result is Ok<List<Message>>) {
-        _messages = result.value;
-      }
-    }
-    yield _messages;
+  final StreamController<List<Message>> _messagesStreamController =
+      StreamController<List<Message>>.broadcast();
+  StreamSubscription<Message>? _realtimeSubscription;
 
-    // Subscribe to new messages
-    await for (final newMessage in _chatRepository.subscribeToMessages(
-      room.id,
-    )) {
-      // Avoid duplicates from optimistic UI or race conditions
-      if (!_messages.any((m) => m.id == newMessage.id)) {
-        _messages.add(newMessage);
-        yield _messages;
-      }
-    }
-  }
-
-  /// Returns messages in reverse order for efficient rendering in a reversed ListView
+  Stream<List<Message>> get messagesStream => _messagesStreamController.stream;
   List<Message> get messages => _messages.reversed.toList();
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  Future<void> loadMessages() async {
+  void _initMessagePipeline() async {
     _isLoading = true;
     notifyListeners();
 
     final result = await _chatRepository.getMessages(room.id);
-
     if (result is Ok<List<Message>>) {
-      _messages = result.value;
+      _messages.clear();
+      _messages.addAll(result.value);
+      _messagesStreamController.add(List.from(_messages));
     }
 
     _isLoading = false;
     notifyListeners();
+
+    _startRealtimeSubscription();
+  }
+
+  void _startRealtimeSubscription() {
+    _realtimeSubscription?.cancel();
+
+    _realtimeSubscription = _chatRepository
+        .subscribeToMessages(room.id)
+        .listen(
+          (newMessage) {
+            if (!_messages.any((m) => m.id == newMessage.id)) {
+              _messages.add(newMessage);
+              _messagesStreamController.add(List.from(_messages));
+            }
+          },
+          onError: (error) {
+            _messagesStreamController.addError(error);
+          },
+        );
   }
 
   Future<void> sendMessage(String text) async {
@@ -72,13 +75,12 @@ class RoomDetailViewModel extends ChangeNotifier {
     if (user == null) return;
 
     final message = Message(
-      id: '', // Temporary ID
+      id: '',
       roomId: room.id,
       sendBy: user.id,
       message: text,
       messageType: 'text',
       createdAt: DateTime.now(),
-      // Required by model but will be ignored/replaced by backend
       created: DateTime.now(),
       updated: DateTime.now(),
     );
@@ -86,8 +88,20 @@ class RoomDetailViewModel extends ChangeNotifier {
     final result = await _chatRepository.sendMessage(message);
 
     if (result is Ok<Message>) {
-      _messages.add(result.value);
-      notifyListeners();
+      if (!_messages.any((m) => m.id == result.value.id)) {
+        _messages.add(result.value);
+        _messagesStreamController.add(List.from(_messages));
+        notifyListeners();
+      }
     }
   }
+
+  @override
+  void dispose() {
+    _realtimeSubscription?.cancel();
+    _messagesStreamController.close();
+    super.dispose();
+  }
+
+  Future<void> loadMessages() async {}
 }
