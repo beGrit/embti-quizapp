@@ -28,8 +28,8 @@ class LoginMethods extends StatelessWidget {
 
           const SizedBox(height: 16),
           _buildLoginButton(
-            icon: Icons.phone_android,
-            label: "Login use Phone",
+            icon: Icons.password,
+            label: "Login use Password",
             backgroundColor: Colors.white,
             textColor: Colors.black87,
             onPressed: () {

@@ -1,0 +1,64 @@
+# ==========================================
+# Gemini Code Assist Ignore File for Flutter
+# ==========================================
+
+# --- Flutter / Dart Dependencies & Generated Files ---
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+
+# --- Generated Code (If you want Gemini to focus on your handwritten logic) ---
+# Uncomment these if your generated files (.g.dart, .freezed.dart) are bloating the context
+# *.g.dart
+# *.freezed.dart
+# *.mocks.dart
+
+# --- Android Specifics ---
+.gradle/
+android/app/src/main/res/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+**/GeneratedPluginRegistrant.java
+
+# --- iOS Specifics ---
+ios/.symlinks/
+ios/Pods/
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+*.xcworkspace/
+*.xcuserdata/
+
+# --- Web Specifics ---
+web/build/
+
+# --- IDEs and System Files ---
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Version Control ---
+.git/
+.gitignore
+
+# --- Documentation & Media (Optional) ---
+# Prevents indexing design assets or large markdown docs
+assets/images/
+assets/fonts/
+doc/
+*.png
+*.jpg
+*.jpeg
+*.svg

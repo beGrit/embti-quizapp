@@ -4,10 +4,14 @@ import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository_local.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository_local.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
+import 'package:emombti/data/repositories/user/user_repository_dev.dart';
 import 'package:emombti/data/services/advertising_service.dart';
 import 'package:emombti/data/services/local/local_data_sqlite_service.dart';
 import 'package:emombti/data/services/local/local_notification_service.dart';
 import 'package:emombti/data/services/notification_service.dart';
+import 'package:emombti/data/services/pocketbase/pocketbase_service.dart';
+import 'package:emombti/data/services/remote_file_service.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:flutter/material.dart';
@@ -46,9 +50,18 @@ List<SingleChildWidget> _sharedProviders = [
 List<SingleChildWidget> get providersLocal {
   return [
     ..._sharedProviders,
-    ChangeNotifierProvider.value(value: AuthRepositoryDev() as AuthRepository),
     Provider<LocalDataService>.value(value: LocalDataService()),
     Provider<LocalDataSqliteService>.value(value: LocalDataSqliteService()),
+    Provider<PocketBaseService>(create: (context) => PocketBaseService()),
+    ProxyProvider<PocketBaseService, RemoteFileService>(
+      update: (context, pb, _) => pb,
+    ),
+    ChangeNotifierProvider<AuthRepository>(
+      create: (context) => AuthRepositoryDev(pbService: context.read()),
+    ),
+    Provider<UserRepository>(
+      create: (context) => UserRepositoryDev(pbService: context.read()),
+    ),
     Provider<ArticleContentRepository>(
       create: (context) =>
           ArticleContentRepositoryLocal(localDataService: context.read())

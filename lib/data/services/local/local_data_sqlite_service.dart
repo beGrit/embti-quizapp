@@ -4,6 +4,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../domain/models/quiz/survey_models.dart';
+import '../../../domain/models/user/user.dart';
 
 class LocalDataSqliteService {
   static Database? _database;
@@ -20,7 +21,7 @@ class LocalDataSqliteService {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         // 1. Survey 静态数据表 (缓存从 JSON 加载的题目)
         await db.execute('''
@@ -62,6 +63,14 @@ class LocalDataSqliteService {
             submitted_at TEXT NOT NULL
           )
         ''');
+
+        // 5. User tables
+        await db.execute('''
+          CREATE TABLE users (
+            id TEXT PRIMARY KEY,
+            data_json TEXT NOT NULL
+          )
+        ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -74,8 +83,33 @@ class LocalDataSqliteService {
             )
           ''');
         }
+        if (oldVersion < 3) {
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+              id TEXT PRIMARY KEY,
+              data_json TEXT NOT NULL
+            )
+          ''');
+        }
       },
     );
+  }
+
+  // --- User Logic ---
+
+  Future<User?> getUserById(String id) async {
+    final db = await database;
+    final maps = await db.query('users', where: 'id = ?', whereArgs: [id]);
+    if (maps.isEmpty) return null;
+    return User.fromJson(jsonDecode(maps.first['data_json'] as String));
+  }
+
+  Future<void> saveUser(User user) async {
+    final db = await database;
+    await db.insert('users', {
+      'id': user.id,
+      'data_json': jsonEncode(user.toJson()),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   // --- Survey 缓存逻辑 ---

@@ -1,4 +1,7 @@
+import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/services/advertising_service.dart';
+import 'package:emombti/data/services/pocketbase/pocketbase_model_extension.dart';
+import 'package:emombti/data/services/remote_file_service.dart';
 import 'package:emombti/ui/contents/view_models/banner_viewmodel.dart';
 import 'package:emombti/ui/contents/view_models/slideshow_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/knowledge_section.dart';
@@ -53,6 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final authRepository = context.watch<AuthRepository>();
+    final fileService = context.read<RemoteFileService>();
+    final user = authRepository.user;
+    final String avatarUrl = fileService
+        .getFileUrl(
+          user?.id,
+          UserPocketBaseX.collectionId,
+          UserPocketBaseX.collectionName,
+          user?.avatar,
+        )
+        .toString();
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -65,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
             return HomeAppBar(
               onSearchChanged: (value) => debugPrint("Searching for: $value"),
               scrollScale: scrollScaleValue,
+              avatarUrl: avatarUrl,
             );
           },
         ),

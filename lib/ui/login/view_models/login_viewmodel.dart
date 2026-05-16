@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 
 import '../../../data/repositories/auth/auth_repository.dart';
+import '../../../data/repositories/user/user_repository.dart';
 import '../../../utils/result.dart';
 
 class LoginViewModel extends ChangeNotifier {
-  LoginViewModel({required this.repository}) {
+  LoginViewModel({required this.repository, required this.userRepository}) {
     loginWithWechat = Command0<void>(_loginWithWechatAction);
     loginWithAccountAndPassword = Command1<void, (String, String)>(
       _loginWithAccountAndPassword,
@@ -15,6 +16,7 @@ class LoginViewModel extends ChangeNotifier {
   final _log = Logger('LoginViewModel');
 
   final AuthRepository repository;
+  final UserRepository userRepository;
 
   late Command0<void> loginWithWechat;
   late Command1<void, (String, String)> loginWithAccountAndPassword;
@@ -24,14 +26,21 @@ class LoginViewModel extends ChangeNotifier {
   ) async {
     final (email, password) = credentials;
     final result = await repository.login(email: email, password: password);
-    if (result is Error<void>) {
-      _log.warning('Login failed! ${result.error}');
+
+    if (result is Ok<void>) {
+      _log.info('Successfully logged in');
+    } else if (result is Error<void>) {
+      _log.warning('Authentication failed! ${result.error}');
     }
+
     return result;
   }
 
   Future<Result<void>> _loginWithWechatAction() async {
-    final result = await repository.loginWithWechat();
+    final result = await repository.login(
+      email: 'relaezwnh@gmail.com',
+      password: 'LSFlsf123',
+    );
     if (result is Error<void>) {
       _log.warning('Login failed! ${result.error}');
     }

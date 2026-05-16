@@ -30,8 +30,12 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     // Login Route
     GoRoute(
       path: Routes.login,
-      builder: (context, state) =>
-          LoginScreen(viewModel: LoginViewModel(repository: context.read())),
+      builder: (context, state) => LoginScreen(
+        viewModel: LoginViewModel(
+          repository: context.read(),
+          userRepository: context.read(),
+        ),
+      ),
     ),
     // Me Standalone Route
     GoRoute(
