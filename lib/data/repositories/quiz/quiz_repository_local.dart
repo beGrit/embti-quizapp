@@ -1,8 +1,8 @@
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../../services/local/local_data_service.dart';
-import '../../services/local/local_data_sqlite_service.dart';
+import '../../services/persistence/local_data_service.dart';
+import '../../services/persistence/local_data_sqlite_service.dart';
 import 'quiz_repository.dart';
 
 /// Local [QuizRepository]: surveys from assets, submissions in SQLite.

@@ -2,7 +2,7 @@
 
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../policy_service.dart';
+import 'policy_service.dart';
 
 class LocalPolicyService implements PolicyService {
   @override

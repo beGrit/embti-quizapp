@@ -1,6 +1,6 @@
 import 'package:pocketbase/pocketbase.dart';
 
-import '../remote_file_service.dart';
+import 'remote_file_service.dart';
 
 class PocketBaseService implements RemoteFileService {
   final PocketBase client;

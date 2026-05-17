@@ -14,6 +14,6 @@ import 'main.dart';
 /// Uses local data.
 void main() {
   Logger.root.level = Level.ALL;
-
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MultiProvider(providers: providersRemote, child: MainApp()));
 }

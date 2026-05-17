@@ -1,7 +1,7 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/services/advertising_service.dart';
-import 'package:emombti/data/services/pocketbase/pocketbase_model_extension.dart';
-import 'package:emombti/data/services/remote_file_service.dart';
+import 'package:emombti/data/services/common/advertising_service.dart';
+import 'package:emombti/data/services/persistence/pocketbase_model_extension.dart';
+import 'package:emombti/data/services/persistence/remote_file_service.dart';
 import 'package:emombti/ui/contents/view_models/banner_viewmodel.dart';
 import 'package:emombti/ui/contents/view_models/slideshow_viewmodel.dart';
 import 'package:emombti/ui/contents/widgets/knowledge_section.dart';

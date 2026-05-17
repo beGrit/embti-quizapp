@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../../../../data/services/policy_service.dart';
+import '../../../../data/services/common/policy_service.dart';
 
 class PolicyWebView extends StatefulWidget {
   final String policyType;

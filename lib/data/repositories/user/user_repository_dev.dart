@@ -1,4 +1,4 @@
-import 'package:emombti/data/services/pocketbase/pocketbase_service.dart';
+import 'package:emombti/data/services/persistence/pocketbase_service.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../domain/models/user/user.dart';

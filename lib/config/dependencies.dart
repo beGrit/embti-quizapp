@@ -8,12 +8,12 @@ import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository_local.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository_dev.dart';
-import 'package:emombti/data/services/advertising_service.dart';
-import 'package:emombti/data/services/local/local_data_sqlite_service.dart';
-import 'package:emombti/data/services/local/local_notification_service.dart';
-import 'package:emombti/data/services/notification_service.dart';
-import 'package:emombti/data/services/pocketbase/pocketbase_service.dart';
-import 'package:emombti/data/services/remote_file_service.dart';
+import 'package:emombti/data/services/common/advertising_service.dart';
+import 'package:emombti/data/services/persistence/local_data_sqlite_service.dart';
+import 'package:emombti/data/services/common/notification_service_local.dart';
+import 'package:emombti/data/services/common/notification_service.dart';
+import 'package:emombti/data/services/persistence/pocketbase_service.dart';
+import 'package:emombti/data/services/persistence/remote_file_service.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +28,9 @@ import '../data/repositories/banner_content/banner_content_repository.dart';
 import '../data/repositories/banner_content/banner_content_repository_local.dart';
 import '../data/repositories/video_content/video_content_repository.dart';
 import '../data/repositories/video_content/video_content_repository_local.dart';
-import '../data/services/local/local_data_service.dart';
-import '../data/services/local/local_policy_service.dart';
-import '../data/services/policy_service.dart';
+import '../data/services/persistence/local_data_service.dart';
+import '../data/services/common/policy_service_local.dart';
+import '../data/services/common/policy_service.dart';
 
 List<SingleChildWidget> _sharedProviders = [
   ChangeNotifierProvider<ThemeController>(

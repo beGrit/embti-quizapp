@@ -1,4 +1,4 @@
-import 'package:emombti/data/services/pocketbase/pocketbase_model_extension.dart';
+import 'package:emombti/data/services/persistence/pocketbase_model_extension.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 

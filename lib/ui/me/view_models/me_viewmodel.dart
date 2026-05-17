@@ -1,6 +1,6 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
-import 'package:emombti/data/services/remote_file_service.dart';
+import 'package:emombti/data/services/persistence/remote_file_service.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
