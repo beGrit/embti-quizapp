@@ -10,7 +10,7 @@ import 'config/dependencies.dart';
 import 'main.dart';
 
 /// Development config entry point.
-/// Launch with `flutter run --target lib/main_development.dart`.
+/// Launch with `flutter run --target lib/main_dev.dart`.
 /// Uses local data.
 void main() {
   Logger.root.level = Level.ALL;

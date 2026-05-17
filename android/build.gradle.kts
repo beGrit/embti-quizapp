@@ -1,5 +1,11 @@
 allprojects {
     repositories {
+        // 1. Add Chinese Mirrors first so Gradle checks them first
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://maven.aliyun.com/repository/jcenter") }
+        
+        // 2. Keep the originals as a backup
         google()
         mavenCentral()
     }
