@@ -43,7 +43,6 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<RoomDetailViewModel>();
-    final currentUserId = context.read<AuthRepository>().user?.id;
 
     return Scaffold(
       appBar: StandardAppBar(title: viewModel.room.name ?? 'Chat'),
@@ -72,9 +71,10 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                   itemBuilder: (context, index) {
                     // Since the list is chronological and we use reverse: true,
                     // we map index 0 (bottom) to the last item in the list.
-                    final message = messages[messages.length - 1 - index];
-                    final isMe = message.sendBy == currentUserId;
+                    final message = messages[index];
+                    final isMe = message.sendBy == viewModel.currentUserId;
                     return _MessageBubble(
+                      key: ValueKey(message.id),
                       message: message,
                       isMe: isMe,
                       senderName: isMe
@@ -150,6 +150,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
+    super.key,
     required this.message,
     required this.isMe,
     this.senderName,
@@ -214,7 +215,8 @@ class _MessageBubble extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (message.replyMessage != null)
+                      if (message.replyId != null &&
+                          message.replyId!.isNotEmpty)
                         _buildReplyPreview(context, theme),
                       if (message.messageType == 'voice')
                         _buildVoiceMessage(context, theme)
@@ -235,7 +237,6 @@ class _MessageBubble extends StatelessWidget {
               ],
             ),
           ),
-          if (isMe) const SizedBox(width: 32), // Offset for right side
         ],
       ),
     );

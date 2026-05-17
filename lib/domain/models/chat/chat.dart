@@ -1,4 +1,3 @@
-import 'package:emombti/utils/converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'chat.freezed.dart';

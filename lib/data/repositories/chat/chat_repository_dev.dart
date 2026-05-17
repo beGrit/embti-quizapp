@@ -15,12 +15,34 @@ class ChatRepositoryDev implements ChatRepository {
   @override
   Future<Result<List<Room>>> getRooms(String userId) async {
     try {
-      final records = await _pbService.client
+      final memberRecords = await _pbService.client
+          .collection('room_members')
+          .getFullList(filter: 'user_id = "$userId"');
+
+      if (memberRecords.isEmpty) {
+        return const Result.ok([]);
+      }
+
+      final roomIds = memberRecords
+          .map((record) => record.getStringValue('room_id'))
+          .where((id) => id.isNotEmpty)
+          .toSet()
+          .toList();
+
+      if (roomIds.isEmpty) {
+        return const Result.ok([]);
+      }
+
+      final filterExpression = roomIds.map((id) => 'id = "$id"').join(' || ');
+
+      final roomRecords = await _pbService.client
           .collection('rooms')
-          .getFullList(filter: 'room_members_via_room_id.user_id = "$userId"');
-      final rooms = records
+          .getFullList(filter: filterExpression);
+
+      final rooms = roomRecords
           .map((record) => Room.fromJson(record.toJson()))
           .toList();
+
       return Result.ok(rooms);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -102,7 +124,7 @@ class ChatRepositoryDev implements ChatRepository {
     try {
       final records = await _pbService.client
           .collection('messages')
-          .getFullList(filter: 'room_id = "$roomId"', sort: 'created');
+          .getFullList(filter: 'room_id = "$roomId"', sort: '-created');
       final messages = records
           .map((record) => Message.fromJson(record.toJson()))
           .toList();
@@ -137,11 +159,13 @@ class ChatRepositoryDev implements ChatRepository {
     final controller = StreamController<Message>();
 
     _pbService.client.collection('messages').subscribe('*', (e) {
-      final message = Message.fromJson(e.record!.toJson());
-      if (message.roomId == roomId) {
-        controller.add(message);
+      if (e.action == 'create') {
+        final message = Message.fromJson(e.record!.toJson());
+        if (message.roomId == roomId) {
+          controller.add(message);
+        }
       }
-    }, filter: 'room_id = "$roomId" && @action = "create"');
+    }, filter: 'room_id = "$roomId"');
 
     controller.onCancel = () {
       _pbService.client.collection('messages').unsubscribe('*');

@@ -58,7 +58,7 @@ class RoomDetailViewModel extends ChangeNotifier {
         .listen(
           (newMessage) {
             if (!_messages.any((m) => m.id == newMessage.id)) {
-              _messages.add(newMessage);
+              _messages.insert(0, newMessage);
               _messagesStreamController.add(List.from(_messages));
             }
           },
@@ -89,9 +89,7 @@ class RoomDetailViewModel extends ChangeNotifier {
 
     if (result is Ok<Message>) {
       if (!_messages.any((m) => m.id == result.value.id)) {
-        _messages.add(result.value);
-        _messagesStreamController.add(List.from(_messages));
-        notifyListeners();
+        return;
       }
     }
   }
