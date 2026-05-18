@@ -38,7 +38,7 @@ dependencies:
   uuid: ^4.5.3
   flutter_slidable: ^4.0.0
   pocketbase: ^0.23.3
-  connectivity_plus: ^7.1.1
+  connectivity_plus: ^6.1.5
 
 dev_dependencies:
   flutter_test:

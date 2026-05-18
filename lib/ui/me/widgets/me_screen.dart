@@ -1,6 +1,5 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
-import 'package:emombti/data/services/persistence/remote_file_service.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -45,7 +44,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
       create: (_) => MeViewModel(
         context.read<AuthRepository>(),
         context.read<UserRepository>(),
-        context.read<RemoteFileService>(),
       ),
       builder: (context, _) {
         final viewModel = context.watch<MeViewModel>();

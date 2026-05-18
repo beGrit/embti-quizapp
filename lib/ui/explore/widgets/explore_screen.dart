@@ -1,6 +1,7 @@
 import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
+import 'package:emombti/ui/feed/widgets/feed_post.dart';
 import 'package:emombti/ui/feed/widgets/feed_reel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -139,14 +140,27 @@ class _ExploreTabBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (tab.id == ExploreTabIds.videos) {
-      return _ExploreVideosReelTab();
-    }
+    switch (tab.type) {
+      case ExploreTabType.shares:
+        // Reusing the FeedPostScreen widget. Since it has its own
+        // provider/scaffold, it works as a standalone module.
+        return const FeedPostScreen();
 
+      case ExploreTabType.videos:
+        return const _VideoReelContainer();
+
+      case ExploreTabType.friends:
+      case ExploreTabType.chatAiMbti:
+      case ExploreTabType.placeholder:
+        return _buildPlaceholder(context);
+    }
+  }
+
+  Widget _buildPlaceholder(BuildContext context) {
     final theme = Theme.of(context);
     return Center(
       child: Text(
-        tab.label,
+        '${tab.label} content coming soon...',
         style: theme.textTheme.titleMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),
@@ -155,48 +169,33 @@ class _ExploreTabBody extends StatelessWidget {
   }
 }
 
-/// Owns [FeedReelViewModel] for the Videos tab so it is disposed with this branch.
-class _ExploreVideosReelTab extends StatefulWidget {
-  const _ExploreVideosReelTab();
+/// A generic container for the Video Reel tab.
+/// This avoids creating a specific "Tab Widget" for every feature,
+/// but keeps the ViewModel lifecycle management clean.
+class _VideoReelContainer extends StatefulWidget {
+  const _VideoReelContainer();
 
   @override
-  State<_ExploreVideosReelTab> createState() => _ExploreVideosReelTabState();
+  State<_VideoReelContainer> createState() => _VideoReelContainerState();
 }
 
-class _ExploreVideosReelTabState extends State<_ExploreVideosReelTab> {
+class _VideoReelContainerState extends State<_VideoReelContainer> {
   late final FeedReelViewModel _feedReelViewModel;
-
-  // @override
-  // bool get wantKeepAlive => false;
 
   @override
   void initState() {
-    debugPrint('InitState: _ExploreVideosReelTabState.');
     super.initState();
     _feedReelViewModel = FeedReelViewModel();
   }
 
   @override
   void dispose() {
-    debugPrint('Dispose: _ExploreVideosReelTabState.');
     _feedReelViewModel.dispose();
     super.dispose();
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  void didUpdateWidget(covariant _ExploreVideosReelTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    debugPrint('didUpdateWidget: _ExploreVideosReelTabState.');
-  }
-
-  @override
   Widget build(BuildContext context) {
-    debugPrint('Build: _ExploreVideosReelTabState');
     return FeedReel(viewModel: _feedReelViewModel);
   }
 }

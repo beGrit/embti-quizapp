@@ -1,4 +1,3 @@
-import 'package:emombti/data/services/persistence/pocketbase_model_extension.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
@@ -35,15 +34,6 @@ class MeScreenAvatar extends StatelessWidget {
     final user = viewModel.user;
     final userName = user?.name ?? "MBTI Explorer";
 
-    final String avatarUrl = viewModel.remoteFileService
-        .getFileUrl(
-          user?.id,
-          UserPocketBaseX.collectionId,
-          UserPocketBaseX.collectionName,
-          user?.avatar,
-        )
-        .toString();
-
     return GestureDetector(
       onTap: () => _onAvatarTap(context),
       child: Stack(
@@ -55,9 +45,9 @@ class MeScreenAvatar extends StatelessWidget {
               borderRadius: BorderRadius.circular(46),
               child: viewModel.isUpdatingAvatar
                   ? const CircularProgressIndicator()
-                  : avatarUrl.isNotEmpty && user?.avatar != null
+                  : user != null && user.avatar != null
                   ? Image.network(
-                      avatarUrl,
+                      user.avatar!.uri.toString(),
                       width: 92,
                       height: 92,
                       fit: BoxFit.cover,

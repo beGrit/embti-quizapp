@@ -6,9 +6,9 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../../config/assets.dart';
-import '../../../domain/models/content/content.dart';
-import '../../../domain/models/quiz/survey_models.dart';
+import '../../../../config/assets.dart';
+import '../../../../domain/models/content/content.dart';
+import '../../../../domain/models/quiz/survey_models.dart';
 
 class LocalDataService {
   Future<List<Content>> getMockFeed() async {

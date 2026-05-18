@@ -1,6 +1,6 @@
 import '../../../domain/models/content/content.dart';
 import '../../../utils/result.dart';
-import '../../services/persistence/local_data_service.dart';
+import '../../services/persistence/local/local_data_service.dart';
 import 'video_content_repository.dart';
 
 /// Local repository for [VideoContent].

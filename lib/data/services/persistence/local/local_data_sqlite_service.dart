@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../../../domain/models/quiz/survey_models.dart';
-import '../../../domain/models/user/user.dart';
+import '../../../../domain/models/quiz/survey_models.dart';
+import '../../../../domain/models/user/user.dart';
 
 class LocalDataSqliteService {
   static Database? _database;

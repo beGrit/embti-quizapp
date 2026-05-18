@@ -10,12 +10,20 @@ abstract final class ExploreTabIds {
   static const chatAiMbti = 'chat_ai_mbti';
 }
 
+enum ExploreTabType { shares, videos, friends, chatAiMbti, placeholder }
+
 @immutable
 class ExploreTab {
-  const ExploreTab({required this.id, required this.label, this.themeDataName});
+  const ExploreTab({
+    required this.id,
+    required this.label,
+    required this.type,
+    this.themeDataName,
+  });
 
   final String id;
   final String label;
+  final ExploreTabType type;
   final String? themeDataName;
 }
 
@@ -25,16 +33,26 @@ class ExploreViewModel extends ChangeNotifier {
     : tabs =
           tabs ??
           const [
-            ExploreTab(id: ExploreTabIds.shares, label: 'Shares'),
+            ExploreTab(
+              id: ExploreTabIds.shares,
+              label: 'Shares',
+              type: ExploreTabType.shares,
+            ),
             ExploreTab(
               id: ExploreTabIds.videos,
               label: 'Videos',
+              type: ExploreTabType.videos,
               themeDataName: 'dark',
             ),
-            ExploreTab(id: ExploreTabIds.friends, label: 'Friends'),
+            ExploreTab(
+              id: ExploreTabIds.friends,
+              label: 'Friends',
+              type: ExploreTabType.friends,
+            ),
             ExploreTab(
               id: ExploreTabIds.chatAiMbti,
               label: 'Chat with AI(MBTI)',
+              type: ExploreTabType.chatAiMbti,
             ),
           ];
 

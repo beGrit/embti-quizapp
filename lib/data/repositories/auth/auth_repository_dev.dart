@@ -1,8 +1,10 @@
-import 'package:emombti/data/services/persistence/pocketbase_service.dart';
+import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
+import 'package:emombti/domain/models/common/common.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 import '../../../domain/models/user/user.dart';
 import '../../../utils/result.dart';
+import '../../services/persistence/api/model/user/user_api_model.dart';
 import 'auth_repository.dart';
 
 class AuthRepositoryDev extends AuthRepository {
@@ -19,7 +21,23 @@ class AuthRepositoryDev extends AuthRepository {
   User? get user {
     final recordModel = _pbService.client.authStore.record;
     if (recordModel is RecordModel) {
-      return User.fromJson(recordModel.toJson());
+      final apiModel = UserApiModel.fromJson(recordModel.toJson());
+      Uri avatarUri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        apiModel.avatar ?? '',
+      );
+      return User(
+        id: apiModel.id,
+        email: apiModel.email,
+        name: apiModel.name,
+        avatar: apiModel.avatar != null
+            ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+            : null,
+      );
     }
     return null;
   }

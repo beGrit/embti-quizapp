@@ -1,8 +1,11 @@
-import 'package:emombti/data/services/persistence/pocketbase_service.dart';
+import 'package:emombti/data/services/persistence/api/model/user/user_api_model.dart';
+import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
+import 'package:emombti/domain/models/common/common.dart';
+import 'package:emombti/domain/models/user/user.dart';
+import 'package:emombti/utils/result.dart';
 import 'package:http/http.dart' as http;
+import 'package:pocketbase/pocketbase.dart';
 
-import '../../../domain/models/user/user.dart';
-import '../../../utils/result.dart';
 import 'user_repository.dart';
 
 /// [UserRepository] implementation using PocketBase.
@@ -16,7 +19,27 @@ class UserRepositoryDev implements UserRepository {
   Future<Result<User>> getUser(String id) async {
     try {
       final record = await _pbService.client.collection('users').getOne(id);
-      return Result.ok(User.fromJson(record.toJson()));
+      final apiModel = UserApiModel.fromJson(record.toJson());
+
+      final avatarUri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        apiModel.avatar ?? '',
+      );
+
+      return Result.ok(
+        User(
+          id: apiModel.id,
+          email: apiModel.email,
+          name: apiModel.name,
+          avatar: apiModel.avatar != null
+              ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+              : null,
+        ),
+      );
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
@@ -25,13 +48,9 @@ class UserRepositoryDev implements UserRepository {
   @override
   Future<Result<void>> saveUser(User user) async {
     try {
-      await _pbService.client.collection('users').update(
-        user.id,
-        body: {
-          'name': user.name,
-          'emailVisibility': user.emailVisibility,
-        },
-      );
+      await _pbService.client
+          .collection('users')
+          .update(user.id, body: {'name': user.name});
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -45,12 +64,27 @@ class UserRepositoryDev implements UserRepository {
     String filename,
   ) async {
     try {
-      final record = await _pbService.client.collection('users').update(
-        id,
-        files: [http.MultipartFile.fromBytes('avatar', bytes, filename: filename)],
+      final record = await _pbService.client
+          .collection('users')
+          .update(
+            id,
+            files: [
+              http.MultipartFile.fromBytes('avatar', bytes, filename: filename),
+            ],
+          );
+
+      final apiModel = UserApiModel.fromJson(record.toJson());
+
+      final avatarUri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        apiModel.avatar ?? '',
       );
-      final newUser = User.fromJson(record.toJson());
-      return Result.ok(newUser.avatar ?? '');
+
+      return Result.ok(apiModel.avatar != null ? avatarUri.toString() : '');
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }

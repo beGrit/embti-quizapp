@@ -1,4 +1,4 @@
-import 'package:emombti/data/services/persistence/local_data_sqlite_service.dart';
+import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 
 import 'survey_flow_repository.dart';

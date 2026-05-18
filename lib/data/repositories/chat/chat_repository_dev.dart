@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:emombti/data/services/persistence/pocketbase_service.dart';
+import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/utils/result.dart';
 

@@ -23,6 +23,7 @@ class LoginMethods extends StatelessWidget {
               backgroundColor: const Color(0xFF07C160),
               textColor: colorScheme.onSurface,
               onPressed: viewModel.loginWithWechat.execute,
+              isLoading: viewModel.loginWithWechat.running,
             ),
           ),
 
@@ -58,15 +59,25 @@ class LoginMethods extends StatelessWidget {
     required Color backgroundColor,
     required Color textColor,
     required VoidCallback onPressed,
+    bool isLoading = false,
   }) {
     return SizedBox(
       width: double.infinity,
       height: 50,
       child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, color: textColor, size: 24),
+        onPressed: isLoading ? null : onPressed,
+        icon: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: textColor,
+                ),
+              )
+            : Icon(icon, color: textColor, size: 24),
         label: Text(
-          label,
+          isLoading ? "Logging in..." : label,
           style: TextStyle(
             color: textColor,
             fontSize: 16,
