@@ -9,4 +9,8 @@ class PocketBaseService {
         baseUrl,
         httpClientFactory: () => HeaderInterceptorClient(),
       );
+
+  void dispose() {
+    client.close();
+  }
 }

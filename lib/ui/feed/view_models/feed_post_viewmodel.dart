@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
+import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,9 @@ class FeedPostViewModel extends ChangeNotifier {
     required AuthRepository authRepository,
     required FeedRepository feedRepository,
   }) : _authRepository = authRepository,
-       _feedRepository = feedRepository;
+       _feedRepository = feedRepository {
+    loadPostsCommand = Command0<List<Post>>(_loadPostsInternal);
+  }
 
   final AuthRepository _authRepository;
   final FeedRepository _feedRepository;
@@ -19,19 +22,9 @@ class FeedPostViewModel extends ChangeNotifier {
   List<Post> _posts = [];
   List<Post> get posts => _posts;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  late final Command0<List<Post>> loadPostsCommand;
 
-  String? _errorMessage;
-  String? get errorMessage => _errorMessage;
-
-  Future<void> loadPosts() async {
-    if (_isLoading) return;
-
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
+  Future<Result<List<Post>>> _loadPostsInternal() async {
     // Fetches the first page of posts (paginated)
     final result = await _feedRepository.getPostsPaginated(
       page: 1,
@@ -40,13 +33,11 @@ class FeedPostViewModel extends ChangeNotifier {
 
     switch (result) {
       case Ok<List<Post>>():
-        _posts = result.value;
+        _posts = result.value; // Update the internal list
       case Error<List<Post>>():
-        _errorMessage = result.error.toString();
+        break;
     }
-
-    _isLoading = false;
-    notifyListeners();
+    return result;
   }
 
   /// Adds a newly created post to the top of the feed list.

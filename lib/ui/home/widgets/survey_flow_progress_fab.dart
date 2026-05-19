@@ -42,6 +42,7 @@ class _SurveyFlowProgressFabState extends State<SurveyFlowProgressFab> {
     if (!mounted) return;
     final path = GoRouterState.of(context).uri.path;
     if (path == Routes.home) {
+      debugPrint(path);
       _debouncedLoad();
     }
   }
@@ -100,10 +101,9 @@ class _SurveyFlowProgressFabState extends State<SurveyFlowProgressFab> {
 
     return Material(
       elevation: 4,
-      shadowColor: theme.shadowColor.withValues(alpha: 0.35),
       shape: const CircleBorder(),
       clipBehavior: Clip.antiAlias,
-      color: theme.colorScheme.secondaryContainer,
+      color: theme.colorScheme.primaryContainer,
       child: InkWell(
         onTap: _openFlow,
         customBorder: const CircleBorder(),
@@ -120,14 +120,14 @@ class _SurveyFlowProgressFabState extends State<SurveyFlowProgressFab> {
                   value: rate,
                   strokeWidth: 3.5,
                   backgroundColor: theme.colorScheme.surfaceContainer,
-                  color: theme.colorScheme.onSecondaryContainer,
+                  color: theme.colorScheme.onPrimaryContainer,
                   strokeCap: StrokeCap.round,
                 ),
                 Text(
                   '$pct%',
                   style: theme.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: theme.colorScheme.onSecondaryContainer,
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
               ],

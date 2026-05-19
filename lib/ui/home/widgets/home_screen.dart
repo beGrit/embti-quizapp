@@ -73,19 +73,8 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
       ),
-      body: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          _buildBody(context),
-          Positioned(
-            right: 16,
-            bottom:
-                MediaQuery.paddingOf(context).bottom +
-                (MediaQuery.sizeOf(context).width >= 600 ? 16.0 : 32.0),
-            child: const SurveyFlowProgressFab(),
-          ),
-        ],
-      ),
+      body: _buildBody(context),
+      floatingActionButton: const SurveyFlowProgressFab(),
     );
   }
 

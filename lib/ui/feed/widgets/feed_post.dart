@@ -18,8 +18,9 @@ class FeedPostScreen extends StatelessWidget {
     return ChangeNotifierProvider<FeedPostViewModel>(
       create: (context) => FeedPostViewModel(
         authRepository: context.read<AuthRepository>(),
-        feedRepository: context.read<FeedRepository>(),
-      )..loadPosts(),
+        feedRepository: context
+            .read<FeedRepository>(), // Execute the command here
+      )..loadPostsCommand.execute(),
       builder: (context, _) {
         final viewModel = context.watch<FeedPostViewModel>();
         final theme = Theme.of(context);
@@ -31,43 +32,51 @@ class FeedPostScreen extends StatelessWidget {
               const _FeedPostScreenHeader(),
               Expanded(
                 child: RefreshIndicator(
-                  onRefresh: viewModel.loadPosts,
+                  onRefresh: () => context
+                      .read<FeedPostViewModel>()
+                      .loadPostsCommand
+                      .execute(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics(),
-                      ),
-                      slivers: [
-                        if (viewModel.isLoading && viewModel.posts.isEmpty)
-                          const SliverFillRemaining(
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        else if (viewModel.errorMessage != null &&
-                            viewModel.posts.isEmpty)
-                          SliverFillRemaining(
-                            child: Center(
-                              child: Text('Error: ${viewModel.errorMessage}'),
-                            ),
-                          )
-                        else if (viewModel.posts.isEmpty)
-                          const SliverFillRemaining(
-                            child: Center(child: Text('No posts found')),
-                          )
-                        else
-                          SliverList(
-                            delegate: SliverChildBuilderDelegate((
-                              context,
-                              index,
-                            ) {
-                              final post = viewModel.posts[index];
-                              return _PostListTile(
-                                post: post,
-                                viewModel: viewModel,
-                              );
-                            }, childCount: viewModel.posts.length),
+                    child: ListenableBuilder(
+                      listenable: viewModel.loadPostsCommand,
+                      builder: (context, child) {
+                        return CustomScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics(),
                           ),
-                      ],
+                          slivers: [
+                            if (viewModel.loadPostsCommand.running &&
+                                viewModel.posts.isEmpty)
+                              const SliverFillRemaining(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            else if (viewModel.loadPostsCommand.error)
+                              SliverFillRemaining(
+                                child: Center(child: Text('Error')),
+                              )
+                            else if (viewModel.posts.isEmpty)
+                              const SliverFillRemaining(
+                                child: Center(child: Text('No posts found')),
+                              )
+                            else
+                              SliverList(
+                                delegate: SliverChildBuilderDelegate((
+                                  context,
+                                  index,
+                                ) {
+                                  final post = viewModel.posts[index];
+                                  return _PostListTile(
+                                    post: post,
+                                    viewModel: viewModel,
+                                  );
+                                }, childCount: viewModel.posts.length),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
