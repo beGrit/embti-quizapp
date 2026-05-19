@@ -10,6 +10,7 @@ import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/explore/widgets/explore_screen.dart';
 import 'package:emombti/ui/feed/widgets/feed_post_editor.dart';
+import 'package:emombti/ui/feed/widgets/feed_viewer_photo.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
@@ -102,7 +103,18 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       },
     ),
     GoRoute(
-      path: '${Routes.feedPostEditor}',
+      path: Routes.feedPhotoView,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return FeedPhotoViewScreen(
+          imageUrls: extra['imageUrls'] as List<String>,
+          initialIndex: extra['initialIndex'] as int,
+          heroTag: extra['heroTag'] as String, // Grabbed from extra
+        );
+      },
+    ),
+    GoRoute(
+      path: Routes.feedPostEditor,
       pageBuilder: (context, state) {
         return MaterialPage(
           key: state.pageKey,

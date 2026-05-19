@@ -257,23 +257,49 @@ class _PostListTile extends StatelessWidget {
                   child: Row(
                     spacing: 8,
                     children: post.photos.take(2).map((photo) {
+                      final index = post.photos.indexOf(photo);
+                      final photoUrl = photo.uri.toString();
+
+                      // Using post.id or a unique fallback string
+                      final postUniqueId =
+                          post.id ?? post.created.toIso8601String();
+                      final heroTag = 'hero-$postUniqueId-$photoUrl';
+
                       return Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            photo.uri.toString(),
-                            fit: BoxFit.cover,
-                            height: 200,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  color: colorScheme.surfaceContainerHigh,
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.broken_image_outlined,
-                                      size: 48,
+                        child: GestureDetector(
+                          onTap: () {
+                            context.push(
+                              Routes.feedPhotoView,
+                              extra: {
+                                'imageUrls': post.photos
+                                    .map((p) => p.uri.toString())
+                                    .toList(),
+                                'initialIndex': index,
+                                'heroTag':
+                                    heroTag, // Passed directly to the destination route
+                              },
+                            );
+                          },
+                          child: Hero(
+                            tag: heroTag,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                photoUrl,
+                                fit: BoxFit.cover,
+                                height: 200,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: colorScheme.surfaceContainerHigh,
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.broken_image_outlined,
+                                          size: 48,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
+                              ),
+                            ),
                           ),
                         ),
                       );

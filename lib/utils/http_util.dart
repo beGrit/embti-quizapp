@@ -18,7 +18,7 @@ class HeaderInterceptorClient extends http.BaseClient {
           timeoutDuration,
           onTimeout: () {
             throw http.ClientException(
-              '(Timeout after ${timeoutDuration.inSeconds}s)',
+              'Timeout after ${timeoutDuration.inSeconds}s',
               request.url,
             );
           },
