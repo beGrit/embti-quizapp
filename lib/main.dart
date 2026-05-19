@@ -1,3 +1,4 @@
+import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:emombti/routing/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,6 +52,7 @@ class _MainAppState extends State<MainApp> {
       themeMode: ThemeMode.system,
       localizationsDelegates: const [
         AppLocalizations.delegate,
+        AppFlowyEditorLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

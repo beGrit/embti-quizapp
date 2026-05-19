@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PostApiModel {
 
- String get id; String get title; String get collectionId; String get collectionName; String? get body; Map<String, dynamic> get author; List<String> get tags; List<String> get photos; DateTime get created; DateTime get updated;
+ String get id; String get title; String get collectionId; String get collectionName; String? get body; Map<String, dynamic> get expand; List<String> get tags; List<String> get photos; DateTime get created; DateTime get updated;
 /// Create a copy of PostApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PostApiModelCopyWith<PostApiModel> get copyWith => _$PostApiModelCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PostApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.body, body) || other.body == body)&&const DeepCollectionEquality().equals(other.author, author)&&const DeepCollectionEquality().equals(other.tags, tags)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PostApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.body, body) || other.body == body)&&const DeepCollectionEquality().equals(other.expand, expand)&&const DeepCollectionEquality().equals(other.tags, tags)&&const DeepCollectionEquality().equals(other.photos, photos)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,collectionId,collectionName,body,const DeepCollectionEquality().hash(author),const DeepCollectionEquality().hash(tags),const DeepCollectionEquality().hash(photos),created,updated);
+int get hashCode => Object.hash(runtimeType,id,title,collectionId,collectionName,body,const DeepCollectionEquality().hash(expand),const DeepCollectionEquality().hash(tags),const DeepCollectionEquality().hash(photos),created,updated);
 
 @override
 String toString() {
-  return 'PostApiModel(id: $id, title: $title, collectionId: $collectionId, collectionName: $collectionName, body: $body, author: $author, tags: $tags, photos: $photos, created: $created, updated: $updated)';
+  return 'PostApiModel(id: $id, title: $title, collectionId: $collectionId, collectionName: $collectionName, body: $body, expand: $expand, tags: $tags, photos: $photos, created: $created, updated: $updated)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PostApiModelCopyWith<$Res>  {
   factory $PostApiModelCopyWith(PostApiModel value, $Res Function(PostApiModel) _then) = _$PostApiModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String collectionId, String collectionName, String? body, Map<String, dynamic> author, List<String> tags, List<String> photos, DateTime created, DateTime updated
+ String id, String title, String collectionId, String collectionName, String? body, Map<String, dynamic> expand, List<String> tags, List<String> photos, DateTime created, DateTime updated
 });
 
 
@@ -65,14 +65,14 @@ class _$PostApiModelCopyWithImpl<$Res>
 
 /// Create a copy of PostApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? collectionId = null,Object? collectionName = null,Object? body = freezed,Object? author = null,Object? tags = null,Object? photos = null,Object? created = null,Object? updated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? collectionId = null,Object? collectionName = null,Object? body = freezed,Object? expand = null,Object? tags = null,Object? photos = null,Object? created = null,Object? updated = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,collectionId: null == collectionId ? _self.collectionId : collectionId // ignore: cast_nullable_to_non_nullable
 as String,collectionName: null == collectionName ? _self.collectionName : collectionName // ignore: cast_nullable_to_non_nullable
 as String,body: freezed == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
-as String?,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as String?,expand: null == expand ? _self.expand : expand // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,photos: null == photos ? _self.photos : photos // ignore: cast_nullable_to_non_nullable
 as List<String>,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
@@ -162,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> author,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> expand,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PostApiModel() when $default != null:
-return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.author,_that.tags,_that.photos,_that.created,_that.updated);case _:
+return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.expand,_that.tags,_that.photos,_that.created,_that.updated);case _:
   return orElse();
 
 }
@@ -183,10 +183,10 @@ return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> author,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> expand,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)  $default,) {final _that = this;
 switch (_that) {
 case _PostApiModel():
-return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.author,_that.tags,_that.photos,_that.created,_that.updated);case _:
+return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.expand,_that.tags,_that.photos,_that.created,_that.updated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +203,10 @@ return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> author,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String collectionId,  String collectionName,  String? body,  Map<String, dynamic> expand,  List<String> tags,  List<String> photos,  DateTime created,  DateTime updated)?  $default,) {final _that = this;
 switch (_that) {
 case _PostApiModel() when $default != null:
-return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.author,_that.tags,_that.photos,_that.created,_that.updated);case _:
+return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_that.body,_that.expand,_that.tags,_that.photos,_that.created,_that.updated);case _:
   return null;
 
 }
@@ -218,7 +218,7 @@ return $default(_that.id,_that.title,_that.collectionId,_that.collectionName,_th
 @JsonSerializable()
 
 class _PostApiModel implements PostApiModel {
-  const _PostApiModel({required this.id, required this.title, required this.collectionId, required this.collectionName, this.body, required final  Map<String, dynamic> author, final  List<String> tags = const [], final  List<String> photos = const [], required this.created, required this.updated}): _author = author,_tags = tags,_photos = photos;
+  const _PostApiModel({required this.id, required this.title, required this.collectionId, required this.collectionName, this.body, required final  Map<String, dynamic> expand, final  List<String> tags = const [], final  List<String> photos = const [], required this.created, required this.updated}): _expand = expand,_tags = tags,_photos = photos;
   factory _PostApiModel.fromJson(Map<String, dynamic> json) => _$PostApiModelFromJson(json);
 
 @override final  String id;
@@ -226,11 +226,11 @@ class _PostApiModel implements PostApiModel {
 @override final  String collectionId;
 @override final  String collectionName;
 @override final  String? body;
- final  Map<String, dynamic> _author;
-@override Map<String, dynamic> get author {
-  if (_author is EqualUnmodifiableMapView) return _author;
+ final  Map<String, dynamic> _expand;
+@override Map<String, dynamic> get expand {
+  if (_expand is EqualUnmodifiableMapView) return _expand;
   // ignore: implicit_dynamic_type
-  return EqualUnmodifiableMapView(_author);
+  return EqualUnmodifiableMapView(_expand);
 }
 
  final  List<String> _tags;
@@ -263,16 +263,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PostApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.body, body) || other.body == body)&&const DeepCollectionEquality().equals(other._author, _author)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PostApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.body, body) || other.body == body)&&const DeepCollectionEquality().equals(other._expand, _expand)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._photos, _photos)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,collectionId,collectionName,body,const DeepCollectionEquality().hash(_author),const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_photos),created,updated);
+int get hashCode => Object.hash(runtimeType,id,title,collectionId,collectionName,body,const DeepCollectionEquality().hash(_expand),const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_photos),created,updated);
 
 @override
 String toString() {
-  return 'PostApiModel(id: $id, title: $title, collectionId: $collectionId, collectionName: $collectionName, body: $body, author: $author, tags: $tags, photos: $photos, created: $created, updated: $updated)';
+  return 'PostApiModel(id: $id, title: $title, collectionId: $collectionId, collectionName: $collectionName, body: $body, expand: $expand, tags: $tags, photos: $photos, created: $created, updated: $updated)';
 }
 
 
@@ -283,7 +283,7 @@ abstract mixin class _$PostApiModelCopyWith<$Res> implements $PostApiModelCopyWi
   factory _$PostApiModelCopyWith(_PostApiModel value, $Res Function(_PostApiModel) _then) = __$PostApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String collectionId, String collectionName, String? body, Map<String, dynamic> author, List<String> tags, List<String> photos, DateTime created, DateTime updated
+ String id, String title, String collectionId, String collectionName, String? body, Map<String, dynamic> expand, List<String> tags, List<String> photos, DateTime created, DateTime updated
 });
 
 
@@ -300,14 +300,14 @@ class __$PostApiModelCopyWithImpl<$Res>
 
 /// Create a copy of PostApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? collectionId = null,Object? collectionName = null,Object? body = freezed,Object? author = null,Object? tags = null,Object? photos = null,Object? created = null,Object? updated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? collectionId = null,Object? collectionName = null,Object? body = freezed,Object? expand = null,Object? tags = null,Object? photos = null,Object? created = null,Object? updated = null,}) {
   return _then(_PostApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,collectionId: null == collectionId ? _self.collectionId : collectionId // ignore: cast_nullable_to_non_nullable
 as String,collectionName: null == collectionName ? _self.collectionName : collectionName // ignore: cast_nullable_to_non_nullable
 as String,body: freezed == body ? _self.body : body // ignore: cast_nullable_to_non_nullable
-as String?,author: null == author ? _self._author : author // ignore: cast_nullable_to_non_nullable
+as String?,expand: null == expand ? _self._expand : expand // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
 as List<String>,photos: null == photos ? _self._photos : photos // ignore: cast_nullable_to_non_nullable
 as List<String>,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable

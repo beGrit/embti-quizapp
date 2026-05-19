@@ -39,6 +39,8 @@ dependencies:
   flutter_slidable: ^4.0.0
   pocketbase: ^0.23.3
   connectivity_plus: ^6.1.5
+  appflowy_editor: ^6.2.0
+  timeago: ^3.7.1
 
 dev_dependencies:
   flutter_test:

@@ -16,4 +16,5 @@ abstract final class Routes {
   static const String content = '/content';
   static const String article = '/content/article';
   static const String video = '/content/video';
+  static const String feedPostEditor = '/feed/post/editor';
 }

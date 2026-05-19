@@ -1,7 +1,11 @@
+import 'package:emombti/data/services/persistence/api/model/feed/feed_api_model.dart';
+import 'package:emombti/data/services/persistence/api/model/user/user_api_model.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
+import 'package:emombti/domain/models/common/common.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
-import 'package:emombti/utils/pocketbase_util.dart';
+import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import 'feed_repository.dart';
 
@@ -29,9 +33,10 @@ class FeedRepositoryDev implements FeedRepository {
             expand: 'author',
           );
 
-      final posts = PocketBaseUtils.flattenList(
-        result.items,
-      ).map((record) => Post.fromJson(record)).toList();
+      final posts = result.items
+          .map((model) => PostApiModel.fromJson(model.toJson()))
+          .map(_mapPostToDomain)
+          .toList();
 
       return Result.ok(posts);
     } catch (e) {
@@ -45,9 +50,9 @@ class FeedRepositoryDev implements FeedRepository {
       final record = await _pbService.client
           .collection('posts')
           .getOne(id, expand: 'author,tags');
-      return Result.ok(
-        Post.fromJson(PocketBaseUtils.flattenExpand(record.toJson())),
-      );
+      final apiModel = PostApiModel.fromJson(record.toJson());
+
+      return Result.ok(_mapPostToDomain(apiModel));
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
@@ -66,28 +71,60 @@ class FeedRepositoryDev implements FeedRepository {
 
       final record = await _pbService.client
           .collection('posts')
-          .create(body: body, files: []);
+          .create(body: body, expand: 'author');
 
-      final json = record.toJson();
+      final apiModel = PostApiModel.fromJson(record.toJson());
 
-      return Result.ok(Post.fromJson(json));
+      return Result.ok(_mapPostToDomain(apiModel));
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 
-  @override
-  Future<Result<List<Tag>>> getAllTags() async {
-    try {
-      final records = await _pbService.client
-          .collection('tags')
-          .getFullList(sort: 'name');
-      final tags = records
-          .map((record) => Tag.fromJson(record.toJson()))
-          .toList();
-      return Result.ok(tags);
-    } catch (e) {
-      return Result.error(e is Exception ? e : Exception(e.toString()));
-    }
+  /// Maps a [PostApiModel] (DTO) to a domain [Post].
+  Post _mapPostToDomain(PostApiModel apiModel) {
+    // 1. Map Author (Nested UserApiModel)
+    final authorApiModel = UserApiModel.fromJson(
+      apiModel.expand['author'] as Map<String, dynamic>,
+    );
+    final authorAvatarUri = _pbService.client.files.getURL(
+      RecordModel({
+        'id': authorApiModel.id,
+        'collectionId': authorApiModel.collectionId,
+        'collectionName': authorApiModel.collectionName,
+      }),
+      authorApiModel.avatar ?? '',
+    );
+
+    final author = User(
+      id: authorApiModel.id,
+      email: authorApiModel.email,
+      name: authorApiModel.name,
+      avatar: authorApiModel.avatar != null
+          ? AppFile(uri: authorAvatarUri, name: authorApiModel.avatar!)
+          : null,
+    );
+
+    // 2. Map Photos to AppFile value objects with proper URIs
+    final photos = apiModel.photos.map((filename) {
+      final uri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        filename,
+      );
+      return AppFile(uri: uri, name: filename);
+    }).toList();
+
+    return Post(
+      id: apiModel.id,
+      title: apiModel.title,
+      body: apiModel.body,
+      author: author,
+      photos: photos,
+      created: apiModel.created,
+    );
   }
 }

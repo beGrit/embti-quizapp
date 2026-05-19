@@ -9,6 +9,7 @@ import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/explore/widgets/explore_screen.dart';
+import 'package:emombti/ui/feed/widgets/feed_post_editor.dart';
 import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
@@ -98,6 +99,16 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       path: '${Routes.surveyResult}/:id',
       builder: (context, state) {
         return const UnderDevelopmentScreen(title: 'Survey Result');
+      },
+    ),
+    GoRoute(
+      path: '${Routes.feedPostEditor}',
+      pageBuilder: (context, state) {
+        return MaterialPage(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          child: const FeedPostEditor(),
+        );
       },
     ),
     GoRoute(

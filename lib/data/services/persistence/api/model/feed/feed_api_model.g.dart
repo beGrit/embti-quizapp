@@ -13,7 +13,7 @@ _PostApiModel _$PostApiModelFromJson(Map<String, dynamic> json) =>
       collectionId: json['collectionId'] as String,
       collectionName: json['collectionName'] as String,
       body: json['body'] as String?,
-      author: json['author'] as Map<String, dynamic>,
+      expand: json['expand'] as Map<String, dynamic>,
       tags:
           (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const [],
@@ -33,7 +33,7 @@ Map<String, dynamic> _$PostApiModelToJson(_PostApiModel instance) =>
       'collectionId': instance.collectionId,
       'collectionName': instance.collectionName,
       'body': instance.body,
-      'author': instance.author,
+      'expand': instance.expand,
       'tags': instance.tags,
       'photos': instance.photos,
       'created': instance.created.toIso8601String(),

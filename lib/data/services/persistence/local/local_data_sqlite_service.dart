@@ -7,11 +7,13 @@ import '../../../../domain/models/quiz/survey_models.dart';
 import '../../../../domain/models/user/user.dart';
 
 class LocalDataSqliteService {
-  static Database? _database;
+  late final Future<Database>? _database;
+
+  LocalDataSqliteService() {
+    _database = _initDB();
+  }
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDB();
     return _database!;
   }
 

@@ -16,7 +16,4 @@ abstract class FeedRepository {
 
   /// Creates a new post.
   Future<Result<Post>> createPost(Post post);
-
-  /// Fetches all available tags.
-  Future<Result<List<Tag>>> getAllTags();
 }

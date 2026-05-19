@@ -95,7 +95,9 @@ List<SingleChildWidget> get providersLocal {
               as QuizRepository,
     ),
     Provider<SurveyFlowRepository>(
-      create: (context) => SurveyFlowRepositoryLocal() as SurveyFlowRepository,
+      create: (context) =>
+          SurveyFlowRepositoryLocal(localDataSqliteService: context.read())
+              as SurveyFlowRepository,
     ),
     Provider<PolicyService>(create: (context) => LocalPolicyService()),
     Provider<NotificationService>(

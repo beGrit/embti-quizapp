@@ -1,10 +1,14 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
+import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../view_models/feed_post_viewmodel.dart';
+import 'feed_post_viewer_body_preview.dart';
 
 class FeedPostScreen extends StatelessWidget {
   const FeedPostScreen({super.key});
@@ -20,49 +24,63 @@ class FeedPostScreen extends StatelessWidget {
         final viewModel = context.watch<FeedPostViewModel>();
         final theme = Theme.of(context);
         // Calculate the top offset to account for the floating TabBar header in ExploreScreen
-        return Material(
-          color: theme.colorScheme.surface,
-          child: Column(
+        return Scaffold(
+          backgroundColor: theme.colorScheme.surface,
+          body: Column(
             children: [
               const _FeedPostScreenHeader(),
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: viewModel.loadPosts,
-                  child: CustomScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(
-                      parent: BouncingScrollPhysics(),
-                    ),
-                    slivers: [
-                      if (viewModel.isLoading && viewModel.posts.isEmpty)
-                        const SliverFillRemaining(
-                          child: Center(child: CircularProgressIndicator()),
-                        )
-                      else if (viewModel.errorMessage != null &&
-                          viewModel.posts.isEmpty)
-                        SliverFillRemaining(
-                          child: Center(
-                            child: Text('Error: ${viewModel.errorMessage}'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
+                      ),
+                      slivers: [
+                        if (viewModel.isLoading && viewModel.posts.isEmpty)
+                          const SliverFillRemaining(
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                        else if (viewModel.errorMessage != null &&
+                            viewModel.posts.isEmpty)
+                          SliverFillRemaining(
+                            child: Center(
+                              child: Text('Error: ${viewModel.errorMessage}'),
+                            ),
+                          )
+                        else if (viewModel.posts.isEmpty)
+                          const SliverFillRemaining(
+                            child: Center(child: Text('No posts found')),
+                          )
+                        else
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final post = viewModel.posts[index];
+                              return _PostListTile(
+                                post: post,
+                                viewModel: viewModel,
+                              );
+                            }, childCount: viewModel.posts.length),
                           ),
-                        )
-                      else if (viewModel.posts.isEmpty)
-                        const SliverFillRemaining(
-                          child: Center(child: Text('No posts found')),
-                        )
-                      else
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate((
-                            context,
-                            index,
-                          ) {
-                            final post = viewModel.posts[index];
-                            return _PostListTile(post: post);
-                          }, childCount: viewModel.posts.length),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: theme.colorScheme.primaryContainer,
+            foregroundColor: theme.colorScheme.onPrimaryContainer,
+            onPressed: () {
+              context.push(Routes.feedPostEditor);
+            },
+            child: const Icon(Icons.edit),
           ),
         );
       },
@@ -82,7 +100,9 @@ class _FeedPostScreenHeader extends StatelessWidget {
 }
 
 class _PostListTile extends StatelessWidget {
-  const _PostListTile({required this.post});
+  _PostListTile({required this.post, required this.viewModel});
+
+  FeedPostViewModel viewModel;
 
   final Post post;
 
@@ -96,7 +116,10 @@ class _PostListTile extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: colorScheme.surfaceContainer),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -104,109 +127,166 @@ class _PostListTile extends StatelessWidget {
               Row(
                 children: [
                   CircleAvatar(
-                    radius: 18,
+                    // Use author's avatar if available, otherwise display initial
+                    radius: 24,
                     backgroundColor: colorScheme.primaryContainer,
-                    child: Text(
-                      post.author.name!.substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
+                    backgroundImage: post.author.avatar != null
+                        ? NetworkImage(
+                            post.author.avatar!.uri.toString(),
+                          ) // Assuming AppFile has a 'url' property
+                        : null,
+                    child: post.author.avatar == null
+                        ? Text(
+                            (post.author.name ?? '?')
+                                .substring(0, 1)
+                                .toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          post.author.name!,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                post.author.name!,
+                                style: theme.textTheme.labelMedium,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            FilledButton.tonal(
+                              onPressed: () {},
+                              style: FilledButton.styleFrom(
+                                backgroundColor: colorScheme.tertiaryContainer,
+                                foregroundColor:
+                                    colorScheme.onTertiaryContainer,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ), // Strips left/right and top/bottom inner spaces
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                textStyle: theme.textTheme.labelSmall,
+                              ),
+                              child: const Text('Follow Up?'),
+                            ),
+                          ],
                         ),
                         Text(
-                          '${post.created.year}-${post.created.month}-${post.created.day}',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          timeago.format(post.created),
+                          style: theme.textTheme.labelSmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.more_horiz, color: colorScheme.onSurfaceVariant),
+                  MenuAnchor(
+                    // 1. Set the anchor's alignment origin to the bottom-right of your button
+                    alignmentOffset: const Offset(
+                      -50,
+                      5,
+                    ), // 2. Shift it left to expand leftwards (adjust -120 based on your menu width)
+                    builder: (context, controller, child) {
+                      return IconButton.filledTonal(
+                        onPressed: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                        icon: const Icon(Icons.more_horiz),
+                      );
+                    },
+                    menuChildren: [
+                      MenuItemButton(
+                        leadingIcon: const Icon(Icons.favorite_border),
+                        onPressed: () {},
+                        child: const Text('Like'),
+                      ),
+                      MenuItemButton(
+                        leadingIcon: const Icon(Icons.bookmark_border),
+                        onPressed: () {},
+                        child: const Text('Save'),
+                      ),
+                      MenuItemButton(
+                        leadingIcon: const Icon(Icons.share_outlined),
+                        onPressed: () {},
+                        child: const Text('Share'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
 
               // Row 2: Post content (Title, Body, Photos)
-              Text(post.title, style: theme.textTheme.titleSmall),
+              Text(post.title ?? '', style: theme.textTheme.titleMedium),
               if (post.body != null) ...[
                 const SizedBox(height: 4),
-                Text(
-                  post.body!,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall,
+                FeedPostViewerBodyPreview(
+                  initialJson: post.body,
+                  viewModel: viewModel,
+                  maxLines: 2,
                 ),
               ],
               if (post.photos.isNotEmpty) ...[
                 const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    height: 200,
-                    width: double.infinity,
-                    color: colorScheme.surfaceContainerHigh,
-                    child: const Center(
-                      child: Icon(Icons.image_outlined, size: 48),
-                    ),
+                SizedBox(
+                  height: 200,
+                  child: Row(
+                    spacing: 8,
+                    children: post.photos.take(2).map((photo) {
+                      return Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            photo.uri.toString(),
+                            fit: BoxFit.cover,
+                            height: 200,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Container(
+                                  color: colorScheme.surfaceContainerHigh,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.broken_image_outlined,
+                                      size: 48,
+                                    ),
+                                  ),
+                                ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
-              const SizedBox(height: 16),
-
-              // Row 3: Social Interactions
+              const SizedBox(height: 12),
               Row(
+                spacing: 2,
                 children: [
-                  _SocialAction(icon: Icons.favorite_border, label: 'Like'),
-                  const SizedBox(width: 16),
-                  _SocialAction(
-                    icon: Icons.chat_bubble_outline,
-                    label: 'Comment',
+                  FilledButton(
+                    onPressed: () {},
+                    child: const Text('View post'),
                   ),
-                  const Spacer(),
-                  _SocialAction(icon: Icons.share_outlined, label: 'Share'),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('Show related'),
+                  ),
                 ],
               ),
             ],
           ),
         ),
-        const SizedBox(height: 12),
-      ],
-    );
-  }
-}
-
-class _SocialAction extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _SocialAction({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
+        const SizedBox(height: 8),
       ],
     );
   }

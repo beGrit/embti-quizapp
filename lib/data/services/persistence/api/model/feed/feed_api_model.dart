@@ -13,7 +13,7 @@ abstract class PostApiModel with _$PostApiModel {
     required String collectionId,
     required String collectionName,
     String? body,
-    required Map<String, dynamic> author,
+    required Map<String, dynamic> expand,
     @Default([]) List<String> tags,
     @Default([]) List<String> photos,
     required DateTime created,

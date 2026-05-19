@@ -64,6 +64,8 @@ class AppLayout extends StatelessWidget {
           ? null
           : NavigationBarTheme(
               data: NavigationBarThemeData(
+                backgroundColor: colorScheme.surfaceContainer,
+                indicatorColor: colorScheme.secondaryContainer,
                 indicatorShape: null,
                 iconTheme: WidgetStateProperty.all(
                   const IconThemeData(size: 24),
