@@ -5,6 +5,7 @@ import 'package:emombti/domain/models/common/common.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
+import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 
 import 'feed_repository.dart';
@@ -66,12 +67,22 @@ class FeedRepositoryDev implements FeedRepository {
       body.remove('id');
       body.remove('created');
       body.remove('updated');
+      body.remove('photos');
 
       body['author'] = post.author.id;
 
+      final List<http.MultipartFile> files = [];
+      for (final photo in post.photos) {
+        if (photo.uri.isScheme('file')) {
+          files.add(
+            await http.MultipartFile.fromPath('photos', photo.uri.toFilePath()),
+          );
+        }
+      }
+
       final record = await _pbService.client
           .collection('posts')
-          .create(body: body, expand: 'author');
+          .create(body: body, files: files, expand: 'author');
 
       final apiModel = PostApiModel.fromJson(record.toJson());
 

@@ -49,6 +49,12 @@ class FeedPostViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adds a newly created post to the top of the feed list.
+  void addPost(Post post) {
+    _posts = [post, ..._posts];
+    notifyListeners();
+  }
+
   /// Traverses the AppFlowy JSON document block hierarchy to pull out clean plain text
   String getPlainTextFromAppFlowyJson(String? jsonString, {int maxLines = 3}) {
     if (jsonString == null || jsonString.isEmpty) return '';

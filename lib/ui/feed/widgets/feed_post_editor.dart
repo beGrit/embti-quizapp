@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
+import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/feed/view_models/feed_post_editor_viewmodel.dart';
+import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class FeedPostEditor extends StatefulWidget {
@@ -16,6 +21,9 @@ class FeedPostEditor extends StatefulWidget {
 class _FeedPostEditorState extends State<FeedPostEditor> {
   late final EditorState _editorState;
   late final EditorScrollController _scrollController;
+  late final TextEditingController _titleController;
+  final ImagePicker _picker = ImagePicker();
+  final List<XFile> _selectedImages = [];
 
   @override
   void initState() {
@@ -23,17 +31,20 @@ class _FeedPostEditorState extends State<FeedPostEditor> {
     // 1. 初始化 EditorState 并提供可辨认的初始块
     _editorState = EditorState.blank(withInitialText: true);
     _scrollController = EditorScrollController(editorState: _editorState);
+    _titleController = TextEditingController();
   }
 
   @override
   void dispose() {
     _editorState.dispose();
     _scrollController.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return ChangeNotifierProvider(
       create: (context) => FeedPostEditorViewModel(
         authRepository: context.read<AuthRepository>(),
@@ -47,7 +58,7 @@ class _FeedPostEditorState extends State<FeedPostEditor> {
               if (didPop) return;
             },
             child: Scaffold(
-              backgroundColor: Colors.white,
+              backgroundColor: theme.colorScheme.surface,
               appBar: StandardAppBar(
                 title: '',
                 leading: IconButton(
@@ -69,10 +80,17 @@ class _FeedPostEditorState extends State<FeedPostEditor> {
                       padding: const EdgeInsets.symmetric(horizontal: 12.0),
                       child: FilledButton(
                         onPressed: () async {
-                          await viewModel.saveCommand.execute(_editorState);
+                          await viewModel.saveCommand.execute((
+                            title: _titleController.text,
+                            body: _editorState.document.toJson(),
+                            photos: _selectedImages,
+                          ));
                           if (context.mounted) {
                             if (viewModel.saveCommand.completed) {
-                              Navigator.of(context).pop();
+                              final post =
+                                  (viewModel.saveCommand.result as Ok<Post>)
+                                      .value;
+                              Navigator.of(context).pop(post);
                             } else if (viewModel.saveCommand.error) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -84,13 +102,130 @@ class _FeedPostEditorState extends State<FeedPostEditor> {
                             }
                           }
                         },
-                        child: const Text('Publish'),
+                        child: Text('Publish'),
                       ),
                     ),
                 ],
               ),
               body: Column(
                 children: [
+                  SizedBox(
+                    height: 120,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _selectedImages.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == _selectedImages.length) {
+                          return GestureDetector(
+                            onTap: () async {
+                              final images = await _picker.pickMultiImage();
+                              if (images.isNotEmpty) {
+                                setState(() {
+                                  _selectedImages.addAll(images);
+                                });
+                              }
+                            },
+                            child: Container(
+                              width: 96,
+                              decoration: BoxDecoration(
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: theme.colorScheme.outlineVariant,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.add_a_photo_outlined,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              width: 96,
+                              margin: const EdgeInsets.only(right: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                image: DecorationImage(
+                                  image: FileImage(
+                                    File(_selectedImages[index].path),
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: -4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedImages.removeAt(index);
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.error,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: theme.colorScheme.surface,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 14,
+                                    color: theme.colorScheme.onError,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Divider(
+                      height: 1,
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                    child: TextField(
+                      controller: _titleController,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        hintText: 'Title',
+                        hintStyle: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.4,
+                          ),
+                        ),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Divider(
+                      height: 1,
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
                   Expanded(
                     child: AppFlowyEditor(
                       editorState: _editorState,

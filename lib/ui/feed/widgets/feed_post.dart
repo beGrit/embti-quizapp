@@ -77,8 +77,11 @@ class FeedPostScreen extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             backgroundColor: theme.colorScheme.primaryContainer,
             foregroundColor: theme.colorScheme.onPrimaryContainer,
-            onPressed: () {
-              context.push(Routes.feedPostEditor);
+            onPressed: () async {
+              final newPost = await context.push<Post>(Routes.feedPostEditor);
+              if (newPost != null && context.mounted) {
+                viewModel.addPost(newPost);
+              }
             },
             child: const Icon(Icons.edit),
           ),
