@@ -1,5 +1,6 @@
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/core/themes/theme_util.dart';
+import 'package:emombti/ui/core/ui/view_models/nav_badge_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -49,8 +50,22 @@ class AppLayout extends StatelessWidget {
               destinations: [
                 for (final route in routeBottom)
                   NavigationRailDestination(
-                    icon: Icon(route.icon),
-                    selectedIcon: Icon(route.selectedIcon),
+                    icon: route.badgeLabel != null
+                        ? Badge(
+                            label: route.badgeLabel!.isEmpty
+                                ? null
+                                : Text(route.badgeLabel!),
+                            child: Icon(route.icon),
+                          )
+                        : Icon(route.icon),
+                    selectedIcon: route.badgeLabel != null
+                        ? Badge(
+                            label: route.badgeLabel!.isEmpty
+                                ? null
+                                : Text(route.badgeLabel!),
+                            child: Icon(route.selectedIcon),
+                          )
+                        : Icon(route.selectedIcon),
                     label: Text(route.label),
                   ),
               ],
@@ -114,23 +129,52 @@ class _AppLayoutNavigationBarState extends State<_AppLayoutNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = context.watch<ThemeController>();
-    return Theme(
-      data: themeController.currentTheme,
-      child: NavigationBar(
-        height: 60,
-        selectedIndex: widget.navigationShell.currentIndex,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: [
-          for (final route in widget.routeBottom)
-            NavigationDestination(
-              icon: Icon(route.icon),
-              selectedIcon: Icon(route.selectedIcon),
-              label: route.label,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => NavBadgeViewmodel(configuration: widget.routeBottom),
+        ),
+      ],
+      child: Consumer2<NavBadgeViewmodel, ThemeController>(
+        builder: (context, badgeVM, themeController, child) {
+          return Theme(
+            data: themeController.currentTheme,
+            child: NavigationBar(
+              height: 60,
+              selectedIndex: widget.navigationShell.currentIndex,
+              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              destinations: [
+                for (final route in widget.routeBottom) ...[
+                  () {
+                    final badgeLabel =
+                        badgeVM.getBadge(route.label) ?? route.badgeLabel;
+                    return NavigationDestination(
+                      icon: badgeLabel != null
+                          ? Badge(
+                              label: badgeLabel.isEmpty
+                                  ? null
+                                  : Text(badgeLabel),
+                              child: Icon(route.icon),
+                            )
+                          : Icon(route.icon),
+                      selectedIcon: badgeLabel != null
+                          ? Badge(
+                              label: badgeLabel.isEmpty
+                                  ? null
+                                  : Text(badgeLabel),
+                              child: Icon(route.selectedIcon),
+                            )
+                          : Icon(route.selectedIcon),
+                      label: route.label,
+                    );
+                  }(),
+                ],
+              ],
+              onDestinationSelected: (index) =>
+                  widget.navigationShell.goBranch(index),
             ),
-        ],
-        onDestinationSelected: (index) =>
-            widget.navigationShell.goBranch(index),
+          );
+        },
       ),
     );
   }

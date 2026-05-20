@@ -49,9 +49,7 @@ class FeedPostScreen extends StatelessWidget {
                             if (viewModel.loadPostsCommand.running &&
                                 viewModel.posts.isEmpty)
                               const SliverFillRemaining(
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
+                                child: Center(child: Text('Refreshing')),
                               )
                             else if (viewModel.loadPostsCommand.error)
                               SliverFillRemaining(
@@ -143,9 +141,7 @@ class _PostListTile extends StatelessWidget {
                     radius: 24,
                     backgroundColor: colorScheme.primaryContainer,
                     backgroundImage: post.author.avatar != null
-                        ? NetworkImage(
-                            post.author.avatar!.uri.toString(),
-                          ) // Assuming AppFile has a 'url' property
+                        ? NetworkImage(post.author.avatar!.uri.toString())
                         : null,
                     child: post.author.avatar == null
                         ? Text(

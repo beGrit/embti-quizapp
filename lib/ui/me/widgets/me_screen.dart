@@ -256,49 +256,85 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     ThemeData theme,
     MeViewModel viewModel,
   ) {
-    return SliverPadding(
-      padding: const EdgeInsets.all(16.0),
-      sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.85,
-        ),
-        delegate: SliverChildBuilderDelegate((context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Container(
-                    color: theme.colorScheme.primaryContainer.withValues(
-                      alpha: 0.3,
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.article_outlined,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
+    return SliverMainAxisGroup(
+      slivers: [
+        // 1. 头部过滤按钮：使用 SliverToBoxAdapter 承载普通组件
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
+            child: SegmentedButton<String>(
+              segments: const <ButtonSegment<String>>[
+                ButtonSegment<String>(
+                  value: 'Posts',
+                  label: Text('Posts'),
+                  icon: Icon(Icons.article_outlined, size: 18),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Activity Post #$index",
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                ButtonSegment<String>(
+                  value: 'Videos',
+                  label: Text('Videos'),
+                  icon: Icon(Icons.videocam_outlined, size: 18),
+                ),
+                ButtonSegment<String>(
+                  value: 'Popular',
+                  label: Text('Popular'),
+                  icon: Icon(Icons.local_fire_department_outlined, size: 18),
                 ),
               ],
+              selected: const {'Posts'},
+              onSelectionChanged: (Set<String> newSelection) {},
+              style: SegmentedButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+              ),
             ),
-          );
-        }, childCount: 8),
-      ),
+          ),
+        ),
+
+        // 2. 原有的 Grid 列表
+        SliverPadding(
+          padding: const EdgeInsets.all(16.0),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.85,
+            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        color: theme.colorScheme.primaryContainer.withValues(
+                          alpha: 0.3,
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.article_outlined,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Activity Post #$index",
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }, childCount: 8),
+          ),
+        ),
+      ],
     );
   }
 

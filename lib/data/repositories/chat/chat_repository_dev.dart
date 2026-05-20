@@ -173,4 +173,9 @@ class ChatRepositoryDev implements ChatRepository {
 
     return controller.stream;
   }
+
+  @override
+  Stream<Message> subscribeToMessagesInUserScope(String userId) {
+    throw UnimplementedError();
+  }
 }

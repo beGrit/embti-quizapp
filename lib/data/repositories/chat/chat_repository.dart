@@ -36,4 +36,7 @@ abstract class ChatRepository {
 
   /// Subscribes to real-time message updates for a specific room.
   Stream<Message> subscribeToMessages(String roomId);
+
+  /// Subscribes to real-time message updates for user.
+  Stream<Message> subscribeToMessagesInUserScope(String userId);
 }

@@ -18,7 +18,7 @@ class RoomsScreen extends StatelessWidget {
       create: (context) => RoomsViewModel(
         authRepository: context.read<AuthRepository>(),
         chatRepository: context.read<ChatRepository>(),
-      )..loadRooms(),
+      )..loadRoomsCommand.execute(),
       builder: (context, _) {
         final viewModel = context.watch<RoomsViewModel>();
 
@@ -30,35 +30,38 @@ class RoomsScreen extends StatelessWidget {
             ],
           ),
           body: RefreshIndicator(
-            onRefresh: viewModel.loadRooms,
-            child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              slivers: [
-                if (viewModel.isLoading && viewModel.rooms.isEmpty)
-                  const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (viewModel.errorMessage != null &&
-                    viewModel.rooms.isEmpty)
-                  SliverFillRemaining(
-                    child: Center(
-                      child: Text('Error: ${viewModel.errorMessage}'),
-                    ),
-                  )
-                else if (viewModel.rooms.isEmpty)
-                  const SliverFillRemaining(
-                    child: Center(child: Text('No active chats found')),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final room = viewModel.rooms[index];
-                      return _RoomListTile(room: room);
-                    }, childCount: viewModel.rooms.length),
+            onRefresh: () => viewModel.loadRoomsCommand.execute(),
+            child: ListenableBuilder(
+              listenable: viewModel.loadRoomsCommand,
+              builder: (context, _) {
+                return CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
                   ),
-              ],
+                  slivers: [
+                    if (viewModel.loadRoomsCommand.running &&
+                        viewModel.rooms.isEmpty)
+                      const SliverFillRemaining(
+                        child: Center(child: Text('Refreshing')),
+                      )
+                    else if (viewModel.loadRoomsCommand.error)
+                      const SliverFillRemaining(
+                        child: Center(child: Text('Error')),
+                      )
+                    else if (viewModel.rooms.isEmpty)
+                      const SliverFillRemaining(
+                        child: Center(child: Text('No active chats found')),
+                      )
+                    else
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final room = viewModel.rooms[index];
+                          return _RoomListTile(room: room);
+                        }, childCount: viewModel.rooms.length),
+                      ),
+                  ],
+                );
+              },
             ),
           ),
         );
