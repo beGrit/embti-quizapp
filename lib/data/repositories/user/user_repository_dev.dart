@@ -46,11 +46,66 @@ class UserRepositoryDev implements UserRepository {
   }
 
   @override
+  Future<Result<User?>> getUserByEmail(String email) async {
+    try {
+      final record = await _pbService.client
+          .collection('users')
+          .getFirstListItem('email="$email"');
+
+      final apiModel = UserApiModel.fromJson(record.toJson());
+
+      final avatarUri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        apiModel.avatar ?? '',
+      );
+
+      return Result.ok(
+        User(
+          id: apiModel.id,
+          email: apiModel.email,
+          name: apiModel.name,
+          avatar: apiModel.avatar != null
+              ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+              : null,
+        ),
+      );
+    } catch (e) {
+      // PocketBase throws a 404 if no record matches the filter
+      if (e is ClientException && e.statusCode == 404) {
+        return const Result.ok(null);
+      }
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> createUser(String email, String password) async {
+    try {
+      await _pbService.client
+          .collection('users')
+          .create(
+            body: {
+              'email': email,
+              'password': password,
+              'passwordConfirm': password,
+            },
+          );
+      return const Result.ok(null);
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> saveUser(User user) async {
     try {
       await _pbService.client
           .collection('users')
-          .update(user.id, body: {'name': user.name});
+          .update(user.id ?? '', body: {'name': user.name});
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));

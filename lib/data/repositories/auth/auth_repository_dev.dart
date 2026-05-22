@@ -1,6 +1,7 @@
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/domain/models/common/common.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/models/user/user.dart';
 import '../../../utils/result.dart';
@@ -65,6 +66,24 @@ class AuthRepositoryDev extends AuthRepository {
   Future<Result<void>> logout() async {
     _pbService.client.authStore.clear();
     return const Result.ok(null);
+  }
+
+  @override
+  Future<Result<void>> loginWithGoogle() async {
+    try {
+      await _pbService.client.collection('users').authWithOAuth2('google', (
+        url,
+      ) async {
+        if (await canLaunchUrl(url)) {
+          await launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          throw Exception('Could not launch OAuth URL');
+        }
+      });
+      return const Result.ok(null);
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
   }
 
   @override

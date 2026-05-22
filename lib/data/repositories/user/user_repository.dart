@@ -6,9 +6,19 @@ abstract class UserRepository {
   /// Fetches basic user information for a specific ID.
   Future<Result<User>> getUser(String id);
 
+  /// Fetches a user by their email address. Returns null if no user is found.
+  Future<Result<User?>> getUserByEmail(String email);
+
   /// Saves or updates core user information.
   Future<Result<void>> saveUser(User user);
 
+  /// Create user.
+  Future<Result<void>> createUser(String email, String password);
+
   /// Updates the user's avatar.
-  Future<Result<String>> updateAvatar(String id, List<int> bytes, String filename);
+  Future<Result<String>> updateAvatar(
+    String id,
+    List<int> bytes,
+    String filename,
+  );
 }

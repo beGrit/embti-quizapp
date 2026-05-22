@@ -20,6 +20,8 @@ abstract class AuthRepository extends ChangeNotifier {
 
   Future<Result<void>> loginWithWechat();
 
+  Future<Result<void>> loginWithGoogle();
+
   /// Perform logout
   Future<Result<void>> logout();
 }

@@ -28,7 +28,7 @@ class RoomsViewModel extends ChangeNotifier {
       return Result.error(Exception('User not authenticated'));
     }
 
-    final result = await _chatRepository.getRooms(user.id);
+    final result = await _chatRepository.getRooms(user.id ?? '');
 
     if (result is Ok<List<Room>>) {
       _rooms = result.value;

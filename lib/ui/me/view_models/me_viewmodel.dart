@@ -54,7 +54,7 @@ class MeViewModel extends ChangeNotifier {
 
     try {
       final result = await _userRepository.updateAvatar(
-        currentUser.id,
+        currentUser.id ?? '',
         bytes,
         filename,
       );

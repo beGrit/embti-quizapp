@@ -1,4 +1,4 @@
-package com.example.emombti
+package cn.gritsoft.emombti
 
 import io.flutter.embedding.android.FlutterActivity
 

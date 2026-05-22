@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -26,135 +24,136 @@ class _LoginFormState extends State<LoginForm> {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     widget.viewModel.loginWithAccountAndPassword.addListener(_onResult);
+    widget.viewModel.register.addListener(_onResult);
   }
 
   @override
   void didUpdateWidget(covariant LoginForm oldWidget) {
     super.didUpdateWidget(oldWidget);
     oldWidget.viewModel.loginWithAccountAndPassword.removeListener(_onResult);
+    oldWidget.viewModel.register.removeListener(_onResult);
     widget.viewModel.loginWithAccountAndPassword.addListener(_onResult);
+    widget.viewModel.register.addListener(_onResult);
   }
 
   @override
   void dispose() {
     widget.viewModel.loginWithAccountAndPassword.removeListener(_onResult);
+    widget.viewModel.register.removeListener(_onResult);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _handleLogin() {
-    if (_formKey.currentState?.validate() ?? false) {
-      widget.viewModel.loginWithAccountAndPassword.execute((
-        _emailController.value.text,
-        _passwordController.value.text,
-      ));
+    if (!widget.viewModel.loginWithAccountAndPassword.running &&
+        !widget.viewModel.register.running) {
+      if (_formKey.currentState?.validate() ?? false) {
+        widget.viewModel.loginWithAccountAndPassword.execute((
+          _emailController.value.text,
+          _passwordController.value.text,
+        ));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final l10n = AppLocalizations.of(context)!; // 如果需要多语言请取消注释
+    final colorScheme = theme.colorScheme;
 
     return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 400),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 毛玻璃效果
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface.withValues(alpha: 0.85),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(32),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: const Icon(Icons.email_outlined),
+                      border: const UnderlineInputBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
                       ),
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            "Login",
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Email 输入框
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              prefixIcon: Icon(Icons.email_outlined),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                              ),
-                              filled: true,
-                            ),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) =>
-                                (value == null || value.isEmpty)
-                                ? 'Enter email'
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Password 输入框
-                          TextFormField(
-                            controller: _passwordController,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(12),
-                                ),
-                              ),
-                              filled: true,
-                            ),
-                            obscureText: true,
-                            validator: (value) =>
-                                (value == null || value.length < 6)
-                                ? 'Password too short'
-                                : null,
-                          ),
-                          const SizedBox(height: 24),
-
-                          // 登录按钮
-                          FilledButton.icon(
-                            onPressed: _handleLogin,
-                            icon: const Icon(Icons.login),
-                            label: const Text('Login'),
-                            style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) =>
+                        (value == null || value.isEmpty) ? 'Enter email' : null,
                   ),
-                ),
+                  const SizedBox(height: 16),
+
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: const UnderlineInputBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                    obscureText: true,
+                    validator: (value) => (value == null || value.length < 6)
+                        ? 'Password too short'
+                        : null,
+                  ),
+                  const SizedBox(height: 32),
+
+                  ListenableBuilder(
+                    listenable: widget.viewModel.loginWithAccountAndPassword,
+                    builder: (context, child) {
+                      return FilledButton(
+                        onPressed: _handleLogin,
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child:
+                            widget.viewModel.loginWithAccountAndPassword.running
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.login, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Login', style: TextStyle(fontSize: 16)),
+                                ],
+                              ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -162,24 +161,55 @@ class _LoginFormState extends State<LoginForm> {
   void _onResult() {
     if (widget.viewModel.loginWithAccountAndPassword.completed) {
       widget.viewModel.loginWithAccountAndPassword.clearResult();
+      widget.viewModel.register.clearResult();
       context.go(Routes.home);
     }
 
     if (widget.viewModel.loginWithAccountAndPassword.error) {
       widget.viewModel.loginWithAccountAndPassword.clearResult();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login Failed.'),
-          action: SnackBarAction(
-            label: 'Try Again',
-            onPressed: () =>
-                widget.viewModel.loginWithAccountAndPassword.execute((
-                  _emailController.value.text,
-                  _passwordController.value.text,
-                )),
-          ),
-        ),
-      );
+      _showRegisterConfirmDialog();
     }
+
+    if (widget.viewModel.register.completed) {
+      widget.viewModel.register.clearResult();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Created Successfully.')));
+    }
+
+    if (widget.viewModel.register.error) {
+      widget.viewModel.register.clearResult();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registration Failed.')));
+    }
+  }
+
+  void _showRegisterConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Account Not Found'),
+        content: const Text(
+          'Would you like to create a new account with this email and password?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.viewModel.register.execute((
+                _emailController.text,
+                _passwordController.text,
+              ));
+            },
+            child: const Text('Create Account'),
+          ),
+        ],
+      ),
+    );
   }
 }
