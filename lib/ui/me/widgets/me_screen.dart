@@ -242,7 +242,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                       }
                     },
                   ),
-                ],
+              ],
               ],
             ),
           ),
@@ -375,7 +375,12 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
       delegate: SliverChildListDelegate([
         const SizedBox(height: 8),
         _buildListTile(Icons.person_outline, "Account Info", () {}),
-        _buildListTile(Icons.policy, "Privacy & Policy", () {}),
+        _buildListTile(Icons.star_outline, "Saved & Favoriates", () {}),
+        _buildListTile(
+          Icons.social_distance,
+          'Social: Comments & Likes',
+          () {},
+        ),
         _buildListTile(
           Icons.help_outline,
           "Help & Feedback",
@@ -392,6 +397,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
 
   Widget _buildListTile(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
+      dense: true,
       leading: Icon(icon),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right, size: 20),

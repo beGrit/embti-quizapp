@@ -11,12 +11,10 @@ class FeedPostViewModel extends ChangeNotifier {
   FeedPostViewModel({
     required AuthRepository authRepository,
     required FeedRepository feedRepository,
-  }) : _authRepository = authRepository,
-       _feedRepository = feedRepository {
+  }) : _feedRepository = feedRepository {
     loadPostsCommand = Command0<List<Post>>(_loadPostsInternal);
   }
 
-  final AuthRepository _authRepository;
   final FeedRepository _feedRepository;
 
   List<Post> _posts = [];

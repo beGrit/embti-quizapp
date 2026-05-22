@@ -110,9 +110,9 @@ class _FeedPostScreenHeader extends StatelessWidget {
 }
 
 class _PostListTile extends StatelessWidget {
-  _PostListTile({required this.post, required this.viewModel});
+  const _PostListTile({required this.post, required this.viewModel});
 
-  FeedPostViewModel viewModel;
+  final FeedPostViewModel viewModel;
 
   final Post post;
 

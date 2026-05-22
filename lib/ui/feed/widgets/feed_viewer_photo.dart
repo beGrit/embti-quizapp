@@ -18,12 +18,10 @@ class FeedPhotoViewScreen extends StatefulWidget {
 
 class _FeedPhotoViewScreenState extends State<FeedPhotoViewScreen> {
   late PageController _pageController;
-  late int _currentIndex;
 
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: widget.initialIndex);
   }
 
@@ -44,18 +42,15 @@ class _FeedPhotoViewScreenState extends State<FeedPhotoViewScreen> {
         elevation: 0,
         leading: CloseButton(color: theme.colorScheme.onSurface),
       ),
-      body: PageView.builder(
+      body: PageView(
         controller: _pageController,
-        itemCount: widget.imageUrls.length,
-        onPageChanged: (index) => setState(() => _currentIndex = index),
-        itemBuilder: (context, index) {
-          final url = widget.imageUrls[index];
-
+        children: widget.imageUrls.asMap().entries.map((entry) {
+          final index = entry.key;
+          final url = entry.value;
           return Center(
             child: InteractiveViewer(
               clipBehavior: Clip.none,
               maxScale: 4.0,
-              // Apply the Hero tag to the specific image currently active
               child: Hero(
                 tag: index == widget.initialIndex
                     ? widget.heroTag
@@ -64,7 +59,7 @@ class _FeedPhotoViewScreenState extends State<FeedPhotoViewScreen> {
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
