@@ -1,7 +1,7 @@
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
-import '../view_models/me_viewmodel.dart';
+import '../view_models/me_screen_viewmodel.dart';
 
 class MeScreenAvatar extends StatelessWidget {
   const MeScreenAvatar({super.key, required this.viewModel});

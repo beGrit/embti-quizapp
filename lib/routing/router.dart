@@ -15,6 +15,7 @@ import 'package:emombti/ui/home/widgets/home_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
+import 'package:emombti/ui/me/widgets/me_screen_feedback.dart';
 import 'package:emombti/ui/qr_code/widgets/qr_code_scanner.dart';
 import 'package:emombti/ui/quiz/view_models/survey_flow_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
@@ -50,6 +51,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: Routes.qRCodeScanner,
       builder: (context, state) => QRCodeScanner(),
+    ),
+    GoRoute(
+      path: Routes.feedback,
+      builder: (context, state) => const MeFeedbackScreen(),
     ),
     // Settings Route
     GoRoute(

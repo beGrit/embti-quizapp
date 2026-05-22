@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../view_models/me_viewmodel.dart';
+import '../view_models/me_screen_viewmodel.dart';
 import 'me_screen_avatar.dart';
 
 class MeScreen extends StatefulWidget {
@@ -375,19 +375,15 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
       delegate: SliverChildListDelegate([
         const SizedBox(height: 8),
         _buildListTile(Icons.person_outline, "Account Info", () {}),
-        _buildListTile(Icons.badge_outlined, "My MBTI Dimension Badges", () {}),
-        _buildListTile(Icons.help_outline, "Help & Feedback", () {}),
+        _buildListTile(Icons.policy, "Privacy & Policy", () {}),
+        _buildListTile(
+          Icons.help_outline,
+          "Help & Feedback",
+          () => context.push(Routes.feedback),
+        ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Divider(),
-        ),
-        ListTile(
-          leading: const Icon(Icons.logout, color: Colors.redAccent),
-          title: const Text(
-            "Logout",
-            style: TextStyle(color: Colors.redAccent),
-          ),
-          onTap: () => viewModel.logout(),
         ),
         const SizedBox(height: 50),
       ]),
