@@ -1,5 +1,5 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/user/user_repository.dart';
+import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,19 +39,20 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     final screenSize = MediaQuery.of(context).size;
 
     final double headerHeight = screenSize.height > 400 ? 250 : 200;
-
-    return ChangeNotifierProvider<MeViewModel>(
-      create: (_) => MeViewModel(
-        context.read<AuthRepository>(),
-        context.read<UserRepository>(),
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<MeViewModel>(
+          create: (context) => MeViewModel(
+            context.read<AuthRepository>(),
+            context.read<UserAvatarUpdateUseCase>(),
+          ),
+        ),
+      ],
       builder: (context, _) {
         final viewModel = context.watch<MeViewModel>();
         final user = viewModel.user;
 
-        final userName = user?.name ?? "MBTI Explorer";
-        final userEmail = user?.email ?? "explorer@emombti.com";
-        const mbtiType = "INFP"; // Mock for now
+        const mbtiType = "INFP";
 
         return Scaffold(
           body: DefaultTabController(
@@ -114,7 +115,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     MeScreenAvatar(viewModel: viewModel),
                                     const SizedBox(height: 12),
                                     Text(
-                                      userName,
+                                      user?.name ?? "MBTI Explorer",
                                       style: theme.textTheme.titleLarge
                                           ?.copyWith(
                                             color: theme
@@ -126,7 +127,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     if (user != null) ...[
                                       const SizedBox(height: 4),
                                       Text(
-                                        userEmail,
+                                        user.email ?? "Unknown email",
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
                                               color: theme
@@ -139,7 +140,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     const SizedBox(height: 8),
                                     Chip(
                                       label: Text(
-                                        mbtiType,
+                                        user?.mbtiType ?? '',
                                         style: theme.textTheme.labelMedium
                                             ?.copyWith(
                                               color: theme.colorScheme.tertiary,
@@ -162,7 +163,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     top: kToolbarHeight / 2,
                                   ),
                                   child: Text(
-                                    userName,
+                                    user?.name ?? "MBTI Explorer",
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -242,7 +243,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                       }
                     },
                   ),
-              ],
+                ],
               ],
             ),
           ),
@@ -374,7 +375,11 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     return SliverList(
       delegate: SliverChildListDelegate([
         const SizedBox(height: 8),
-        _buildListTile(Icons.person_outline, "Account Info", () {}),
+        _buildListTile(
+          Icons.person_outline,
+          "Account Info",
+          () => context.push(Routes.userInfo),
+        ),
         _buildListTile(Icons.star_outline, "Saved & Favoriates", () {}),
         _buildListTile(
           Icons.social_distance,

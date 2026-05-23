@@ -11,6 +11,8 @@ abstract class AuthRepository extends ChangeNotifier {
   /// The currently authenticated user.
   User? get user;
 
+  void updateAuthenticatedUser(User? newUser);
+
   /// Returns true when the user is logged in
   /// Returns [Future] because it will load a stored auth state the first time.
   Future<bool> get isAuthenticated;

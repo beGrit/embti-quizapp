@@ -15,6 +15,7 @@ import 'package:emombti/data/services/common/notification_service.dart';
 import 'package:emombti/data/services/common/notification_service_local.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
+import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:flutter/material.dart';
@@ -49,10 +50,16 @@ List<SingleChildWidget> _sharedProviders = [
       );
     },
   ),
+  Provider<UserAvatarUpdateUseCase>(
+    lazy: true,
+    create: (context) => UserAvatarUpdateUseCase(
+      authRepository: context.read<AuthRepository>(),
+      userRepository: context.read<UserRepository>(),
+    ),
+  ),
 ];
 List<SingleChildWidget> get providersLocal {
   return [
-    ..._sharedProviders,
     Provider<LocalDataService>.value(value: LocalDataService()),
     Provider<LocalDataSqliteService>.value(value: LocalDataSqliteService()),
     Provider<PocketBaseService>(create: (context) => PocketBaseService()),
@@ -110,6 +117,7 @@ List<SingleChildWidget> get providersLocal {
       },
     ),
     Provider<AdvertisingService>(create: (context) => AdvertisingService()),
+    ..._sharedProviders,
   ];
 }
 

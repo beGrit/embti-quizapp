@@ -16,6 +16,8 @@ abstract class UserApiModel with _$UserApiModel {
     bool? emailVisibility,
     bool? verified,
     String? name,
+    String? mbtiType,
+    String? introduce,
     String? avatar,
     required DateTime created,
     required DateTime updated,

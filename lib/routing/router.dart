@@ -21,6 +21,7 @@ import 'package:emombti/ui/quiz/view_models/survey_flow_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow.dart';
 import 'package:emombti/ui/settings/widgets/settings_screen.dart';
+import 'package:emombti/ui/user/widgets/user_info_screen.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -47,6 +48,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     GoRoute(
       path: Routes.settings,
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: Routes.userInfo,
+      builder: (context, state) => const UserInfoScreen(),
     ),
     GoRoute(
       path: Routes.qRCodeScanner,

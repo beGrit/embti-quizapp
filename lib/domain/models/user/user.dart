@@ -12,6 +12,8 @@ abstract class User with _$User {
     String? id,
     String? email,
     String? name,
+    String? mbtiType,
+    String? introduce,
     AppFile? avatar,
   }) = _User;
 

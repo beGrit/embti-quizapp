@@ -35,6 +35,8 @@ class UserRepositoryDev implements UserRepository {
           id: apiModel.id,
           email: apiModel.email,
           name: apiModel.name,
+          mbtiType: apiModel.mbtiType,
+          introduce: apiModel.introduce,
           avatar: apiModel.avatar != null
               ? AppFile(uri: avatarUri, name: apiModel.avatar!)
               : null,
@@ -68,6 +70,8 @@ class UserRepositoryDev implements UserRepository {
           id: apiModel.id,
           email: apiModel.email,
           name: apiModel.name,
+          mbtiType: apiModel.mbtiType,
+          introduce: apiModel.introduce,
           avatar: apiModel.avatar != null
               ? AppFile(uri: avatarUri, name: apiModel.avatar!)
               : null,
@@ -105,7 +109,14 @@ class UserRepositoryDev implements UserRepository {
     try {
       await _pbService.client
           .collection('users')
-          .update(user.id ?? '', body: {'name': user.name});
+          .update(
+            user.id ?? '',
+            body: {
+              'name': user.name,
+              'introduce': user.introduce,
+              'mbtiType': user.mbtiType,
+            },
+          );
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));

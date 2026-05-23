@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserApiModel {
 
- String get id; String get collectionId; String get collectionName; String? get username; String? get email; bool? get emailVisibility; bool? get verified; String? get name; String? get avatar; DateTime get created; DateTime get updated;
+ String get id; String get collectionId; String get collectionName; String? get username; String? get email; bool? get emailVisibility; bool? get verified; String? get name; String? get mbtiType; String? get introduce; String? get avatar; DateTime get created; DateTime get updated;
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserApiModelCopyWith<UserApiModel> get copyWith => _$UserApiModelCopyWithImpl<U
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVisibility, emailVisibility) || other.emailVisibility == emailVisibility)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVisibility, emailVisibility) || other.emailVisibility == emailVisibility)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,collectionId,collectionName,username,email,emailVisibility,verified,name,avatar,created,updated);
+int get hashCode => Object.hash(runtimeType,id,collectionId,collectionName,username,email,emailVisibility,verified,name,mbtiType,introduce,avatar,created,updated);
 
 @override
 String toString() {
-  return 'UserApiModel(id: $id, collectionId: $collectionId, collectionName: $collectionName, username: $username, email: $email, emailVisibility: $emailVisibility, verified: $verified, name: $name, avatar: $avatar, created: $created, updated: $updated)';
+  return 'UserApiModel(id: $id, collectionId: $collectionId, collectionName: $collectionName, username: $username, email: $email, emailVisibility: $emailVisibility, verified: $verified, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar, created: $created, updated: $updated)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserApiModelCopyWith<$Res>  {
   factory $UserApiModelCopyWith(UserApiModel value, $Res Function(UserApiModel) _then) = _$UserApiModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String collectionId, String collectionName, String? username, String? email, bool? emailVisibility, bool? verified, String? name, String? avatar, DateTime created, DateTime updated
+ String id, String collectionId, String collectionName, String? username, String? email, bool? emailVisibility, bool? verified, String? name, String? mbtiType, String? introduce, String? avatar, DateTime created, DateTime updated
 });
 
 
@@ -65,7 +65,7 @@ class _$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? collectionId = null,Object? collectionName = null,Object? username = freezed,Object? email = freezed,Object? emailVisibility = freezed,Object? verified = freezed,Object? name = freezed,Object? avatar = freezed,Object? created = null,Object? updated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? collectionId = null,Object? collectionName = null,Object? username = freezed,Object? email = freezed,Object? emailVisibility = freezed,Object? verified = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,Object? created = null,Object? updated = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,collectionId: null == collectionId ? _self.collectionId : collectionId // ignore: cast_nullable_to_non_nullable
@@ -75,6 +75,8 @@ as String?,email: freezed == email ? _self.email : email // ignore: cast_nullabl
 as String?,emailVisibility: freezed == emailVisibility ? _self.emailVisibility : emailVisibility // ignore: cast_nullable_to_non_nullable
 as bool?,verified: freezed == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
 as bool?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,mbtiType: freezed == mbtiType ? _self.mbtiType : mbtiType // ignore: cast_nullable_to_non_nullable
+as String?,introduce: freezed == introduce ? _self.introduce : introduce // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String?,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable
@@ -163,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? avatar,  DateTime created,  DateTime updated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? mbtiType,  String? introduce,  String? avatar,  DateTime created,  DateTime updated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.avatar,_that.created,_that.updated);case _:
+return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.created,_that.updated);case _:
   return orElse();
 
 }
@@ -184,10 +186,10 @@ return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? avatar,  DateTime created,  DateTime updated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? mbtiType,  String? introduce,  String? avatar,  DateTime created,  DateTime updated)  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel():
-return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.avatar,_that.created,_that.updated);case _:
+return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.created,_that.updated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +206,10 @@ return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? avatar,  DateTime created,  DateTime updated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String collectionId,  String collectionName,  String? username,  String? email,  bool? emailVisibility,  bool? verified,  String? name,  String? mbtiType,  String? introduce,  String? avatar,  DateTime created,  DateTime updated)?  $default,) {final _that = this;
 switch (_that) {
 case _UserApiModel() when $default != null:
-return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.avatar,_that.created,_that.updated);case _:
+return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,_that.email,_that.emailVisibility,_that.verified,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.created,_that.updated);case _:
   return null;
 
 }
@@ -219,7 +221,7 @@ return $default(_that.id,_that.collectionId,_that.collectionName,_that.username,
 @JsonSerializable()
 
 class _UserApiModel implements UserApiModel {
-  const _UserApiModel({required this.id, required this.collectionId, required this.collectionName, this.username, this.email, this.emailVisibility, this.verified, this.name, this.avatar, required this.created, required this.updated});
+  const _UserApiModel({required this.id, required this.collectionId, required this.collectionName, this.username, this.email, this.emailVisibility, this.verified, this.name, this.mbtiType, this.introduce, this.avatar, required this.created, required this.updated});
   factory _UserApiModel.fromJson(Map<String, dynamic> json) => _$UserApiModelFromJson(json);
 
 @override final  String id;
@@ -230,6 +232,8 @@ class _UserApiModel implements UserApiModel {
 @override final  bool? emailVisibility;
 @override final  bool? verified;
 @override final  String? name;
+@override final  String? mbtiType;
+@override final  String? introduce;
 @override final  String? avatar;
 @override final  DateTime created;
 @override final  DateTime updated;
@@ -247,16 +251,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVisibility, emailVisibility) || other.emailVisibility == emailVisibility)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.name, name) || other.name == name)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.collectionId, collectionId) || other.collectionId == collectionId)&&(identical(other.collectionName, collectionName) || other.collectionName == collectionName)&&(identical(other.username, username) || other.username == username)&&(identical(other.email, email) || other.email == email)&&(identical(other.emailVisibility, emailVisibility) || other.emailVisibility == emailVisibility)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,collectionId,collectionName,username,email,emailVisibility,verified,name,avatar,created,updated);
+int get hashCode => Object.hash(runtimeType,id,collectionId,collectionName,username,email,emailVisibility,verified,name,mbtiType,introduce,avatar,created,updated);
 
 @override
 String toString() {
-  return 'UserApiModel(id: $id, collectionId: $collectionId, collectionName: $collectionName, username: $username, email: $email, emailVisibility: $emailVisibility, verified: $verified, name: $name, avatar: $avatar, created: $created, updated: $updated)';
+  return 'UserApiModel(id: $id, collectionId: $collectionId, collectionName: $collectionName, username: $username, email: $email, emailVisibility: $emailVisibility, verified: $verified, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar, created: $created, updated: $updated)';
 }
 
 
@@ -267,7 +271,7 @@ abstract mixin class _$UserApiModelCopyWith<$Res> implements $UserApiModelCopyWi
   factory _$UserApiModelCopyWith(_UserApiModel value, $Res Function(_UserApiModel) _then) = __$UserApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String collectionId, String collectionName, String? username, String? email, bool? emailVisibility, bool? verified, String? name, String? avatar, DateTime created, DateTime updated
+ String id, String collectionId, String collectionName, String? username, String? email, bool? emailVisibility, bool? verified, String? name, String? mbtiType, String? introduce, String? avatar, DateTime created, DateTime updated
 });
 
 
@@ -284,7 +288,7 @@ class __$UserApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? collectionId = null,Object? collectionName = null,Object? username = freezed,Object? email = freezed,Object? emailVisibility = freezed,Object? verified = freezed,Object? name = freezed,Object? avatar = freezed,Object? created = null,Object? updated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? collectionId = null,Object? collectionName = null,Object? username = freezed,Object? email = freezed,Object? emailVisibility = freezed,Object? verified = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,Object? created = null,Object? updated = null,}) {
   return _then(_UserApiModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,collectionId: null == collectionId ? _self.collectionId : collectionId // ignore: cast_nullable_to_non_nullable
@@ -294,6 +298,8 @@ as String?,email: freezed == email ? _self.email : email // ignore: cast_nullabl
 as String?,emailVisibility: freezed == emailVisibility ? _self.emailVisibility : emailVisibility // ignore: cast_nullable_to_non_nullable
 as bool?,verified: freezed == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
 as bool?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,mbtiType: freezed == mbtiType ? _self.mbtiType : mbtiType // ignore: cast_nullable_to_non_nullable
+as String?,introduce: freezed == introduce ? _self.introduce : introduce // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
 as String?,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable

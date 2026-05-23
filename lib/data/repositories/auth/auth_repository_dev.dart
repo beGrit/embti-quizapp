@@ -18,30 +18,10 @@ class AuthRepositoryDev extends AuthRepository {
 
   final PocketBaseService _pbService;
 
+  User? _user;
+
   @override
-  User? get user {
-    final recordModel = _pbService.client.authStore.record;
-    if (recordModel is RecordModel) {
-      final apiModel = UserApiModel.fromJson(recordModel.toJson());
-      Uri avatarUri = _pbService.client.files.getURL(
-        RecordModel({
-          'id': apiModel.id,
-          'collectionId': apiModel.collectionId,
-          'collectionName': apiModel.collectionName,
-        }),
-        apiModel.avatar ?? '',
-      );
-      return User(
-        id: apiModel.id,
-        email: apiModel.email,
-        name: apiModel.name,
-        avatar: apiModel.avatar != null
-            ? AppFile(uri: avatarUri, name: apiModel.avatar!)
-            : null,
-      );
-    }
-    return null;
-  }
+  User? get user => _user;
 
   @override
   Future<bool> get isAuthenticated =>
@@ -56,6 +36,7 @@ class AuthRepositoryDev extends AuthRepository {
       await _pbService.client
           .collection('users')
           .authWithPassword(email, password);
+      setUpUserFromRemote();
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -80,6 +61,7 @@ class AuthRepositoryDev extends AuthRepository {
           throw Exception('Could not launch OAuth URL');
         }
       });
+      setUpUserFromRemote();
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -91,5 +73,38 @@ class AuthRepositoryDev extends AuthRepository {
     return Result.error(
       Exception('Wechat login not implemented with PocketBase'),
     );
+  }
+
+  void setUpUserFromRemote() {
+    final recordModel = _pbService.client.authStore.record;
+    if (recordModel is RecordModel) {
+      final apiModel = UserApiModel.fromJson(recordModel.toJson());
+      Uri avatarUri = _pbService.client.files.getURL(
+        RecordModel({
+          'id': apiModel.id,
+          'collectionId': apiModel.collectionId,
+          'collectionName': apiModel.collectionName,
+        }),
+        apiModel.avatar ?? '',
+      );
+      updateAuthenticatedUser(
+        User(
+          id: apiModel.id,
+          email: apiModel.email,
+          name: apiModel.name,
+          avatar: apiModel.avatar != null
+              ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+              : null,
+          mbtiType: apiModel.mbtiType,
+          introduce: apiModel.introduce,
+        ),
+      );
+    }
+  }
+
+  @override
+  void updateAuthenticatedUser(User? newUser) {
+    _user = newUser;
+    notifyListeners();
   }
 }
