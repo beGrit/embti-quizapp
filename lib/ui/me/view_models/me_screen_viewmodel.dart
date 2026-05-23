@@ -16,9 +16,19 @@ class MeViewModel extends ChangeNotifier {
   User? get user => _authRepository.user;
   bool get isUpdatingAvatar => _userAvatarUpdateUseCase.isUpdatingAvatar;
 
-  Future<Result<String>> pickAndUploadAvatar() async {
-    Future<Result<String>> result = _userAvatarUpdateUseCase
-        .pickAndUploadAvatar(ImagePicker());
+  Future<Result> pickAndUploadAvatar() async {
+    Future<Result<User>> result = _userAvatarUpdateUseCase.pickAndUploadAvatar(
+      ImagePicker(),
+    );
+    result.then(
+      (value) => {
+        if (value is Ok)
+          {
+            _authRepository.updateAuthenticatedUser((value as Ok).value),
+            notifyListeners(),
+          },
+      },
+    );
     return result;
   }
 

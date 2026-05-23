@@ -53,11 +53,15 @@ class UserInfoScreenViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _updateIntroduce() async {
-    return _updateUserProperty((user) => user.copyWith(introduce: _tempIntroduce));
+    return _updateUserProperty(
+      (user) => user.copyWith(introduce: _tempIntroduce),
+    );
   }
 
   Future<Result<void>> _updateMbtiType() async {
-    return _updateUserProperty((user) => user.copyWith(mbtiType: _tempMbtiType));
+    return _updateUserProperty(
+      (user) => user.copyWith(mbtiType: _tempMbtiType),
+    );
   }
 
   Future<Result<void>> _updateUserProperty(User Function(User) updateFn) async {
@@ -74,13 +78,37 @@ class UserInfoScreenViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _updateAvatar() async {
-    return _userAvatarUpdateUseCase.pickAndUploadAvatar(ImagePicker());
+    Future<Result<User>> result = _userAvatarUpdateUseCase.pickAndUploadAvatar(
+      ImagePicker(),
+    );
+    result.then(
+      (value) => {
+        if (value is Ok)
+          {
+            _authRepository.updateAuthenticatedUser((value as Ok).value),
+            notifyListeners(),
+          },
+      },
+    );
+    return result;
   }
 
   final List<String> mbtiTypes = [
-    'INTJ', 'INTP', 'ENTJ', 'ENTP',
-    'INFJ', 'INFP', 'ENFJ', 'ENFP',
-    'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ',
-    'ISTP', 'ISFP', 'ESTP', 'ESFP',
+    'INTJ',
+    'INTP',
+    'ENTJ',
+    'ENTP',
+    'INFJ',
+    'INFP',
+    'ENFJ',
+    'ENFP',
+    'ISTJ',
+    'ISFJ',
+    'ESTJ',
+    'ESFJ',
+    'ISTP',
+    'ISFP',
+    'ESTP',
+    'ESFP',
   ];
 }

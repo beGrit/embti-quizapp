@@ -16,7 +16,7 @@ abstract class UserRepository {
   Future<Result<void>> createUser(String email, String password);
 
   /// Updates the user's avatar.
-  Future<Result<String>> updateAvatar(
+  Future<Result<User>> updateAvatar(
     String id,
     List<int> bytes,
     String filename,

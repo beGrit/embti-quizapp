@@ -1,5 +1,6 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
+import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -16,7 +17,7 @@ class UserAvatarUpdateUseCase {
   bool _isUpdatingAvatar = false;
   bool get isUpdatingAvatar => _isUpdatingAvatar;
 
-  Future<Result<String>> pickAndUploadAvatar(ImagePicker picker) async {
+  Future<Result<User>> pickAndUploadAvatar(ImagePicker picker) async {
     // 1. Guard against concurrent taps or multiple selection attempts
     if (_isUpdatingAvatar) {
       return Result.error(Exception('An upload is already in progress.'));

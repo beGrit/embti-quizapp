@@ -124,7 +124,7 @@ class UserRepositoryDev implements UserRepository {
   }
 
   @override
-  Future<Result<String>> updateAvatar(
+  Future<Result<User>> updateAvatar(
     String id,
     List<int> bytes,
     String filename,
@@ -150,7 +150,16 @@ class UserRepositoryDev implements UserRepository {
         apiModel.avatar ?? '',
       );
 
-      return Result.ok(apiModel.avatar != null ? avatarUri.toString() : '');
+      return Result.ok(
+        User(
+          id: apiModel.id,
+          email: apiModel.email,
+          name: apiModel.name,
+          mbtiType: apiModel.mbtiType,
+          introduce: apiModel.introduce,
+          avatar: AppFile(uri: avatarUri, name: filename),
+        ),
+      );
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
