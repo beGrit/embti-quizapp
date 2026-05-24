@@ -1,9 +1,7 @@
-import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/routing/navigation_config.dart';
-import 'package:emombti/ui/core/ui/view_models/nav_badge_viewmodel.dart';
+import 'package:emombti/ui/core/ui/widgets/layout_app_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class AppLayout extends StatelessWidget {
   const AppLayout({
@@ -90,92 +88,11 @@ class AppLayout extends StatelessWidget {
                 ),
                 labelPadding: EdgeInsets.zero,
               ),
-              child: _AppLayoutNavigationBar(
+              child: AppLayoutNavigationBar(
                 navigationShell: navigationShell,
                 routeBottom: routeBottom,
               ),
             ),
-    );
-  }
-}
-
-class _AppLayoutNavigationBar extends StatefulWidget {
-  const _AppLayoutNavigationBar({
-    required this.navigationShell,
-    required this.routeBottom,
-  });
-
-  final StatefulNavigationShell navigationShell;
-  final List<NavigationConfig> routeBottom;
-
-  @override
-  State<_AppLayoutNavigationBar> createState() =>
-      _AppLayoutNavigationBarState();
-}
-
-class _AppLayoutNavigationBarState extends State<_AppLayoutNavigationBar> {
-  late ThemeData themeData;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void changeTheme(ThemeData themeData) {
-    setState(() {
-      this.themeData = themeData;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => NavBadgeViewmodel(configuration: widget.routeBottom),
-        ),
-      ],
-      child: Consumer2<NavBadgeViewmodel, ThemeState>(
-        builder: (context, badgeVM, themeController, child) {
-          return Theme(
-            data: themeController.currentTheme,
-            child: NavigationBar(
-              height: 60,
-              selectedIndex: widget.navigationShell.currentIndex,
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              destinations: [
-                for (final route in widget.routeBottom) ...[
-                  () {
-                    final badgeLabel =
-                        badgeVM.getBadge(route.label) ?? route.badgeLabel;
-                    return NavigationDestination(
-                      icon: badgeLabel != null
-                          ? Badge(
-                              label: badgeLabel.isEmpty
-                                  ? null
-                                  : Text(badgeLabel),
-                              child: Icon(route.icon),
-                            )
-                          : Icon(route.icon),
-                      selectedIcon: badgeLabel != null
-                          ? Badge(
-                              label: badgeLabel.isEmpty
-                                  ? null
-                                  : Text(badgeLabel),
-                              child: Icon(route.selectedIcon),
-                            )
-                          : Icon(route.selectedIcon),
-                      label: route.label,
-                    );
-                  }(),
-                ],
-              ],
-              onDestinationSelected: (index) =>
-                  widget.navigationShell.goBranch(index),
-            ),
-          );
-        },
-      ),
     );
   }
 }
