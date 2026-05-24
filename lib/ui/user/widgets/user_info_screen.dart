@@ -31,56 +31,74 @@ class _UserInfoScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<UserInfoScreenViewModel>();
     final colorScheme = Theme.of(context).colorScheme;
-    final user = viewModel.user;
-
-    if (user == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
+    final viewModel = context.read<UserInfoScreenViewModel>();
     return Scaffold(
       appBar: const StandardAppBar(title: 'User Info'),
       backgroundColor: colorScheme.surface,
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        children: [
-          _buildSectionHeader(context, 'Basic Info'),
-          Container(
-            decoration: AppContainerStyles.standard(context).decoration,
-            child: Column(
-              children: [
-                _buildAvatarTile(context, viewModel),
-                _buildDivider(context),
-                _buildInfoTile(
-                  context,
-                  title: 'Name',
-                  value: user.name ?? 'Not set',
-                  onTap: () => _editName(context, viewModel),
-                ),
-                _buildDivider(context),
-                _buildInfoTile(
-                  context,
-                  title: 'MBTI',
-                  value: user.mbtiType ?? 'Not set',
-                  onTap: () => _editMbtiType(context, viewModel),
-                ),
-                _buildDivider(context),
-                _buildInfoTile(
-                  context,
-                  title: 'Introduce',
-                  value: user.introduce ?? 'Not set',
-                  onTap: () => _editIntroduce(context, viewModel),
-                ),
-              ],
+      body: Builder(
+        builder: (context) {
+          if (viewModel.user == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return ListView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
             ),
-          ),
-        ],
+            children: [
+              _buildSectionHeader(context, 'Basic Info'),
+              Container(
+                decoration: AppContainerStyles.standard(context).decoration,
+                child: ListenableBuilder(
+                  listenable: Listenable.merge([
+                    viewModel.updateNameCommand,
+                    viewModel.updateIntroduceCommand,
+                    viewModel.updateMbtiTypeCommand,
+                    viewModel.updateAvatarCommand,
+                  ]),
+                  builder: (context, child) {
+                    return Column(
+                      children: [
+                        _buildAvatarTile(context, viewModel),
+                        _buildDivider(context),
+                        _buildInfoTile(
+                          context,
+                          title: 'Name',
+                          value: viewModel.user?.name ?? 'Not set',
+                          onTap: () => _editName(context, viewModel),
+                        ),
+                        _buildDivider(context),
+                        _buildInfoTile(
+                          context,
+                          title: 'MBTI',
+                          value: viewModel.user?.mbtiType ?? 'Not set',
+                          onTap: () => _editMbtiType(context, viewModel),
+                        ),
+                        _buildDivider(context),
+                        _buildInfoTile(
+                          context,
+                          title: 'Introduce',
+                          value: viewModel.user?.introduce ?? 'Not set',
+                          onTap: () => _editIntroduce(context, viewModel),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildAvatarTile(BuildContext context, UserInfoScreenViewModel viewModel) {
+  Widget _buildAvatarTile(
+    BuildContext context,
+    UserInfoScreenViewModel viewModel,
+  ) {
     final user = viewModel.user!;
     return ListTile(
       dense: true,
@@ -183,25 +201,28 @@ class _UserInfoScreenContent extends StatelessWidget {
       title: 'Select MBTI',
       command: viewModel.updateMbtiTypeCommand,
       builder: (context) {
-        return ListenableBuilder(
-          listenable: viewModel,
-          builder: (context, _) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: viewModel.mbtiTypes.map((type) {
-                return RadioListTile<String>(
-                  title: Text(type),
-                  value: type,
-                  groupValue: viewModel.tempMbtiType,
-                  onChanged: (value) {
-                    if (value != null) viewModel.tempMbtiType = value;
-                  },
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                );
-              }).toList(),
+        return ValueListenableBuilder<String?>(
+          valueListenable: viewModel.tempMbtiType,
+          builder: (context, value, radiosChild) {
+            return RadioGroup<String>(
+              groupValue: value,
+              onChanged: (value) {
+                if (value != null) viewModel.tempMbtiType = value;
+              },
+              child: radiosChild ?? const SizedBox.shrink(),
             );
           },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: viewModel.mbtiTypes.map((type) {
+              return RadioListTile<String>(
+                title: Text(type),
+                value: type,
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+              );
+            }).toList(),
+          ),
         );
       },
       scrollable: true,
@@ -243,7 +264,10 @@ class _UserInfoScreenContent extends StatelessWidget {
   Widget _buildDivider(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Divider(color: Theme.of(context).colorScheme.outlineVariant, height: 1),
+      child: Divider(
+        color: Theme.of(context).colorScheme.outlineVariant,
+        height: 1,
+      ),
     );
   }
 }
@@ -298,7 +322,9 @@ class _EditPropertyScreen extends StatelessWidget {
                     if (context.canPop()) Navigator.of(context).pop();
                   } else if (command.error) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed: ${command.result.toString()}')),
+                      SnackBar(
+                        content: Text('Failed: ${command.result.toString()}'),
+                      ),
                     );
                   }
                 }

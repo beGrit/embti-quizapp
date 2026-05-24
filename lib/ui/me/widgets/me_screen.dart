@@ -52,8 +52,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
         final viewModel = context.watch<MeViewModel>();
         final user = viewModel.user;
 
-        const mbtiType = "INFP";
-
         return Scaffold(
           body: DefaultTabController(
             length: 3,

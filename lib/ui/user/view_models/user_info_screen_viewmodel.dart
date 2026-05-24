@@ -31,21 +31,18 @@ class UserInfoScreenViewModel extends ChangeNotifier {
   String get tempName => _tempName;
   set tempName(String value) {
     _tempName = value;
-    notifyListeners();
   }
 
   String _tempIntroduce = '';
   String get tempIntroduce => _tempIntroduce;
   set tempIntroduce(String value) {
     _tempIntroduce = value;
-    notifyListeners();
   }
 
-  String _tempMbtiType = '';
-  String get tempMbtiType => _tempMbtiType;
+  final ValueNotifier<String?> _tempMbtiType = ValueNotifier<String?>('');
+  ValueNotifier<String?> get tempMbtiType => _tempMbtiType;
   set tempMbtiType(String value) {
-    _tempMbtiType = value;
-    notifyListeners();
+    _tempMbtiType.value = value;
   }
 
   Future<Result<void>> _updateName() async {
@@ -60,7 +57,7 @@ class UserInfoScreenViewModel extends ChangeNotifier {
 
   Future<Result<void>> _updateMbtiType() async {
     return _updateUserProperty(
-      (user) => user.copyWith(mbtiType: _tempMbtiType),
+      (user) => user.copyWith(mbtiType: _tempMbtiType.value),
     );
   }
 
@@ -72,7 +69,6 @@ class UserInfoScreenViewModel extends ChangeNotifier {
 
     if (result is Ok<void>) {
       _authRepository.updateAuthenticatedUser(updatedUser);
-      notifyListeners();
     }
     return result;
   }
@@ -84,10 +80,7 @@ class UserInfoScreenViewModel extends ChangeNotifier {
     result.then(
       (value) => {
         if (value is Ok)
-          {
-            _authRepository.updateAuthenticatedUser((value as Ok).value),
-            notifyListeners(),
-          },
+          {_authRepository.updateAuthenticatedUser((value as Ok).value)},
       },
     );
     return result;
