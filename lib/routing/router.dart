@@ -99,6 +99,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           viewModel: SurveyFlowViewModel(
             surveyFlowRepository: context.read(),
             quizRepository: context.read(),
+            surveyFlowState: context.read(),
             flowId: flowId,
             surveyId: surveyId,
           ),

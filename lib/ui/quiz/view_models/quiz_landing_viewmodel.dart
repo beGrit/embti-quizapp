@@ -1,4 +1,5 @@
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
+import 'package:emombti/providers/survey_flow_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,14 +12,17 @@ class QuizLandingViewModel extends ChangeNotifier {
   QuizLandingViewModel({
     required QuizRepository repository,
     required SurveyFlowRepository surveyFlowRepository,
+    required SurveyFlowState surveyFlowState,
   }) : _surveyFlowRepository = surveyFlowRepository,
-       _repository = repository {
+       _repository = repository,
+       _surveyFlowState = surveyFlowState {
     load = Command0(_load);
     startAssessment = Command0(_startAssessmentAction);
   }
 
   final QuizRepository _repository;
   final SurveyFlowRepository _surveyFlowRepository;
+  final SurveyFlowState _surveyFlowState;
 
   /// Command to load available surveys.
   late final Command0<void> load;
@@ -84,6 +88,7 @@ class QuizLandingViewModel extends ChangeNotifier {
     _selectedFlowIds.clear();
     _selectionMode = false;
     _surveyFlows = await _surveyFlowRepository.getFlows();
+    _surveyFlowState.refresh();
     notifyListeners();
   }
 
@@ -133,7 +138,8 @@ class QuizLandingViewModel extends ChangeNotifier {
 
     if (_surveys.isNotEmpty) {
       SurveyFlow newSurveyFlow = _genNewSurveyFlow(_surveys[0]);
-      _surveyFlowRepository.saveFlow(newSurveyFlow);
+      await _surveyFlowRepository.saveFlow(newSurveyFlow);
+      await _surveyFlowState.refresh();
       return Result.ok({
         'flowId': newSurveyFlow.id,
         'surveyId': _surveys[0].id,

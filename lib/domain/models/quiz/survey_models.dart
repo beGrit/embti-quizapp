@@ -77,6 +77,8 @@ sealed class SurveyFlow with _$SurveyFlow {
   double get completionRate =>
       totalQuestions == 0 ? 0.0 : currentAnswers.length / totalQuestions;
 
+  int get completionPercentage => (completionRate.clamp(0.0, 1.0) * 100).round();
+
   Duration get duration =>
       (endTime ?? DateTime.now()).difference(startTime ?? DateTime.now());
 

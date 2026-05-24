@@ -34,6 +34,8 @@ import '../data/services/common/policy_service.dart';
 import '../data/services/common/policy_service_local.dart';
 import '../data/services/persistence/local/local_data_service.dart';
 
+import 'package:emombti/providers/survey_flow_state.dart';
+
 List<SingleChildWidget> _sharedProviders = [
   ChangeNotifierProvider<ThemeController>(
     create: (context) {
@@ -49,6 +51,11 @@ List<SingleChildWidget> _sharedProviders = [
         currentPlatformBrightness: brightness,
       );
     },
+  ),
+  ChangeNotifierProvider<SurveyFlowState>(
+    create: (context) => SurveyFlowState(
+      repository: context.read<SurveyFlowRepository>(),
+    )..refresh(),
   ),
   Provider<UserAvatarUpdateUseCase>(
     lazy: true,

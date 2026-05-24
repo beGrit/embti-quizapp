@@ -27,6 +27,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
     viewModel = QuizLandingViewModel(
       repository: context.read(),
       surveyFlowRepository: context.read(),
+      surveyFlowState: context.read(),
     );
     _listenable = Listenable.merge([
       viewModel,

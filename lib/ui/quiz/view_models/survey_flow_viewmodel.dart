@@ -1,6 +1,7 @@
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
+import 'package:emombti/providers/survey_flow_state.dart';
 import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlowViewModel({
     required this.surveyFlowRepository,
     required this.quizRepository,
+    required this.surveyFlowState,
     required this.flowId,
     required this.surveyId,
   }) {
@@ -17,6 +19,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   final SurveyFlowRepository surveyFlowRepository;
   final QuizRepository quizRepository;
+  final SurveyFlowState surveyFlowState;
   final String flowId;
   final String surveyId;
 
@@ -67,7 +70,8 @@ class SurveyFlowViewModel extends ChangeNotifier {
     _flow = _flow.copyWith(currentAnswers: newAnswers);
     notifyListeners();
 
-    surveyFlowRepository.saveFlow(_flow);
+    await surveyFlowRepository.saveFlow(_flow);
+    surveyFlowState.updateLatest(_flow);
 
     if (score != null) {
       final currentIndex = pageController.page?.round() ?? 0;
