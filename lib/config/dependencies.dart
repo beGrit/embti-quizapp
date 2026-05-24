@@ -18,6 +18,7 @@ import 'package:emombti/data/services/common/notification_service.dart';
 import 'package:emombti/data/services/common/notification_service_local.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
+import 'package:emombti/data/services/common/chat_service.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,14 @@ List<SingleChildWidget> _sharedProviders = [
           ..refresh(),
   ),
   ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
+  Provider<ChatService>(
+    lazy: false,
+    create: (context) => ChatService(
+      authRepository: context.read<AuthRepository>(),
+      chatRepository: context.read<ChatRepository>(),
+      chatState: context.read<ChatState>(),
+    ),
+  ),
   Provider<UserAvatarUpdateUseCase>(
     lazy: true,
     create: (context) => UserAvatarUpdateUseCase(

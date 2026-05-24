@@ -46,6 +46,7 @@ class AuthRepositoryDev extends AuthRepository {
   @override
   Future<Result<void>> logout() async {
     _pbService.client.authStore.clear();
+    updateAuthenticatedUser(null);
     return const Result.ok(null);
   }
 
@@ -56,11 +57,13 @@ class AuthRepositoryDev extends AuthRepository {
         url,
       ) async {
         if (await canLaunchUrl(url)) {
-          await launchUrl(url, mode: LaunchMode.externalApplication);
+          await launchUrl(url, mode: LaunchMode.platformDefault);
         } else {
           throw Exception('Could not launch OAuth URL');
         }
       });
+
+      closeInAppWebView();
       setUpUserFromRemote();
       return const Result.ok(null);
     } catch (e) {
@@ -104,7 +107,7 @@ class AuthRepositoryDev extends AuthRepository {
 
   @override
   void updateAuthenticatedUser(User? newUser) {
-    _user = newUser;
+    _user = _user?.copyWith(avatar: newUser?.avatar);
     notifyListeners();
   }
 }

@@ -30,6 +30,90 @@
         "axis": 3,
         "isReversed": false,
         "weight": 1.0
+      },
+      {
+        "id": "q5",
+        "text": "You feel drained after spending time with a large group of people.",
+        "axis": 0,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q6",
+        "text": "You prefer to follow established traditions rather than invent new ways.",
+        "axis": 1,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q7",
+        "text": "You highly value emotional harmony in your relationships.",
+        "axis": 2,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q8",
+        "text": "You prefer to leave things open-ended and adapt as you go.",
+        "axis": 3,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q9",
+        "text": "You are usually the one to start conversations with new people.",
+        "axis": 0,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q10",
+        "text": "You often find yourself daydreaming about abstract concepts or the future.",
+        "axis": 1,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q11",
+        "text": "You find it easy to remain detached when discussing controversial topics.",
+        "axis": 2,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q12",
+        "text": "You feel anxious when you don't have a clear schedule for your day.",
+        "axis": 3,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q13",
+        "text": "You prefer quiet weekends at home over going to busy parties.",
+        "axis": 0,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q14",
+        "text": "You lean heavily on facts, data, and past experiences to solve problems.",
+        "axis": 1,
+        "isReversed": true,
+        "weight": 1.0
+      },
+      {
+        "id": "q15",
+        "text": "You prioritize people's feelings over absolute scientific or objective truth.",
+        "axis": 2,
+        "isReversed": false,
+        "weight": 1.0
+      },
+      {
+        "id": "q16",
+        "text": "You often wait until the last minute or deadline to finish tasks.",
+        "axis": 3,
+        "isReversed": true,
+        "weight": 1.0
       }
     ]
   }

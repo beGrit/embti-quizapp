@@ -15,8 +15,8 @@ class RoomDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => RoomDetailViewModel(
+    return ChangeNotifierProvider.value(
+      value: RoomDetailViewModel(
         room: room,
         authRepository: context.read<AuthRepository>(),
         chatRepository: context.read<ChatRepository>(),
@@ -44,6 +44,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
     viewModel = context.read<RoomDetailViewModel>();
     _controller = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      viewModel.init();
       viewModel.markCurrentRoomAsRead();
     });
   }

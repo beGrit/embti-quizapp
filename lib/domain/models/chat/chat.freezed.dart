@@ -281,7 +281,7 @@ as DateTime,
 /// @nodoc
 mixin _$Room {
 
- String get id; String? get name;@JsonKey(name: 'created_by') String? get createdBy;@JsonKey(name: 'chat_id') String? get chatId; DateTime get created; DateTime get updated;
+ String get id; String? get name;@JsonKey(name: 'created_by') String? get createdBy;@JsonKey(name: 'chat_id') String? get chatId; DateTime get created; DateTime get updated;@JsonKey(name: 'last_message') String? get lastMessage;@JsonKey(name: 'last_message_at') DateTime? get lastMessageAt;
 /// Create a copy of Room
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -294,16 +294,16 @@ $RoomCopyWith<Room> get copyWith => _$RoomCopyWithImpl<Room>(this as Room, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Room&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Room&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdBy,chatId,created,updated);
+int get hashCode => Object.hash(runtimeType,id,name,createdBy,chatId,created,updated,lastMessage,lastMessageAt);
 
 @override
 String toString() {
-  return 'Room(id: $id, name: $name, createdBy: $createdBy, chatId: $chatId, created: $created, updated: $updated)';
+  return 'Room(id: $id, name: $name, createdBy: $createdBy, chatId: $chatId, created: $created, updated: $updated, lastMessage: $lastMessage, lastMessageAt: $lastMessageAt)';
 }
 
 
@@ -314,7 +314,7 @@ abstract mixin class $RoomCopyWith<$Res>  {
   factory $RoomCopyWith(Room value, $Res Function(Room) _then) = _$RoomCopyWithImpl;
 @useResult
 $Res call({
- String id, String? name,@JsonKey(name: 'created_by') String? createdBy,@JsonKey(name: 'chat_id') String? chatId, DateTime created, DateTime updated
+ String id, String? name,@JsonKey(name: 'created_by') String? createdBy,@JsonKey(name: 'chat_id') String? chatId, DateTime created, DateTime updated,@JsonKey(name: 'last_message') String? lastMessage,@JsonKey(name: 'last_message_at') DateTime? lastMessageAt
 });
 
 
@@ -331,7 +331,7 @@ class _$RoomCopyWithImpl<$Res>
 
 /// Create a copy of Room
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? createdBy = freezed,Object? chatId = freezed,Object? created = null,Object? updated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? createdBy = freezed,Object? chatId = freezed,Object? created = null,Object? updated = null,Object? lastMessage = freezed,Object? lastMessageAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -339,7 +339,9 @@ as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // igno
 as String?,chatId: freezed == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String?,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,lastMessage: freezed == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
+as String?,lastMessageAt: freezed == lastMessageAt ? _self.lastMessageAt : lastMessageAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -421,10 +423,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated, @JsonKey(name: 'last_message')  String? lastMessage, @JsonKey(name: 'last_message_at')  DateTime? lastMessageAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Room() when $default != null:
-return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated);case _:
+return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated,_that.lastMessage,_that.lastMessageAt);case _:
   return orElse();
 
 }
@@ -442,10 +444,10 @@ return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated, @JsonKey(name: 'last_message')  String? lastMessage, @JsonKey(name: 'last_message_at')  DateTime? lastMessageAt)  $default,) {final _that = this;
 switch (_that) {
 case _Room():
-return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated);}
+return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated,_that.lastMessage,_that.lastMessageAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -459,10 +461,10 @@ return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name, @JsonKey(name: 'created_by')  String? createdBy, @JsonKey(name: 'chat_id')  String? chatId,  DateTime created,  DateTime updated, @JsonKey(name: 'last_message')  String? lastMessage, @JsonKey(name: 'last_message_at')  DateTime? lastMessageAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Room() when $default != null:
-return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated);case _:
+return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_that.updated,_that.lastMessage,_that.lastMessageAt);case _:
   return null;
 
 }
@@ -474,7 +476,7 @@ return $default(_that.id,_that.name,_that.createdBy,_that.chatId,_that.created,_
 @JsonSerializable()
 
 class _Room extends Room {
-  const _Room({required this.id, this.name, @JsonKey(name: 'created_by') this.createdBy, @JsonKey(name: 'chat_id') this.chatId, required this.created, required this.updated}): super._();
+  const _Room({required this.id, this.name, @JsonKey(name: 'created_by') this.createdBy, @JsonKey(name: 'chat_id') this.chatId, required this.created, required this.updated, @JsonKey(name: 'last_message') this.lastMessage, @JsonKey(name: 'last_message_at') this.lastMessageAt}): super._();
   factory _Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);
 
 @override final  String id;
@@ -483,6 +485,8 @@ class _Room extends Room {
 @override@JsonKey(name: 'chat_id') final  String? chatId;
 @override final  DateTime created;
 @override final  DateTime updated;
+@override@JsonKey(name: 'last_message') final  String? lastMessage;
+@override@JsonKey(name: 'last_message_at') final  DateTime? lastMessageAt;
 
 /// Create a copy of Room
 /// with the given fields replaced by the non-null parameter values.
@@ -497,16 +501,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Room&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Room&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,createdBy,chatId,created,updated);
+int get hashCode => Object.hash(runtimeType,id,name,createdBy,chatId,created,updated,lastMessage,lastMessageAt);
 
 @override
 String toString() {
-  return 'Room(id: $id, name: $name, createdBy: $createdBy, chatId: $chatId, created: $created, updated: $updated)';
+  return 'Room(id: $id, name: $name, createdBy: $createdBy, chatId: $chatId, created: $created, updated: $updated, lastMessage: $lastMessage, lastMessageAt: $lastMessageAt)';
 }
 
 
@@ -517,7 +521,7 @@ abstract mixin class _$RoomCopyWith<$Res> implements $RoomCopyWith<$Res> {
   factory _$RoomCopyWith(_Room value, $Res Function(_Room) _then) = __$RoomCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? name,@JsonKey(name: 'created_by') String? createdBy,@JsonKey(name: 'chat_id') String? chatId, DateTime created, DateTime updated
+ String id, String? name,@JsonKey(name: 'created_by') String? createdBy,@JsonKey(name: 'chat_id') String? chatId, DateTime created, DateTime updated,@JsonKey(name: 'last_message') String? lastMessage,@JsonKey(name: 'last_message_at') DateTime? lastMessageAt
 });
 
 
@@ -534,7 +538,7 @@ class __$RoomCopyWithImpl<$Res>
 
 /// Create a copy of Room
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? createdBy = freezed,Object? chatId = freezed,Object? created = null,Object? updated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? createdBy = freezed,Object? chatId = freezed,Object? created = null,Object? updated = null,Object? lastMessage = freezed,Object? lastMessageAt = freezed,}) {
   return _then(_Room(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -542,7 +546,9 @@ as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // igno
 as String?,chatId: freezed == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String?,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,lastMessage: freezed == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
+as String?,lastMessageAt: freezed == lastMessageAt ? _self.lastMessageAt : lastMessageAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

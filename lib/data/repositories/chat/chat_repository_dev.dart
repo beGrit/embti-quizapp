@@ -176,6 +176,19 @@ class ChatRepositoryDev implements ChatRepository {
 
   @override
   Stream<Message> subscribeToMessagesInUserScope(String userId) {
-    throw UnimplementedError();
+    final controller = StreamController<Message>();
+
+    _pbService.client.collection('messages').subscribe('*', (e) {
+      if (e.action == 'create') {
+        final message = Message.fromJson(e.record!.toJson());
+        controller.add(message);
+      }
+    }, filter: 'room_id.room_members_via_room_id.user_id = "$userId"');
+
+    controller.onCancel = () {
+      _pbService.client.collection('messages').unsubscribe('*');
+    };
+
+    return controller.stream;
   }
 }

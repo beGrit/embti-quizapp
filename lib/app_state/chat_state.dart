@@ -1,3 +1,4 @@
+import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:flutter/foundation.dart';
 
 class ChatState extends ChangeNotifier {
@@ -10,6 +11,9 @@ class ChatState extends ChangeNotifier {
   /// The ID of the currently active chat room, if any.
   String? _activeRoomId;
 
+  /// The ID of the current user to filter own messages.
+  String? _currentUserId;
+
   /// Returns the unread count for a specific room.
   int getUnreadCount(String roomId) => _unreadCounts[roomId] ?? 0;
 
@@ -18,7 +22,8 @@ class ChatState extends ChangeNotifier {
       _unreadCounts.values.fold(0, (sum, count) => sum + count);
 
   /// Returns whether a specific message has been read.
-  bool isMessageRead(String messageId) => _messageReadStatus[messageId] ?? false;
+  bool isMessageRead(String messageId) =>
+      _messageReadStatus[messageId] ?? false;
 
   /// Sets the unread count for a specific room.
   void setUnreadCount(String roomId, int count) {
@@ -36,7 +41,6 @@ class ChatState extends ChangeNotifier {
   void markRoomAsRead(String roomId) {
     if (_unreadCounts[roomId] != 0) {
       _unreadCounts[roomId] = 0;
-      notifyListeners();
     }
   }
 
@@ -48,9 +52,16 @@ class ChatState extends ChangeNotifier {
     }
   }
 
+  /// Sets the current user ID.
+  void setCurrentUserId(String? userId) {
+    _currentUserId = userId;
+  }
+
   /// Handles a newly received message.
-  void handleNewMessage(String roomId) {
-    if (roomId != _activeRoomId) {
+  void handleNewMessage(Message message) {
+    if (message.sendBy == _currentUserId) return;
+    final roomId = message.roomId;
+    if (roomId != null && roomId != _activeRoomId) {
       incrementUnreadCount(roomId);
     }
   }

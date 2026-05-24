@@ -1,5 +1,5 @@
-import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/app_state/survey_flow_state.dart';
+import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,8 +46,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   int get selectedFlowCount => _selectedFlowIds.length;
 
   bool get allFlowsSelected =>
-      _surveyFlows.isNotEmpty &&
-      _selectedFlowIds.length == _surveyFlows.length;
+      _surveyFlows.isNotEmpty && _selectedFlowIds.length == _surveyFlows.length;
 
   bool isFlowSelected(String flowId) => _selectedFlowIds.contains(flowId);
 
@@ -107,6 +106,7 @@ class QuizLandingViewModel extends ChangeNotifier {
     if (_surveyFlows.isEmpty) {
       _selectionMode = false;
     }
+    _surveyFlowState.refresh();
     notifyListeners();
   }
 

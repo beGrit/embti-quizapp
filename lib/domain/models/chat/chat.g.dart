@@ -27,6 +27,10 @@ _Room _$RoomFromJson(Map<String, dynamic> json) => _Room(
   chatId: json['chat_id'] as String?,
   created: DateTime.parse(json['created'] as String),
   updated: DateTime.parse(json['updated'] as String),
+  lastMessage: json['last_message'] as String?,
+  lastMessageAt: json['last_message_at'] == null
+      ? null
+      : DateTime.parse(json['last_message_at'] as String),
 );
 
 Map<String, dynamic> _$RoomToJson(_Room instance) => <String, dynamic>{
@@ -36,6 +40,8 @@ Map<String, dynamic> _$RoomToJson(_Room instance) => <String, dynamic>{
   'chat_id': instance.chatId,
   'created': instance.created.toIso8601String(),
   'updated': instance.updated.toIso8601String(),
+  'last_message': instance.lastMessage,
+  'last_message_at': instance.lastMessageAt?.toIso8601String(),
 };
 
 _RoomMember _$RoomMemberFromJson(Map<String, dynamic> json) => _RoomMember(

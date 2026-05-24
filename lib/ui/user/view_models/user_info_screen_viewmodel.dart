@@ -27,17 +27,9 @@ class UserInfoScreenViewModel extends ChangeNotifier {
   late final Command0<void> updateMbtiTypeCommand = Command0(_updateMbtiType);
   late final Command0<void> updateAvatarCommand = Command0(_updateAvatar);
 
-  String _tempName = '';
-  String get tempName => _tempName;
-  set tempName(String value) {
-    _tempName = value;
-  }
+  String tempName = '';
 
-  String _tempIntroduce = '';
-  String get tempIntroduce => _tempIntroduce;
-  set tempIntroduce(String value) {
-    _tempIntroduce = value;
-  }
+  String tempIntroduce = '';
 
   final ValueNotifier<String?> _tempMbtiType = ValueNotifier<String?>('');
   ValueNotifier<String?> get tempMbtiType => _tempMbtiType;
@@ -46,12 +38,12 @@ class UserInfoScreenViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _updateName() async {
-    return _updateUserProperty((user) => user.copyWith(name: _tempName));
+    return _updateUserProperty((user) => user.copyWith(name: tempName));
   }
 
   Future<Result<void>> _updateIntroduce() async {
     return _updateUserProperty(
-      (user) => user.copyWith(introduce: _tempIntroduce),
+      (user) => user.copyWith(introduce: tempIntroduce),
     );
   }
 

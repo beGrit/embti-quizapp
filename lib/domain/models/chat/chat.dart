@@ -32,6 +32,9 @@ sealed class Room with _$Room {
     @JsonKey(name: 'chat_id') String? chatId,
     required DateTime created,
     required DateTime updated,
+
+    @JsonKey(name: 'last_message') String? lastMessage,
+    @JsonKey(name: 'last_message_at') DateTime? lastMessageAt,
   }) = _Room;
 
   factory Room.fromJson(Map<String, dynamic> json) => _$RoomFromJson(json);

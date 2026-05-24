@@ -15,9 +15,7 @@ class RoomDetailViewModel extends ChangeNotifier {
     required ChatState chatState,
   }) : _authRepository = authRepository,
        _chatRepository = chatRepository,
-       _chatState = chatState {
-    _initMessagePipeline();
-  }
+       _chatState = chatState;
 
   final Room room;
   final AuthRepository _authRepository;
@@ -41,6 +39,10 @@ class RoomDetailViewModel extends ChangeNotifier {
     _chatState.markRoomAsRead(room.id);
   }
 
+  void init() async {
+    _initMessagePipeline();
+  }
+
   void _initMessagePipeline() async {
     _isLoading = true;
     notifyListeners();
@@ -49,32 +51,34 @@ class RoomDetailViewModel extends ChangeNotifier {
     if (result is Ok<List<Message>>) {
       _messages.clear();
       _messages.addAll(result.value);
-      _messagesStreamController.add(List.from(_messages));
+      if (!_messagesStreamController.isClosed) {
+        _messagesStreamController.add(List.from(_messages));
+      }
     }
 
+    _startRealtimeSubscription();
     _isLoading = false;
     notifyListeners();
-
-    _startRealtimeSubscription();
   }
 
   void _startRealtimeSubscription() {
     _realtimeSubscription?.cancel();
-
-    _realtimeSubscription = _chatRepository
-        .subscribeToMessages(room.id)
-        .listen(
-          (newMessage) {
-            if (!_messages.any((m) => m.id == newMessage.id)) {
-              _messages.insert(0, newMessage);
-              _messagesStreamController.add(List.from(_messages));
-              _chatState.markRoomAsRead(room.id);
-            }
-          },
-          onError: (error) {
-            _messagesStreamController.addError(error);
-          },
-        );
+    if (!_messagesStreamController.isClosed) {
+      _realtimeSubscription = _chatRepository
+          .subscribeToMessages(room.id)
+          .listen(
+            (newMessage) {
+              if (!_messages.any((m) => m.id == newMessage.id)) {
+                _messages.insert(0, newMessage);
+                _messagesStreamController.add(List.from(_messages));
+                _chatState.markRoomAsRead(room.id);
+              }
+            },
+            onError: (error) {
+              _messagesStreamController.addError(error);
+            },
+          );
+    }
   }
 
   Future<void> sendMessage(String text) async {
@@ -105,6 +109,7 @@ class RoomDetailViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _chatState.setActiveRoom(null);
     _realtimeSubscription?.cancel();
     _messagesStreamController.close();
     super.dispose();
