@@ -45,8 +45,13 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
     _controller = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       viewModel.init();
-      viewModel.markCurrentRoomAsRead();
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _handleSend() {
@@ -56,54 +61,51 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: viewModel,
-      builder: (context, _) => Scaffold(
+    return Consumer2<RoomDetailViewModel, ChatState>(
+      builder: (context, viewModel, chatState, _) => Scaffold(
         appBar: StandardAppBar(title: viewModel.room.name ?? 'Chat'),
         body: Column(
           children: [
-            Expanded(
-              child: StreamBuilder<List<Message>>(
-                stream: viewModel.messagesStream,
-                builder: (context, snapshot) {
-                  if (viewModel.isLoading && !snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final messages = snapshot.data ?? [];
-                  if (messages.isEmpty && !viewModel.isLoading) {
-                    return const Center(child: Text('No messages yet'));
-                  }
-
-                  return ListView.builder(
-                    reverse: true,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      // Since the list is chronological and we use reverse: true,
-                      // we map index 0 (bottom) to the last item in the list.
-                      final message = messages[index];
-                      final isMe = message.sendBy == viewModel.currentUserId;
-                      return _MessageBubble(
-                        key: ValueKey(message.id),
-                        message: message,
-                        isMe: isMe,
-                        senderName: isMe
-                            ? null
-                            : 'User ${message.sendBy?.substring(0, 3)}',
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
+            Expanded(child: _buildMessageList(viewModel, chatState)),
             _buildInputArea(viewModel),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMessageList(RoomDetailViewModel viewModel, ChatState chatState) {
+    final messages = chatState.activeRoomMessages;
+    return ListenableBuilder(
+      listenable: viewModel.loadMessagesCommand,
+      builder: (context, child) {
+        if (viewModel.loadMessagesCommand.running && messages.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (viewModel.loadMessagesCommand.completed && messages.isEmpty) {
+          return const Center(child: Text('No messages yet'));
+        }
+        if (viewModel.loadMessagesCommand.error) {
+          return const Center(child: Text('Error loading messages'));
+        }
+        return ListView.builder(
+          reverse: true,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            final message = messages[index];
+            final isMe = message.sendBy == viewModel.currentUserId;
+            return _MessageBubble(
+              key: ValueKey(message.id),
+              message: message,
+              isMe: isMe,
+              senderName: isMe
+                  ? null
+                  : 'User ${message.sendBy?.substring(0, 3)}',
+            );
+          },
+        );
+      },
     );
   }
 

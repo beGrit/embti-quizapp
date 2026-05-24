@@ -183,7 +183,7 @@ class ChatRepositoryDev implements ChatRepository {
         final message = Message.fromJson(e.record!.toJson());
         controller.add(message);
       }
-    }, filter: 'room_id.room_members_via_room_id.user_id = "$userId"');
+    }, filter: 'room_id.room_members_via_room_id.user_id ?= "$userId"');
 
     controller.onCancel = () {
       _pbService.client.collection('messages').unsubscribe('*');

@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
@@ -9,20 +10,20 @@ class RoomsViewModel extends ChangeNotifier {
   RoomsViewModel({
     required AuthRepository authRepository,
     required ChatRepository chatRepository,
+    required ChatState chatState,
   }) : _authRepository = authRepository,
-       _chatRepository = chatRepository {
-    loadRoomsCommand = Command0<List<Room>>(_loadRoomsInternal);
+       _chatRepository = chatRepository,
+       _chatState = chatState {
+    loadRoomsCommand = Command0<void>(_loadRoomsInternal);
   }
 
   final AuthRepository _authRepository;
   final ChatRepository _chatRepository;
+  final ChatState _chatState;
 
-  List<Room> _rooms = [];
-  List<Room> get rooms => _rooms;
+  late final Command0<void> loadRoomsCommand;
 
-  late final Command0<List<Room>> loadRoomsCommand;
-
-  Future<Result<List<Room>>> _loadRoomsInternal() async {
+  Future<Result<void>> _loadRoomsInternal() async {
     final user = _authRepository.user;
     if (user == null) {
       return Result.error(Exception('User not authenticated'));
@@ -31,8 +32,9 @@ class RoomsViewModel extends ChangeNotifier {
     final result = await _chatRepository.getRooms(user.id ?? '');
 
     if (result is Ok<List<Room>>) {
-      _rooms = result.value;
+      _chatState.setRooms(result.value);
+      return Result.ok(null);
     }
-    return result;
+    return Result.error((result as Error).error);
   }
 }

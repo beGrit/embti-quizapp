@@ -25,6 +25,7 @@ class ChatService {
   String? _subscribedUserId;
 
   void _onAuthChanged() async {
+    // customer logined in with different account, need to resubscribe to new user's messages
     final user = _authRepository.user;
     final userId = user?.id;
 

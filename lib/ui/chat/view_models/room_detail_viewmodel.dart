@@ -4,6 +4,7 @@ import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
+import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
@@ -15,70 +16,30 @@ class RoomDetailViewModel extends ChangeNotifier {
     required ChatState chatState,
   }) : _authRepository = authRepository,
        _chatRepository = chatRepository,
-       _chatState = chatState;
+       _chatState = chatState {
+        loadMessagesCommand = Command0(_loadMessages);
+    }
 
   final Room room;
   final AuthRepository _authRepository;
   final ChatRepository _chatRepository;
   final ChatState _chatState;
 
-  final List<Message> _messages = [];
-  bool _isLoading = false;
+  late final Command0<void> loadMessagesCommand;
 
-  bool get isLoading => _isLoading;
   String? get currentUserId => _authRepository.user?.id;
 
-  final StreamController<List<Message>> _messagesStreamController =
-      StreamController<List<Message>>.broadcast();
-  StreamSubscription<Message>? _realtimeSubscription;
-
-  Stream<List<Message>> get messagesStream => _messagesStreamController.stream;
-  List<Message> get messages => _messages.reversed.toList();
-
-  void markCurrentRoomAsRead() async {
-    _chatState.markRoomAsRead(room.id);
-  }
-
   void init() async {
-    _initMessagePipeline();
+    _chatState.setActiveRoom(room.id);
+    loadMessagesCommand.execute();
   }
 
-  void _initMessagePipeline() async {
-    _isLoading = true;
-    notifyListeners();
-
+  Future<Result<void>> _loadMessages() async {
     final result = await _chatRepository.getMessages(room.id);
     if (result is Ok<List<Message>>) {
-      _messages.clear();
-      _messages.addAll(result.value);
-      if (!_messagesStreamController.isClosed) {
-        _messagesStreamController.add(List.from(_messages));
-      }
+      _chatState.setActiveRoomMessages(result.value);
     }
-
-    _startRealtimeSubscription();
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  void _startRealtimeSubscription() {
-    _realtimeSubscription?.cancel();
-    if (!_messagesStreamController.isClosed) {
-      _realtimeSubscription = _chatRepository
-          .subscribeToMessages(room.id)
-          .listen(
-            (newMessage) {
-              if (!_messages.any((m) => m.id == newMessage.id)) {
-                _messages.insert(0, newMessage);
-                _messagesStreamController.add(List.from(_messages));
-                _chatState.markRoomAsRead(room.id);
-              }
-            },
-            onError: (error) {
-              _messagesStreamController.addError(error);
-            },
-          );
-    }
+    return Result.ok(null);
   }
 
   Future<void> sendMessage(String text) async {
@@ -98,22 +59,13 @@ class RoomDetailViewModel extends ChangeNotifier {
       updated: DateTime.now(),
     );
 
-    final result = await _chatRepository.sendMessage(message);
+    // server state
+    Result<Message> result = await _chatRepository.sendMessage(message);
 
     if (result is Ok<Message>) {
-      if (!_messages.any((m) => m.id == result.value.id)) {
-        return;
-      }
+      // The message will be handled by the global subscription and updated in ChatState.
+      // But we can also manually add it to the active room messages for immediate feedback.
+      _chatState.addMessageToActiveRoom(result.value);
     }
   }
-
-  @override
-  void dispose() {
-    _chatState.setActiveRoom(null);
-    _realtimeSubscription?.cancel();
-    _messagesStreamController.close();
-    super.dispose();
-  }
-
-  Future<void> loadMessages() async {}
 }

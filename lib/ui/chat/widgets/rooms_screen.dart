@@ -19,10 +19,9 @@ class RoomsScreen extends StatelessWidget {
       create: (context) => RoomsViewModel(
         authRepository: context.read<AuthRepository>(),
         chatRepository: context.read<ChatRepository>(),
+        chatState: context.read<ChatState>(),
       )..loadRoomsCommand.execute(),
       builder: (context, _) {
-        final viewModel = context.watch<RoomsViewModel>();
-
         return Scaffold(
           appBar: StandardAppBar(
             title: 'Messages',
@@ -30,40 +29,45 @@ class RoomsScreen extends StatelessWidget {
               IconButton(icon: const Icon(Icons.search), onPressed: () {}),
             ],
           ),
-          body: RefreshIndicator(
-            onRefresh: () => viewModel.loadRoomsCommand.execute(),
-            child: ListenableBuilder(
-              listenable: viewModel.loadRoomsCommand,
-              builder: (context, _) {
-                return CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
-                  ),
-                  slivers: [
-                    if (viewModel.loadRoomsCommand.running &&
-                        viewModel.rooms.isEmpty)
-                      const SliverFillRemaining(
-                        child: Center(child: Text('Refreshing')),
-                      )
-                    else if (viewModel.loadRoomsCommand.error)
-                      const SliverFillRemaining(
-                        child: Center(child: Text('Error')),
-                      )
-                    else if (viewModel.rooms.isEmpty)
-                      const SliverFillRemaining(
-                        child: Center(child: Text('No active chats found')),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final room = viewModel.rooms[index];
-                          return _RoomListTile(room: room);
-                        }, childCount: viewModel.rooms.length),
+          body: Consumer2<RoomsViewModel, ChatState>(
+            builder: (context, viewModel, chatState, _) {
+              return RefreshIndicator(
+                onRefresh: () => viewModel.loadRoomsCommand.execute(),
+                child: ListenableBuilder(
+                  listenable: viewModel.loadRoomsCommand,
+                  builder: (context, _) {
+                    final rooms = chatState.rooms;
+                    return CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
                       ),
-                  ],
-                );
-              },
-            ),
+                      slivers: [
+                        if (viewModel.loadRoomsCommand.running)
+                          const SliverFillRemaining(child: SizedBox.shrink())
+                        else if (viewModel.loadRoomsCommand.error)
+                          const SliverFillRemaining(
+                            child: Center(child: Text('Error')),
+                          )
+                        else if (rooms.isEmpty)
+                          const SliverFillRemaining(
+                            child: Center(child: Text('No active chats found')),
+                          )
+                        else
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              final room = rooms[index];
+                              return _RoomListTile(room: room);
+                            }, childCount: rooms.length),
+                          ),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
           ),
         );
       },
@@ -123,8 +127,11 @@ class _RoomListTile extends StatelessWidget {
               ],
             ],
           ),
-          onTap: () =>
-              context.push('${Routes.chatRooms}/${room.id}', extra: room),
+          onTap: () async {
+            final chatState = context.read<ChatState>();
+            await context.push('${Routes.chatRooms}/${room.id}', extra: room);
+            chatState.setActiveRoom(null);
+          },
         ),
         const Divider(height: 1, indent: 80),
       ],

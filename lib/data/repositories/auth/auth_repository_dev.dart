@@ -107,7 +107,7 @@ class AuthRepositoryDev extends AuthRepository {
 
   @override
   void updateAuthenticatedUser(User? newUser) {
-    _user = _user?.copyWith(avatar: newUser?.avatar);
+    _user = newUser;
     notifyListeners();
   }
 }
