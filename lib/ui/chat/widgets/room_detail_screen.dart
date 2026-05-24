@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
@@ -19,6 +20,7 @@ class RoomDetailScreen extends StatelessWidget {
         room: room,
         authRepository: context.read<AuthRepository>(),
         chatRepository: context.read<ChatRepository>(),
+        chatState: context.read<ChatState>(),
       ),
       child: const _RoomDetailContent(),
     );
@@ -33,61 +35,73 @@ class _RoomDetailContent extends StatefulWidget {
 }
 
 class _RoomDetailContentState extends State<_RoomDetailContent> {
-  final TextEditingController _controller = TextEditingController();
+  late final RoomDetailViewModel viewModel;
+  late final TextEditingController _controller;
 
-  void _handleSend(RoomDetailViewModel viewModel) {
+  @override
+  void initState() {
+    super.initState();
+    viewModel = context.read<RoomDetailViewModel>();
+    _controller = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      viewModel.markCurrentRoomAsRead();
+    });
+  }
+
+  void _handleSend() {
     viewModel.sendMessage(_controller.text);
     _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = context.watch<RoomDetailViewModel>();
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, _) => Scaffold(
+        appBar: StandardAppBar(title: viewModel.room.name ?? 'Chat'),
+        body: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder<List<Message>>(
+                stream: viewModel.messagesStream,
+                builder: (context, snapshot) {
+                  if (viewModel.isLoading && !snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-    return Scaffold(
-      appBar: StandardAppBar(title: viewModel.room.name ?? 'Chat'),
-      body: Column(
-        children: [
-          Expanded(
-            child: StreamBuilder<List<Message>>(
-              stream: viewModel.messagesStream,
-              builder: (context, snapshot) {
-                if (viewModel.isLoading && !snapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+                  final messages = snapshot.data ?? [];
+                  if (messages.isEmpty && !viewModel.isLoading) {
+                    return const Center(child: Text('No messages yet'));
+                  }
 
-                final messages = snapshot.data ?? [];
-                if (messages.isEmpty && !viewModel.isLoading) {
-                  return const Center(child: Text('No messages yet'));
-                }
-
-                return ListView.builder(
-                  reverse: true,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    // Since the list is chronological and we use reverse: true,
-                    // we map index 0 (bottom) to the last item in the list.
-                    final message = messages[index];
-                    final isMe = message.sendBy == viewModel.currentUserId;
-                    return _MessageBubble(
-                      key: ValueKey(message.id),
-                      message: message,
-                      isMe: isMe,
-                      senderName: isMe
-                          ? null
-                          : 'User ${message.sendBy?.substring(0, 3)}',
-                    );
-                  },
-                );
-              },
+                  return ListView.builder(
+                    reverse: true,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      // Since the list is chronological and we use reverse: true,
+                      // we map index 0 (bottom) to the last item in the list.
+                      final message = messages[index];
+                      final isMe = message.sendBy == viewModel.currentUserId;
+                      return _MessageBubble(
+                        key: ValueKey(message.id),
+                        message: message,
+                        isMe: isMe,
+                        senderName: isMe
+                            ? null
+                            : 'User ${message.sendBy?.substring(0, 3)}',
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-          _buildInputArea(viewModel),
-        ],
+            _buildInputArea(viewModel),
+          ],
+        ),
       ),
     );
   }
@@ -117,7 +131,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 16),
                         ),
-                        onSubmitted: (_) => _handleSend(viewModel),
+                        onSubmitted: (_) => _handleSend(),
                       ),
                     ),
                     IconButton(
@@ -135,7 +149,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                       color: _controller.text.isEmpty
                           ? theme.colorScheme.onSurfaceVariant
                           : theme.colorScheme.primary,
-                      onPressed: () => _handleSend(viewModel),
+                      onPressed: () => _handleSend(),
                     ),
                   ],
                 ),

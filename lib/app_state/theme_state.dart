@@ -27,13 +27,13 @@ TextTheme createTextTheme(
   return textTheme;
 }
 
-class ThemeController extends ChangeNotifier {
+class ThemeState extends ChangeNotifier {
   final MaterialTheme materialTheme;
 
   ThemeData? _customTheme;
   Brightness _currentPlatformBrightness;
 
-  ThemeController({
+  ThemeState({
     required this.materialTheme,
     required Brightness currentPlatformBrightness,
   }) : _currentPlatformBrightness = currentPlatformBrightness;

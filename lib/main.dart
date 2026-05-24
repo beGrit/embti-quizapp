@@ -7,8 +7,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'main_dev.dart' as development;
+import 'app_state/theme_state.dart';
 import 'ui/core/localization/app_localizations.dart';
-import 'ui/core/themes/theme_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +34,7 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
     _routerConfig = router(context.read());
-    _themeData = context.read<ThemeController>().currentTheme;
+    _themeData = context.read<ThemeState>().currentTheme;
   }
 
   @override

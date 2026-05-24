@@ -1,12 +1,12 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/ui/core/themes/theme_util.dart';
+import 'package:emombti/app_state/theme_state.dart';
 import 'package:flutter/material.dart';
 
 enum ThemeModeOption { system, light, dark }
 
 class SettingsViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
-  final ThemeController _themeController;
+  final ThemeState _themeController;
 
   bool _isNotificationsEnabled = true;
   bool get isNotificationsEnabled => _isNotificationsEnabled;
@@ -18,9 +18,9 @@ class SettingsViewModel extends ChangeNotifier {
 
   SettingsViewModel({
     required AuthRepository authRepository,
-    required ThemeController themeController,
-  })  : _authRepository = authRepository,
-        _themeController = themeController;
+    required ThemeState themeController,
+  }) : _authRepository = authRepository,
+       _themeController = themeController;
 
   void toggleNotifications(bool value) {
     _isNotificationsEnabled = value;
@@ -35,10 +35,14 @@ class SettingsViewModel extends ChangeNotifier {
         _themeController.resetToSystemTheme();
         break;
       case ThemeModeOption.light:
-        _themeController.overrideGlobalTheme(_themeController.materialTheme.light());
+        _themeController.overrideGlobalTheme(
+          _themeController.materialTheme.light(),
+        );
         break;
       case ThemeModeOption.dark:
-        _themeController.overrideGlobalTheme(_themeController.materialTheme.dark());
+        _themeController.overrideGlobalTheme(
+          _themeController.materialTheme.dark(),
+        );
         break;
     }
     notifyListeners();

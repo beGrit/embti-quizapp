@@ -1,5 +1,5 @@
 import 'package:emombti/domain/models/quiz/survey_models.dart';
-import 'package:emombti/providers/survey_flow_state.dart';
+import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

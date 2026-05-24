@@ -1,4 +1,4 @@
-import 'package:emombti/ui/core/themes/theme_util.dart';
+import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
 import 'package:emombti/ui/feed/widgets/feed_post.dart';
@@ -33,7 +33,7 @@ class _ExploreScreenState extends State<ExploreScreen>
   void _onTabAnimation() {
     final double value = _tabController.animation!.value;
     final int targetIndex = value.round();
-    ThemeController themeController = context.read<ThemeController>();
+    ThemeState themeController = context.read<ThemeState>();
     final bool hasThemeOverride =
         widget.viewModel.tabs[targetIndex].themeDataName != null;
     if (hasThemeOverride) {

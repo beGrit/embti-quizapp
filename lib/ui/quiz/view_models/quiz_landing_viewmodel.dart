@@ -1,5 +1,5 @@
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
-import 'package:emombti/providers/survey_flow_state.dart';
+import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 

@@ -1,3 +1,6 @@
+import 'package:emombti/app_state/chat_state.dart';
+import 'package:emombti/app_state/survey_flow_state.dart';
+import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository_dev.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
@@ -17,7 +20,6 @@ import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
-import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -34,10 +36,8 @@ import '../data/services/common/policy_service.dart';
 import '../data/services/common/policy_service_local.dart';
 import '../data/services/persistence/local/local_data_service.dart';
 
-import 'package:emombti/providers/survey_flow_state.dart';
-
 List<SingleChildWidget> _sharedProviders = [
-  ChangeNotifierProvider<ThemeController>(
+  ChangeNotifierProvider<ThemeState>(
     create: (context) {
       final brightness =
           WidgetsBinding.instance.platformDispatcher.platformBrightness;
@@ -46,17 +46,18 @@ List<SingleChildWidget> _sharedProviders = [
         createTextTheme(context, "Noto Sans", "Noto Sans"),
       );
 
-      return ThemeController(
+      return ThemeState(
         materialTheme: materialTheme,
         currentPlatformBrightness: brightness,
       );
     },
   ),
   ChangeNotifierProvider<SurveyFlowState>(
-    create: (context) => SurveyFlowState(
-      repository: context.read<SurveyFlowRepository>(),
-    )..refresh(),
+    create: (context) =>
+        SurveyFlowState(repository: context.read<SurveyFlowRepository>())
+          ..refresh(),
   ),
+  ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
   Provider<UserAvatarUpdateUseCase>(
     lazy: true,
     create: (context) => UserAvatarUpdateUseCase(

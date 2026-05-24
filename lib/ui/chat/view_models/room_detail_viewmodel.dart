@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
@@ -11,14 +12,17 @@ class RoomDetailViewModel extends ChangeNotifier {
     required this.room,
     required AuthRepository authRepository,
     required ChatRepository chatRepository,
+    required ChatState chatState,
   }) : _authRepository = authRepository,
-       _chatRepository = chatRepository {
+       _chatRepository = chatRepository,
+       _chatState = chatState {
     _initMessagePipeline();
   }
 
   final Room room;
   final AuthRepository _authRepository;
   final ChatRepository _chatRepository;
+  final ChatState _chatState;
 
   final List<Message> _messages = [];
   bool _isLoading = false;
@@ -32,6 +36,10 @@ class RoomDetailViewModel extends ChangeNotifier {
 
   Stream<List<Message>> get messagesStream => _messagesStreamController.stream;
   List<Message> get messages => _messages.reversed.toList();
+
+  void markCurrentRoomAsRead() async {
+    _chatState.markRoomAsRead(room.id);
+  }
 
   void _initMessagePipeline() async {
     _isLoading = true;
@@ -60,6 +68,7 @@ class RoomDetailViewModel extends ChangeNotifier {
             if (!_messages.any((m) => m.id == newMessage.id)) {
               _messages.insert(0, newMessage);
               _messagesStreamController.add(List.from(_messages));
+              _chatState.markRoomAsRead(room.id);
             }
           },
           onError: (error) {

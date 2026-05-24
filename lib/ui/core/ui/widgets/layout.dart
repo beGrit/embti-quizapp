@@ -1,5 +1,5 @@
+import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/routing/navigation_config.dart';
-import 'package:emombti/ui/core/themes/theme_util.dart';
 import 'package:emombti/ui/core/ui/view_models/nav_badge_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -135,7 +135,7 @@ class _AppLayoutNavigationBarState extends State<_AppLayoutNavigationBar> {
           create: (_) => NavBadgeViewmodel(configuration: widget.routeBottom),
         ),
       ],
-      child: Consumer2<NavBadgeViewmodel, ThemeController>(
+      child: Consumer2<NavBadgeViewmodel, ThemeState>(
         builder: (context, badgeVM, themeController, child) {
           return Theme(
             data: themeController.currentTheme,

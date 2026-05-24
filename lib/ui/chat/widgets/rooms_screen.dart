@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
@@ -78,6 +79,9 @@ class _RoomListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final chatState = context.watch<ChatState>();
+    final unreadCount = chatState.getUnreadCount(room.id);
+
     return Column(
       children: [
         ListTile(
@@ -102,9 +106,22 @@ class _RoomListTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          trailing: Text(
-            '${room.updated.hour}:${room.updated.minute.toString().padLeft(2, '0')}',
-            style: theme.textTheme.bodySmall,
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${room.updated.hour}:${room.updated.minute.toString().padLeft(2, '0')}',
+                style: theme.textTheme.bodySmall,
+              ),
+              if (unreadCount > 0) ...[
+                const SizedBox(height: 4),
+                Badge(
+                  label: Text(unreadCount.toString()),
+                  backgroundColor: theme.colorScheme.primary,
+                ),
+              ],
+            ],
           ),
           onTap: () =>
               context.push('${Routes.chatRooms}/${room.id}', extra: room),

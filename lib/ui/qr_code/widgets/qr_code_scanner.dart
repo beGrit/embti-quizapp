@@ -1,4 +1,4 @@
-import 'package:emombti/ui/core/themes/theme_util.dart';
+import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,7 +35,7 @@ class _QRCodeScannerState extends State<QRCodeScanner> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeController themeController = context.read<ThemeController>();
+    ThemeState themeController = context.read<ThemeState>();
     return Theme(
       data: themeController.materialTheme.dark(),
       child: Scaffold(

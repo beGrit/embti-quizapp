@@ -1,7 +1,7 @@
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
-import 'package:emombti/providers/survey_flow_state.dart';
+import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
