@@ -1,32 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
-import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 
 class SurveyFlowState extends ChangeNotifier {
-  SurveyFlowState({required SurveyFlowRepository repository})
-      : _repository = repository;
+  SurveyFlowState();
 
-  final SurveyFlowRepository _repository;
+  List<SurveyFlow> _surveyFlows = [];
+  List<SurveyFlow> get surveyFlows => _surveyFlows;
 
   SurveyFlow? _latest;
   SurveyFlow? get latest => _latest;
 
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
-
-  Future<void> refresh() async {
-    _isLoading = true;
+  void setSurveyFlows(List<SurveyFlow> flows) {
+    _surveyFlows = flows;
+    _latest = _surveyFlows.isEmpty ? null : _surveyFlows.first;
     notifyListeners();
-
-    try {
-      final flows = await _repository.getFlows();
-      _latest = flows.isEmpty ? null : flows.first;
-    } catch (e) {
-      debugPrint('Error refreshing SurveyFlowState: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
   }
 
   void updateLatest(SurveyFlow flow) {

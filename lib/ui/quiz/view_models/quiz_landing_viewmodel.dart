@@ -32,10 +32,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
 
-  List<SurveyFlow> _surveyFlows = [];
-  List<SurveyFlow> get surveyFlows => List.unmodifiable(_surveyFlows);
-
-  bool get hasExistingSurveyFlows => _surveyFlows.isNotEmpty;
+  bool get hasExistingSurveyFlows => _surveyFlowState.surveyFlows.isNotEmpty;
 
   bool _selectionMode = false;
   bool get selectionMode => _selectionMode;
@@ -46,7 +43,8 @@ class QuizLandingViewModel extends ChangeNotifier {
   int get selectedFlowCount => _selectedFlowIds.length;
 
   bool get allFlowsSelected =>
-      _surveyFlows.isNotEmpty && _selectedFlowIds.length == _surveyFlows.length;
+      _surveyFlowState.surveyFlows.isNotEmpty &&
+      _selectedFlowIds.length == _surveyFlowState.surveyFlows.length;
 
   bool isFlowSelected(String flowId) => _selectedFlowIds.contains(flowId);
 
@@ -73,7 +71,7 @@ class QuizLandingViewModel extends ChangeNotifier {
     } else {
       _selectedFlowIds
         ..clear()
-        ..addAll(_surveyFlows.map((f) => f.id));
+        ..addAll(_surveyFlowState.surveyFlows.map((f) => f.id));
     }
     notifyListeners();
   }
@@ -86,13 +84,12 @@ class QuizLandingViewModel extends ChangeNotifier {
     }
     _selectedFlowIds.clear();
     _selectionMode = false;
-    _surveyFlows = await _surveyFlowRepository.getFlows();
-    _surveyFlowState.refresh();
+    await _refreshSurveyFlows();
     notifyListeners();
   }
 
   String surveyTitleForFlow(SurveyFlow flow) {
-    for (final s in _surveys) {
+    for (final s in surveys) {
       if (s.id == flow.surveyId) return s.title;
     }
     return flow.surveyId;
@@ -102,24 +99,24 @@ class QuizLandingViewModel extends ChangeNotifier {
   Future<void> deleteSurveyFlow(String flowId) async {
     await _surveyFlowRepository.deleteFlow(flowId);
     _selectedFlowIds.remove(flowId);
-    _surveyFlows = await _surveyFlowRepository.getFlows();
-    if (_surveyFlows.isEmpty) {
+    await _refreshSurveyFlows();
+    if (_surveyFlowState.surveyFlows.isEmpty) {
       _selectionMode = false;
     }
-    _surveyFlowState.refresh();
     notifyListeners();
   }
 
   Future<Result<void>> _load() async {
     try {
       final surveys = await _repository.getAvailableSurveys();
-      final flows = await _surveyFlowRepository.getFlows();
       _surveys = surveys;
-      _surveyFlows = flows;
+
+      await _refreshSurveyFlows();
+
       _selectedFlowIds.removeWhere(
-        (id) => !_surveyFlows.any((f) => f.id == id),
+        (id) => !_surveyFlowState.surveyFlows.any((f) => f.id == id),
       );
-      if (_surveyFlows.isEmpty) {
+      if (_surveyFlowState.surveyFlows.isEmpty) {
         _selectionMode = false;
       }
       notifyListeners();
@@ -129,21 +126,27 @@ class QuizLandingViewModel extends ChangeNotifier {
     }
   }
 
+  Future<void> _refreshSurveyFlows() async {
+    try {
+      final flows = await _surveyFlowRepository.getFlows();
+      _surveyFlowState.setSurveyFlows(flows);
+    } catch (e) {
+      debugPrint('Error fetching survey flows: $e');
+    }
+  }
+
   Future<Result<Map<String, String>>> _startAssessmentAction() async {
     // Ensure data is loaded before starting
-    if (_surveys.isEmpty) {
+    if (surveys.isEmpty) {
       final result = await _load();
       if (result is Error) return Result.error(result.error);
     }
 
-    if (_surveys.isNotEmpty) {
-      SurveyFlow newSurveyFlow = _genNewSurveyFlow(_surveys[0]);
+    if (surveys.isNotEmpty) {
+      SurveyFlow newSurveyFlow = _genNewSurveyFlow(surveys[0]);
       await _surveyFlowRepository.saveFlow(newSurveyFlow);
-      await _surveyFlowState.refresh();
-      return Result.ok({
-        'flowId': newSurveyFlow.id,
-        'surveyId': _surveys[0].id,
-      });
+      await _refreshSurveyFlows();
+      return Result.ok({'flowId': newSurveyFlow.id, 'surveyId': surveys[0].id});
     }
 
     return Result.error(Exception('No available assessments found.'));

@@ -14,6 +14,7 @@ import 'package:emombti/data/repositories/social/social_repository_local.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository_dev.dart';
 import 'package:emombti/data/services/common/advertising_service.dart';
+import 'package:emombti/data/services/common/survey_flow_service.dart';
 import 'package:emombti/data/services/common/chat_service.dart';
 import 'package:emombti/data/services/common/notification_service.dart';
 import 'package:emombti/data/services/common/notification_service_local.dart';
@@ -54,9 +55,14 @@ List<SingleChildWidget> _sharedProviders = [
     },
   ),
   ChangeNotifierProvider<SurveyFlowState>(
-    create: (context) =>
-        SurveyFlowState(repository: context.read<SurveyFlowRepository>())
-          ..refresh(),
+    create: (context) => SurveyFlowState(),
+  ),
+  Provider<SurveyFlowService>(
+    lazy: false,
+    create: (context) => SurveyFlowService(
+      repository: context.read<SurveyFlowRepository>(),
+      state: context.read<SurveyFlowState>(),
+    ),
   ),
   ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
   Provider<ChatService>(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
@@ -18,7 +19,6 @@ class QuizLandingScreen extends StatefulWidget {
 }
 
 class _QuizLandingScreenState extends State<QuizLandingScreen> {
-  late final Listenable _listenable;
   late final QuizLandingViewModel viewModel;
 
   @override
@@ -29,11 +29,6 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
       surveyFlowRepository: context.read(),
       surveyFlowState: context.read(),
     );
-    _listenable = Listenable.merge([
-      viewModel,
-      viewModel.load,
-      viewModel.startAssessment,
-    ]);
     viewModel.startAssessment.addListener(_onStartAssessmentChanged);
     viewModel.load.execute();
   }
@@ -61,7 +56,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final surveyFlowState = context.watch<SurveyFlowState>();
     return Scaffold(
       appBar: StandardAppBar(
         title: 'Quiz',
@@ -77,25 +72,31 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
         ],
       ),
       body: ListenableBuilder(
-        listenable: _listenable,
+        listenable: Listenable.merge([
+          viewModel,
+          viewModel.load,
+          surveyFlowState,
+        ]),
         builder: (context, child) {
-          final vm = viewModel;
           final initialLoading =
-              vm.load.running && vm.surveys.isEmpty && vm.surveyFlows.isEmpty;
+              viewModel.load.running &&
+              viewModel.surveys.isEmpty &&
+              surveyFlowState.surveyFlows.isEmpty;
 
           if (initialLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (vm.hasExistingSurveyFlows) {
+          if (viewModel.hasExistingSurveyFlows) {
             return _SurveyFlowListBody(
-              viewModel: vm,
+              viewModel: viewModel,
+              surveyFlowState: surveyFlowState,
               theme: theme,
               onOpenFlow: _pushSurveyFlow,
             );
           }
 
-          return _LandingBody(viewModel: vm, theme: theme);
+          return _LandingBody(viewModel: viewModel, theme: theme);
         },
       ),
     );
@@ -140,11 +141,13 @@ Future<void> _confirmBatchDeleteSurveyFlows(
 class _SurveyFlowListBody extends StatelessWidget {
   const _SurveyFlowListBody({
     required this.viewModel,
+    required this.surveyFlowState,
     required this.theme,
     required this.onOpenFlow,
   });
 
   final QuizLandingViewModel viewModel;
+  final SurveyFlowState surveyFlowState;
   final ThemeData theme;
   final Future<void> Function(Map<String, String> queryParameters) onOpenFlow;
 
@@ -210,10 +213,10 @@ class _SurveyFlowListBody extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: ListView.separated(
-              itemCount: viewModel.surveyFlows.length,
+              itemCount: surveyFlowState.surveyFlows.length,
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
-                final flow = viewModel.surveyFlows[index];
+                final flow = surveyFlowState.surveyFlows[index];
                 return _SurveyFlowTile(
                   flow: flow,
                   title: viewModel.surveyTitleForFlow(flow),
@@ -300,7 +303,7 @@ class _SurveyFlowTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final pct = (flow.completionRate * 100).clamp(0, 100).round();
+    final pct = flow.completionPercentage;
     final started = flow.startTime;
     final subtitle = started != null
         ? '$pct% complete · Started ${_formatDate(started)}'

@@ -1,120 +1,68 @@
 [
   {
-    "id": "mbti_basic",
-    "title": "Standard Personality Assessment",
+    "id": "mbti_comprehensive",
+    "title": "Comprehensive Personality Assessment",
     "questions": [
-      {
-        "id": "q1",
-        "text": "You enjoy vibrant social events.",
-        "axis": 0,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q2",
-        "text": "You focus on the big picture rather than details.",
-        "axis": 1,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q3",
-        "text": "Logic is more important than heart in decisions.",
-        "axis": 2,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q4",
-        "text": "You prefer having a detailed plan.",
-        "axis": 3,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q5",
-        "text": "You feel drained after spending time with a large group of people.",
-        "axis": 0,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q6",
-        "text": "You prefer to follow established traditions rather than invent new ways.",
-        "axis": 1,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q7",
-        "text": "You highly value emotional harmony in your relationships.",
-        "axis": 2,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q8",
-        "text": "You prefer to leave things open-ended and adapt as you go.",
-        "axis": 3,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q9",
-        "text": "You are usually the one to start conversations with new people.",
-        "axis": 0,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q10",
-        "text": "You often find yourself daydreaming about abstract concepts or the future.",
-        "axis": 1,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q11",
-        "text": "You find it easy to remain detached when discussing controversial topics.",
-        "axis": 2,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q12",
-        "text": "You feel anxious when you don't have a clear schedule for your day.",
-        "axis": 3,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q13",
-        "text": "You prefer quiet weekends at home over going to busy parties.",
-        "axis": 0,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q14",
-        "text": "You lean heavily on facts, data, and past experiences to solve problems.",
-        "axis": 1,
-        "isReversed": true,
-        "weight": 1.0
-      },
-      {
-        "id": "q15",
-        "text": "You prioritize people's feelings over absolute scientific or objective truth.",
-        "axis": 2,
-        "isReversed": false,
-        "weight": 1.0
-      },
-      {
-        "id": "q16",
-        "text": "You often wait until the last minute or deadline to finish tasks.",
-        "axis": 3,
-        "isReversed": true,
-        "weight": 1.0
-      }
+      { "id": "q1", "text": "You enjoy vibrant social events.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q2", "text": "You focus on the big picture rather than details.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q3", "text": "Logic is more important than heart in decisions.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q4", "text": "You prefer having a detailed plan.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q5", "text": "You feel drained after spending time with a large group of people.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q6", "text": "You prefer to follow established traditions rather than invent new ways.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q7", "text": "You highly value emotional harmony in your relationships.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q8", "text": "You prefer to leave things open-ended and adapt as you go.", "axis": 3, "isReversed": true, "weight": 1.0 },
+      { "id": "q9", "text": "You are usually the one to start conversations with new people.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q10", "text": "You often find yourself daydreaming about abstract concepts or the future.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q11", "text": "You find it easy to remain detached when discussing controversial topics.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q12", "text": "You feel anxious when you don't have a clear schedule for your day.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q13", "text": "You prefer quiet weekends at home over going to busy parties.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q14", "text": "You lean heavily on facts, data, and past experiences to solve problems.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q15", "text": "You prioritize people's feelings over absolute scientific or objective truth.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q16", "text": "You often wait until the last minute or deadline to finish tasks.", "axis": 3, "isReversed": true, "weight": 1.0 },
+      { "id": "q17", "text": "You feel comfortable introducing yourself to strangers at a gathering.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q18", "text": "Complex, unconventional, and novel ideas excite you more than straightforward ones.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q19", "text": "You feel more persuaded by what resonates emotionally than by cold factual arguments.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q20", "text": "Your living and working spaces are kept neat, clean, and organized.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q21", "text": "You find the idea of networking or pitching yourself to strangers exhausting.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q22", "text": "You easily lose interest when a discussion becomes highly theoretical or abstract.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q23", "text": "In arguments, you prioritize proving your point over protecting someone else's feelings.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q24", "text": "You find it challenging to stick to a rigid daily routine or schedule.", "axis": 3, "isReversed": true, "weight": 1.0 },
+      { "id": "q25", "text": "After a stressful week, a lively party or social gathering is exactly what you need.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q26", "text": "You enjoy analyzing symbolic meanings, metaphors, or interpretations of art.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q27", "text": "When making group decisions, you focus heavily on the human impact and morale.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q28", "text": "You like to finish one project completely before starting another one.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q29", "text": "You prefer working on tasks independently rather than as part of a team.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q30", "text": "You trust your practical experiences more than your abstract hunches.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q31", "text": "An objective, detached evaluation is the best way to solve workplace conflicts.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q32", "text": "You prefer to keep your options open and leave things flexible until the last minute.", "axis": 3, "isReversed": true, "weight": 1.0 },
+      { "id": "q33", "text": "You find it easy to keep a conversation going with someone you just met.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q34", "text": "You are drawn to creative fields, philosophy, or speculative fiction.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q35", "text": "Seeing other people express heavy emotions easily moves you or influences your mood.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q36", "text": "You rely on a daily to-do list or planning tool to manage your goals.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q37", "text": "You tend to avoid being the center of attention in group environments.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q38", "text": "You like dealing with concrete, practical issues rather than open-ended possibilities.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q39", "text": "You find it hard to understand or validate decisions made out of pure emotion.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q40", "text": "You operate best in short, spontaneous bursts of energy rather than structured hours.", "axis": 3, "isReversed": true, "weight": 1.0 },
+      { "id": "q41", "text": "In your friend group, you are typically the one who schedules and initiates get-togethers.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q42", "text": "You often ponder the deep, underlying reasons behind human existence and behaviors.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q43", "text": "You feel it is more critical to be perfectly honest and direct than to be gentle or polite.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q44", "text": "If your plans are suddenly interrupted, your top priority is to get them back on track.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q45", "text": "You prefer to communicate via text messaging rather than phone calls.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q46", "text": "You are more interested in production, execution, and realistic details than in design and R&D.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q47", "text": "You naturally put yourself in other people's shoes to empathize with their specific choices.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q48", "text": "You get a strong sense of satisfaction from checking completed items off a list.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q49", "text": "You seek out lively, bustling atmospheres over quiet, isolated environments.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q50", "text": "You like puzzles or games that require you to imagine many different future scenarios.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q51", "text": "When a friend is upset, you focus more on offering practical solutions than emotional comfort.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q52", "text": "You prefer to do your chores, work, or errands before allowing yourself to fully unwind.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q53", "text": "You require considerable alone time to recharge your mental battery after traveling.", "axis": 0, "isReversed": true, "weight": 1.0 },
+      { "id": "q54", "text": "You are highly attentive to small shifts or concrete changes in your immediate environment.", "axis": 1, "isReversed": true, "weight": 1.0 },
+      { "id": "q55", "text": "You heavily value a workplace environment where everyone gets along and cooperates smoothly.", "axis": 2, "isReversed": false, "weight": 1.0 },
+      { "id": "q56", "text": "You find structured, predictable environments comforting rather than restricting.", "axis": 3, "isReversed": false, "weight": 1.0 },
+      { "id": "q57", "text": "You look forward to group activities and collaborative projects.", "axis": 0, "isReversed": false, "weight": 1.0 },
+      { "id": "q58", "text": "You love diving into random, complex topics out of pure intellectual curiosity.", "axis": 1, "isReversed": false, "weight": 1.0 },
+      { "id": "q59", "text": "Efficiency, speed, and objective outcomes are your primary metrics for a good solution.", "axis": 2, "isReversed": true, "weight": 1.0 },
+      { "id": "q60", "text": "You find deadlines highly motivating and rarely struggle with delaying your work.", "axis": 3, "isReversed": false, "weight": 1.0 }
     ]
   }
 ]
