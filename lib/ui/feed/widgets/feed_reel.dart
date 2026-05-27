@@ -1,12 +1,11 @@
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 /// Vertical, full-viewport paging feed of videos (TikTok / Instagram Reels style).
 class FeedReel extends StatefulWidget {
-  const FeedReel({super.key, required this.viewModel});
-
-  final FeedReelViewModel viewModel;
+  const FeedReel({super.key});
 
   @override
   State<FeedReel> createState() => _FeedReelState();
@@ -18,9 +17,7 @@ class _FeedReelState extends State<FeedReel> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-      initialPage: widget.viewModel.currentIndex,
-    );
+    _pageController = PageController();
   }
 
   @override
@@ -31,32 +28,32 @@ class _FeedReelState extends State<FeedReel> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = widget.viewModel;
-    if (vm.items.isEmpty) {
+    final viewModel = context.watch<FeedReelViewModel>();
+    if (viewModel.items.isEmpty) {
       return const Center(child: Text('No videos'));
     }
 
     return ListenableBuilder(
-      listenable: vm,
+      listenable: viewModel,
       builder: (context, _) {
         return PageView.custom(
           controller: _pageController,
           scrollDirection: Axis.vertical,
           allowImplicitScrolling: false,
-          onPageChanged: vm.onPageChanged,
+          onPageChanged: viewModel.onPageChanged,
+          key: const PageStorageKey('feed-reel-page-view'),
 
           // 使用 childrenDelegate 来精细化控制子 Widget 的生命周期
           childrenDelegate: SliverChildBuilderDelegate(
             (context, index) {
-              final item = vm.items[index];
+              final item = viewModel.items[index];
               return _ReelPage(
-                key: ValueKey<String>(item.id),
                 item: item,
                 index: index,
-                currentIndex: vm.currentIndex,
+                currentIndex: viewModel.currentIndex,
               );
             },
-            childCount: vm.items.length,
+            childCount: viewModel.items.length,
             addAutomaticKeepAlives: false,
             addRepaintBoundaries: true,
           ),
@@ -97,7 +94,6 @@ class _ReelPageState extends State<_ReelPage> {
   @override
   void initState() {
     super.initState();
-    debugPrint('init: ${widget.index}');
     if (_inPreloadWindow) {
       _startLoad();
     }
@@ -105,7 +101,6 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   void didUpdateWidget(covariant _ReelPage oldWidget) {
-    debugPrint('didUpdateWidget: ${widget.index}');
     super.didUpdateWidget(oldWidget);
     final wasActive = widget.index == oldWidget.currentIndex;
     if (wasActive && !_isActive) {
@@ -121,7 +116,6 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   void dispose() {
-    debugPrint('dispose: ${widget.index}');
     _controller?.removeListener(_onControllerUpdate);
     _controller?.dispose();
     super.dispose();
@@ -210,7 +204,6 @@ class _ReelPageState extends State<_ReelPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('build: ${widget.index}');
     final padding = MediaQuery.paddingOf(context);
     final theme = Theme.of(context);
 

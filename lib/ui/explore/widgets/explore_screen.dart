@@ -1,5 +1,8 @@
 import 'package:emombti/app_state/theme_state.dart';
+import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
+import 'package:emombti/ui/feed/view_models/feed_post_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
 import 'package:emombti/ui/feed/widgets/feed_post.dart';
 import 'package:emombti/ui/feed/widgets/feed_reel.dart';
@@ -78,56 +81,79 @@ class _ExploreScreenState extends State<ExploreScreen>
 
     final vm = widget.viewModel;
 
-    return Scaffold(
-      // We handle the background layout ourselves, so body is completely full-screen
-      body: Stack(
-        children: [
-          // Layer 1: Full-screen TabBarView (Content goes completely underneath)
-          TabBarView(
-            controller: _tabController,
-            children: [for (final tab in vm.tabs) _ExploreTabBody(tab: tab)],
-          ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<FeedPostViewModel>(
+          create: (context) => FeedPostViewModel(
+            authRepository: context.read<AuthRepository>(),
+            feedRepository: context.read<FeedRepository>(),
+          )..loadPostsCommand.execute(),
+        ),
+        ChangeNotifierProvider(create: (context) => FeedReelViewModel()),
+      ],
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            // We handle the background layout ourselves, so body is completely full-screen
+            body: Stack(
+              children: [
+                // Layer 1: Full-screen TabBarView (Content goes completely underneath)
+                TabBarView(
+                  controller: _tabController,
+                  children: [
+                    for (final tab in vm.tabs) _ExploreTabBody(tab: tab),
+                  ],
+                ),
 
-          // Layer 2: Floating Custom AppBar
-          Positioned(
-            // MediaQuery top padding ensures it floats safely below the status bar notch
-            top: MediaQuery.of(context).padding.top,
-            left: 16.0,
-            right: 16.0,
-            child: SizedBox(
-              height:
-                  56.0, // Slightly taller for a comfortable floating bar action
-              child: Row(
-                children: [
-                  const SizedBox(width: 8.0), // Padding before the button
-                  IconButton(
-                    color: theme.colorScheme.primary,
-                    icon: const Icon(Icons.add),
-                    onPressed: () {},
-                  ),
-                  Expanded(
-                    child: TabBar(
-                      controller: _tabController,
-                      isScrollable: true,
-                      tabAlignment: TabAlignment.start,
-                      labelColor: theme.colorScheme.onSurface,
-                      unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                      dividerColor: Colors.transparent,
-                      // Removes the default full-width bottom line indicator styling
-                      indicatorSize: TabBarIndicatorSize.label,
-                      tabs: [
-                        for (final tab in vm.tabs)
-                          Tab(key: ValueKey<String>(tab.id), text: tab.label),
+                // Layer 2: Floating Custom AppBar
+                Positioned(
+                  // MediaQuery top padding ensures it floats safely below the status bar notch
+                  top: MediaQuery.of(context).padding.top,
+                  left: 16.0,
+                  right: 16.0,
+                  child: SizedBox(
+                    height:
+                        56.0, // Slightly taller for a comfortable floating bar action
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8.0), // Padding before the button
+                        IconButton(
+                          color: theme.colorScheme.primary,
+                          icon: const Icon(Icons.add),
+                          onPressed: () {},
+                        ),
+                        Expanded(
+                          child: TabBar(
+                            controller: _tabController,
+                            isScrollable: true,
+                            tabAlignment: TabAlignment.start,
+                            labelColor: theme.colorScheme.onSurface,
+                            unselectedLabelColor:
+                                theme.colorScheme.onSurfaceVariant,
+                            dividerColor: Colors.transparent,
+                            // Removes the default full-width bottom line indicator styling
+                            indicatorSize: TabBarIndicatorSize.label,
+                            tabs: [
+                              for (final tab in vm.tabs)
+                                Tab(
+                                  key: ValueKey<String>(tab.id),
+                                  text: tab.label,
+                                ),
+                            ],
+                            onFocusChange: (value, index) => {},
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16.0,
+                        ), // Uniform padding at the end
                       ],
-                      onFocusChange: (value, index) => {},
                     ),
                   ),
-                  const SizedBox(width: 16.0), // Uniform padding at the end
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -147,7 +173,7 @@ class _ExploreTabBody extends StatelessWidget {
         return const FeedPostScreen();
 
       case ExploreTabType.videos:
-        return const _VideoReelContainer();
+        return const FeedReel();
 
       case ExploreTabType.friends:
       case ExploreTabType.chatAiMbti:
@@ -160,42 +186,11 @@ class _ExploreTabBody extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Text(
-        '${tab.label} content coming soon...',
+        tab.label,
         style: theme.textTheme.titleMedium?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
-  }
-}
-
-/// A generic container for the Video Reel tab.
-/// This avoids creating a specific "Tab Widget" for every feature,
-/// but keeps the ViewModel lifecycle management clean.
-class _VideoReelContainer extends StatefulWidget {
-  const _VideoReelContainer();
-
-  @override
-  State<_VideoReelContainer> createState() => _VideoReelContainerState();
-}
-
-class _VideoReelContainerState extends State<_VideoReelContainer> {
-  late final FeedReelViewModel _feedReelViewModel;
-
-  @override
-  void initState() {
-    super.initState();
-    _feedReelViewModel = FeedReelViewModel();
-  }
-
-  @override
-  void dispose() {
-    _feedReelViewModel.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FeedReel(viewModel: _feedReelViewModel);
   }
 }
