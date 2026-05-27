@@ -65,7 +65,6 @@ class _FeedReelState extends State<FeedReel> {
 
 class _ReelPage extends StatefulWidget {
   const _ReelPage({
-    super.key,
     required this.item,
     required this.index,
     required this.currentIndex,

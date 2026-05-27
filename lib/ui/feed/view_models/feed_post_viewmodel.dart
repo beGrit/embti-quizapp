@@ -13,6 +13,7 @@ class FeedPostViewModel extends ChangeNotifier {
     required FeedRepository feedRepository,
   }) : _feedRepository = feedRepository {
     loadPostsCommand = Command0<List<Post>>(_loadPostsInternal);
+    loadMorePostsCommand = Command0<List<Post>>(_loadMorePostsInternal);
   }
 
   final FeedRepository _feedRepository;
@@ -20,18 +21,58 @@ class FeedPostViewModel extends ChangeNotifier {
   List<Post> _posts = [];
   List<Post> get posts => _posts;
 
+  int _currentPage = 1;
+  static const int _perPage = 5;
+  bool _hasMore = true;
+  bool get hasMore => _hasMore;
+
   late final Command0<List<Post>> loadPostsCommand;
+  late final Command0<List<Post>> loadMorePostsCommand;
 
   Future<Result<List<Post>>> _loadPostsInternal() async {
+    _currentPage = 1;
+    _hasMore = true;
     // Fetches the first page of posts (paginated)
     final result = await _feedRepository.getPostsPaginated(
-      page: 1,
-      perPage: 20,
+      page: _currentPage,
+      perPage: _perPage,
     );
 
     switch (result) {
       case Ok<List<Post>>():
         _posts = result.value; // Update the internal list
+        if (result.value.length < _perPage) {
+          _hasMore = false;
+        }
+        notifyListeners();
+      case Error<List<Post>>():
+        break;
+    }
+    return result;
+  }
+
+  Future<Result<List<Post>>> _loadMorePostsInternal() async {
+    if (!_hasMore) return Result.ok([]);
+
+    final nextPage = _currentPage + 1;
+    final result = await _feedRepository.getPostsPaginated(
+      page: nextPage,
+      perPage: _perPage,
+    );
+
+    switch (result) {
+      case Ok<List<Post>>():
+        final newPosts = result.value;
+        if (newPosts.isEmpty) {
+          _hasMore = false;
+        } else {
+          _posts.addAll(newPosts);
+          _currentPage = nextPage;
+          if (newPosts.length < _perPage) {
+            _hasMore = false;
+          }
+        }
+        notifyListeners();
       case Error<List<Post>>():
         break;
     }

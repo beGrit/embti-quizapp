@@ -1,5 +1,3 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
@@ -15,85 +13,111 @@ class FeedPostScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<FeedPostViewModel>(
-      create: (context) => FeedPostViewModel(
-        authRepository: context.read<AuthRepository>(),
-        feedRepository: context
-            .read<FeedRepository>(), // Execute the command here
-      )..loadPostsCommand.execute(),
-      builder: (context, _) {
-        final viewModel = context.watch<FeedPostViewModel>();
-        final theme = Theme.of(context);
-        // Calculate the top offset to account for the floating TabBar header in ExploreScreen
-        return Scaffold(
-          backgroundColor: theme.colorScheme.surface,
-          body: Column(
-            children: [
-              const _FeedPostScreenHeader(),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => context
-                      .read<FeedPostViewModel>()
-                      .loadPostsCommand
-                      .execute(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    child: ListenableBuilder(
-                      listenable: viewModel.loadPostsCommand,
-                      builder: (context, child) {
-                        return CustomScrollView(
-                          physics: const AlwaysScrollableScrollPhysics(
-                            parent: BouncingScrollPhysics(),
-                          ),
-                          slivers: [
-                            if (viewModel.loadPostsCommand.running &&
-                                viewModel.posts.isEmpty)
-                              const SliverFillRemaining(
-                                child: Center(child: Text('Refreshing')),
-                              )
-                            else if (viewModel.loadPostsCommand.error)
-                              SliverFillRemaining(
-                                child: Center(child: Text('Error')),
-                              )
-                            else if (viewModel.posts.isEmpty)
-                              const SliverFillRemaining(
-                                child: Center(child: Text('No posts found')),
-                              )
-                            else
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate((
-                                  context,
-                                  index,
-                                ) {
-                                  final post = viewModel.posts[index];
-                                  return _PostListTile(
-                                    post: post,
-                                    viewModel: viewModel,
-                                  );
-                                }, childCount: viewModel.posts.length),
-                              ),
-                          ],
-                        );
+    final viewModel = context.watch<FeedPostViewModel>();
+    final theme = Theme.of(context);
+    // Calculate the top offset to account for the floating TabBar header in ExploreScreen
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      body: Column(
+        children: [
+          const _FeedPostScreenHeader(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () =>
+                  context.read<FeedPostViewModel>().loadPostsCommand.execute(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: ListenableBuilder(
+                  listenable: Listenable.merge([
+                    viewModel.loadPostsCommand,
+                    viewModel.loadMorePostsCommand,
+                  ]),
+                  builder: (context, child) {
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        // 1. Ensure we only listen to the primary scroll view, not nested ones
+                        if (scrollInfo.depth == 0) {
+                          final metrics = scrollInfo.metrics;
+                          if (metrics.pixels >= metrics.maxScrollExtent - 200 &&
+                              !viewModel.loadMorePostsCommand.running &&
+                              !viewModel.loadPostsCommand.running &&
+                              viewModel.posts.isNotEmpty &&
+                              viewModel.hasMore) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (context.mounted) {
+                                viewModel.loadMorePostsCommand.execute();
+                              }
+                            });
+                          }
+                        }
+                        return false; // Allows the notification to bubble up if needed
                       },
-                    ),
-                  ),
+                      child: CustomScrollView(
+                        key: const PageStorageKey('feed-post-page-view'),
+                        physics: const AlwaysScrollableScrollPhysics(
+                          parent: BouncingScrollPhysics(),
+                        ),
+                        slivers: [
+                          if (viewModel.loadPostsCommand.running &&
+                              viewModel.posts.isEmpty)
+                            const SliverFillRemaining(
+                              child: Center(child: Text('Refreshing')),
+                            )
+                          else if (viewModel.loadPostsCommand.error)
+                            const SliverFillRemaining(
+                              child: Center(child: Text('Error')),
+                            )
+                          else if (viewModel.posts.isEmpty)
+                            const SliverFillRemaining(
+                              child: Center(child: Text('No posts found')),
+                            )
+                          else
+                            SliverList(
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                                  if (index < viewModel.posts.length) {
+                                    final post = viewModel.posts[index];
+                                    return _PostListTile(
+                                      post: post,
+                                      viewModel: viewModel,
+                                    );
+                                  } else {
+                                    return const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 32.0,
+                                      ),
+                                      child: Center(
+                                        child: CircularProgressIndicator(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                childCount:
+                                    viewModel.posts.length +
+                                    (viewModel.hasMore ? 1 : 0),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-            ],
+            ),
           ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: theme.colorScheme.primaryContainer,
-            foregroundColor: theme.colorScheme.onPrimaryContainer,
-            onPressed: () async {
-              final newPost = await context.push<Post>(Routes.feedPostEditor);
-              if (newPost != null && context.mounted) {
-                viewModel.addPost(newPost);
-              }
-            },
-            child: const Icon(Icons.edit),
-          ),
-        );
-      },
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: theme.colorScheme.primaryContainer,
+        foregroundColor: theme.colorScheme.onPrimaryContainer,
+        onPressed: () async {
+          final newPost = await context.push<Post>(Routes.feedPostEditor);
+          if (newPost != null && context.mounted) {
+            viewModel.addPost(newPost);
+          }
+        },
+        child: const Icon(Icons.edit),
+      ),
     );
   }
 }
@@ -252,9 +276,16 @@ class _PostListTile extends StatelessWidget {
                   height: 200,
                   child: Row(
                     spacing: 8,
-                    children: post.photos.take(2).map((photo) {
-                      final index = post.photos.indexOf(photo);
+                    children: post.photos.take(2).toList().asMap().entries.map((
+                      entry,
+                    ) {
+                      final index = entry.key;
+                      final photo = entry.value;
                       final photoUrl = photo.uri.toString();
+
+                      final isLastVisible =
+                          index == 1 && post.photos.length > 2;
+                      final remainingCount = post.photos.length - 2;
 
                       // Using post.id or a unique fallback string
                       final postUniqueId =
@@ -276,26 +307,59 @@ class _PostListTile extends StatelessWidget {
                               },
                             );
                           },
-                          child: Hero(
-                            tag: heroTag,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                photoUrl,
-                                fit: BoxFit.cover,
-                                height: 200,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                      color: colorScheme.surfaceContainerHigh,
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.broken_image_outlined,
-                                          size: 48,
-                                        ),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              Hero(
+                                tag: heroTag,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    photoUrl,
+                                    fit: BoxFit.cover,
+                                    height: 200,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              color: colorScheme
+                                                  .surfaceContainerHigh,
+                                              child: const Center(
+                                                child: Icon(
+                                                  Icons.broken_image_outlined,
+                                                  size: 48,
+                                                ),
+                                              ),
+                                            ),
+                                  ),
+                                ),
+                              ),
+                              if (isLastVisible)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.tertiary
+                                        .withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 8.0,
+                                      bottom: 8.0,
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.bottomRight,
+                                      child: Text(
+                                        '+$remainingCount',
+                                        style: theme.textTheme.headlineSmall
+                                            ?.copyWith(
+                                              color:
+                                                  theme.colorScheme.onTertiary,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                       ),
                                     ),
-                              ),
-                            ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       );
