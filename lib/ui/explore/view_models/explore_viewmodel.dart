@@ -1,3 +1,5 @@
+import 'package:emombti/app_state/app_nav_bar_state.dart';
+import 'package:emombti/routing/navigation_config.dart';
 import 'package:flutter/material.dart';
 
 /// Stable route-like id for an Explore top tab (used for body selection and analytics).
@@ -29,34 +31,34 @@ class ExploreTab {
 
 /// UI state for the Explore shell (tab selection).
 class ExploreViewModel extends ChangeNotifier {
-  ExploreViewModel({List<ExploreTab>? tabs})
-    : tabs =
-          tabs ??
-          const [
-            ExploreTab(
-              id: ExploreTabIds.shares,
-              label: 'Shares',
-              type: ExploreTabType.shares,
-            ),
-            ExploreTab(
-              id: ExploreTabIds.videos,
-              label: 'Videos',
-              type: ExploreTabType.videos,
-              themeDataName: 'dark',
-            ),
-            ExploreTab(
-              id: ExploreTabIds.friends,
-              label: 'Friends',
-              type: ExploreTabType.friends,
-            ),
-            ExploreTab(
-              id: ExploreTabIds.chatAiMbti,
-              label: 'Chat with AI(MBTI)',
-              type: ExploreTabType.chatAiMbti,
-            ),
-          ];
+  ExploreViewModel({required AppNavBarState appNavBarState})
+    : _appNavBarState = appNavBarState,
+      tabs = const [
+        ExploreTab(
+          id: ExploreTabIds.shares,
+          label: 'Shares',
+          type: ExploreTabType.shares,
+        ),
+        ExploreTab(
+          id: ExploreTabIds.videos,
+          label: 'Videos',
+          type: ExploreTabType.videos,
+          themeDataName: 'dark',
+        ),
+        ExploreTab(
+          id: ExploreTabIds.friends,
+          label: 'Friends',
+          type: ExploreTabType.friends,
+        ),
+        ExploreTab(
+          id: ExploreTabIds.chatAiMbti,
+          label: 'Chat with AI(MBTI)',
+          type: ExploreTabType.chatAiMbti,
+        ),
+      ];
 
   final List<ExploreTab> tabs;
+  final AppNavBarState _appNavBarState;
 
   int _selectedTabIndex = 0;
   int get selectedTabIndex => _selectedTabIndex;
@@ -66,5 +68,14 @@ class ExploreViewModel extends ChangeNotifier {
     if (_selectedTabIndex == index) return;
     _selectedTabIndex = index;
     notifyListeners();
+  }
+
+  void onTabAnimation(int targetIndex) {
+    if (tabs[targetIndex].themeDataName != null &&
+        tabs[targetIndex].themeDataName == 'dark') {
+      _appNavBarState.setDark(NavigationConfigLabel.explore.label, true);
+    } else {
+      _appNavBarState.setDark(NavigationConfigLabel.explore.label, false);
+    }
   }
 }

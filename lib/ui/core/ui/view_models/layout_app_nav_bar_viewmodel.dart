@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/app_nav_bar_state.dart';
 import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/routing/navigation_config.dart';
@@ -5,20 +6,21 @@ import 'package:flutter/material.dart';
 
 class LayoutAppNavBarViewModel extends ChangeNotifier {
   final List<NavigationConfig> _configuration;
-  final ThemeState _themeState;
   final ChatState _chatState;
+  final AppNavBarState _navBarState;
   final Map<String, String?> _badgeCounts = {};
 
   LayoutAppNavBarViewModel({
     required List<NavigationConfig> configuration,
     required ThemeState themeState,
     required ChatState chatState,
+    required AppNavBarState navBarState,
   }) : _configuration = configuration,
-       _themeState = themeState,
-       _chatState = chatState {
+       _chatState = chatState,
+       _navBarState = navBarState {
     // Initialize standard state setup
     for (var config in _configuration) {
-      _badgeCounts[config.label] = null;
+      _badgeCounts[config.label.label] = null;
     }
 
     // Sync badge data with the current state initially
@@ -26,24 +28,23 @@ class LayoutAppNavBarViewModel extends ChangeNotifier {
 
     // Attach native listeners to watch your global app states
     _chatState.addListener(_onChatStateChanged);
-    _themeState.addListener(_onThemeStateChanged);
+    _navBarState.addListener(_onNavBarStateChanged);
   }
 
   List<NavigationConfig> get configuration => _configuration;
-  ThemeState get themeState => _themeState;
   ChatState get chatState => _chatState;
+  AppNavBarState get appNavBarState => _navBarState;
 
   String? getBadge(String label) => _badgeCounts[label];
+  bool isDark(String label) => _navBarState.isDark(label);
 
   /// Internal handler called automatically when ChatState triggers notifyListeners()
   void _onChatStateChanged() {
     _syncChatBadges();
   }
 
-  /// Internal handler called automatically when ThemeState triggers notifyListeners()
-  void _onThemeStateChanged() {
-    // If your navigation bar depends on specific ThemeState properties,
-    // update them here before notifying the bar's listeners.
+  /// Internal handler called automatically when AppNavBarState triggers notifyListeners()
+  void _onNavBarStateChanged() {
     notifyListeners();
   }
 
@@ -52,13 +53,13 @@ class LayoutAppNavBarViewModel extends ChangeNotifier {
     bool hasChanged = false;
 
     for (var config in _configuration) {
-      if (config.label == 'Mess') {
+      if (config.label == NavigationConfigLabel.mess) {
         final targetValue = _chatState.totalUnreadCount > 0
             ? _chatState.totalUnreadCount.toString()
             : null;
 
-        if (_badgeCounts[config.label] != targetValue) {
-          _badgeCounts[config.label] = targetValue;
+        if (_badgeCounts[config.label.label] != targetValue) {
+          _badgeCounts[config.label.label] = targetValue;
           hasChanged = true;
         }
       }
@@ -84,7 +85,7 @@ class LayoutAppNavBarViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _chatState.removeListener(_onChatStateChanged);
-    _themeState.removeListener(_onThemeStateChanged);
+    _navBarState.removeListener(_onNavBarStateChanged);
     super.dispose();
   }
 }

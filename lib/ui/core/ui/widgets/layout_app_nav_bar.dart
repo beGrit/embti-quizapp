@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/app_nav_bar_state.dart';
 import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/routing/navigation_config.dart';
@@ -30,6 +31,7 @@ class AppLayoutNavigationBarState extends State<AppLayoutNavigationBar> {
       configuration: widget.routeBottom,
       themeState: context.read<ThemeState>(),
       chatState: context.read<ChatState>(),
+      navBarState: context.read<AppNavBarState>(),
     );
   }
 
@@ -44,8 +46,17 @@ class AppLayoutNavigationBarState extends State<AppLayoutNavigationBar> {
     return ListenableBuilder(
       listenable: _viewModel,
       builder: (context, child) {
+        final themeState = context.read<ThemeState>();
         return Theme(
-          data: _viewModel.themeState.currentTheme,
+          data:
+              _viewModel.isDark(
+                widget
+                    .routeBottom[widget.navigationShell.currentIndex]
+                    .label
+                    .label,
+              )
+              ? themeState.materialTheme.dark()
+              : themeState.currentTheme,
           child: NavigationBar(
             height: 60,
             selectedIndex: widget.navigationShell.currentIndex,
@@ -54,9 +65,10 @@ class AppLayoutNavigationBarState extends State<AppLayoutNavigationBar> {
               for (final route in widget.routeBottom) ...[
                 () {
                   String? badgeLabel =
-                      _viewModel.getBadge(route.label) ?? route.badgeLabel;
+                      _viewModel.getBadge(route.label.label) ??
+                      route.badgeLabel;
 
-                  if (route.label == 'Mess' &&
+                  if (route.label == NavigationConfigLabel.mess &&
                       _viewModel.chatState.totalUnreadCount > 0) {
                     badgeLabel = _viewModel.chatState.totalUnreadCount
                         .toString();
@@ -75,13 +87,17 @@ class AppLayoutNavigationBarState extends State<AppLayoutNavigationBar> {
                             child: Icon(route.selectedIcon),
                           )
                         : Icon(route.selectedIcon),
-                    label: route.label,
+                    label: route.label.label,
                   );
                 }(),
               ],
             ],
-            onDestinationSelected: (index) =>
-                widget.navigationShell.goBranch(index),
+            onDestinationSelected: (index) {
+              widget.navigationShell.goBranch(index);
+              _viewModel.appNavBarState.currentSelectedIndex = index;
+              _viewModel.appNavBarState.currentSelectedLabel =
+                  widget.routeBottom[index].label.label;
+            },
           ),
         );
       },

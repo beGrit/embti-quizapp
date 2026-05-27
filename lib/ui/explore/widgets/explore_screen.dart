@@ -1,4 +1,3 @@
-import 'package:emombti/app_state/theme_state.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
@@ -36,14 +35,15 @@ class _ExploreScreenState extends State<ExploreScreen>
   void _onTabAnimation() {
     final double value = _tabController.animation!.value;
     final int targetIndex = value.round();
-    ThemeState themeController = context.read<ThemeState>();
-    final bool hasThemeOverride =
-        widget.viewModel.tabs[targetIndex].themeDataName != null;
-    if (hasThemeOverride) {
-      themeController.overrideGlobalTheme(themeController.materialTheme.dark());
-    } else {
-      themeController.resetToSystemTheme();
-    }
+    widget.viewModel.onTabAnimation(targetIndex);
+    // ThemeState themeController = context.read<ThemeState>();
+    // final bool hasThemeOverride =
+    //     widget.viewModel.tabs[targetIndex].themeDataName != null;
+    // if (hasThemeOverride) {
+    //   themeController.overrideGlobalTheme(themeController.materialTheme.dark());
+    // } else {
+    //   themeController.resetToSystemTheme();
+    // }
   }
 
   void _onTabControllerChanged() {

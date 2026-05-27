@@ -21,8 +21,8 @@ import 'package:emombti/ui/quiz/view_models/survey_flow_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/quiz_landing.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow.dart';
 import 'package:emombti/ui/settings/widgets/settings_screen.dart';
-import 'package:emombti/ui/user/widgets/user_info_screen.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
+import 'package:emombti/ui/user/widgets/user_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -149,27 +149,27 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
             NavigationConfig(
               icon: Icons.explore_outlined,
               selectedIcon: Icons.explore,
-              label: 'Home',
+              label: NavigationConfigLabel.home,
             ),
             NavigationConfig(
               icon: Icons.people_outline,
               selectedIcon: Icons.people,
-              label: 'Explore',
+              label: NavigationConfigLabel.explore,
             ),
             NavigationConfig(
               icon: Icons.hub_outlined,
               selectedIcon: Icons.hub,
-              label: 'Quiz',
+              label: NavigationConfigLabel.quiz,
             ),
             NavigationConfig(
               icon: Icons.chat_bubble_outline,
               selectedIcon: Icons.chat_bubble,
-              label: 'Mess',
+              label: NavigationConfigLabel.mess,
             ),
             NavigationConfig(
               icon: Icons.storage_outlined,
               selectedIcon: Icons.storage,
-              label: 'Me',
+              label: NavigationConfigLabel.me,
             ),
           ],
         );
@@ -187,8 +187,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           routes: [
             GoRoute(
               path: Routes.explore,
-              builder: (context, state) =>
-                  ExploreScreen(viewModel: ExploreViewModel()),
+              builder: (context, state) => ExploreScreen(
+                viewModel: ExploreViewModel(appNavBarState: context.read()),
+              ),
             ),
           ],
         ),

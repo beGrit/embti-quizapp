@@ -64,7 +64,7 @@ class AppLayout extends StatelessWidget {
                             child: Icon(route.selectedIcon),
                           )
                         : Icon(route.selectedIcon),
-                    label: Text(route.label),
+                    label: Text(route.label.label),
                   ),
               ],
             ),

@@ -48,6 +48,7 @@ class _FeedReelState extends State<FeedReel> {
             (context, index) {
               final item = viewModel.items[index];
               return _ReelPage(
+                key: ValueKey(item.id),
                 item: item,
                 index: index,
                 currentIndex: viewModel.currentIndex,
@@ -65,6 +66,7 @@ class _FeedReelState extends State<FeedReel> {
 
 class _ReelPage extends StatefulWidget {
   const _ReelPage({
+    required super.key,
     required this.item,
     required this.index,
     required this.currentIndex,

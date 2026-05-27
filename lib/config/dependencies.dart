@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/app_nav_bar_state.dart';
 import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/app_state/theme_state.dart';
@@ -39,6 +40,7 @@ import '../data/services/common/policy_service_local.dart';
 import '../data/services/persistence/local/local_data_service.dart';
 
 List<SingleChildWidget> _sharedProviders = [
+  ChangeNotifierProvider<AppNavBarState>(create: (context) => AppNavBarState()),
   ChangeNotifierProvider<ThemeState>(
     create: (context) {
       final brightness =
