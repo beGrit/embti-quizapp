@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
+import 'package:flutter/foundation.dart';
 
 class SurveyFlowState extends ChangeNotifier {
   SurveyFlowState();
@@ -10,9 +10,16 @@ class SurveyFlowState extends ChangeNotifier {
   SurveyFlow? _latest;
   SurveyFlow? get latest => _latest;
 
+  SurveyFlow? _latestCompleted;
+  SurveyFlow? get latestCompleted => _latestCompleted;
+  bool get hasLatestCompleted => _latestCompleted != null;
+
   void setSurveyFlows(List<SurveyFlow> flows) {
     _surveyFlows = flows;
     _latest = _surveyFlows.isEmpty ? null : _surveyFlows.first;
+    _latestCompleted = _surveyFlows
+        .where((flow) => flow.status == SurveyFlowStatus.completed)
+        .firstOrNull;
     notifyListeners();
   }
 
@@ -23,6 +30,11 @@ class SurveyFlowState extends ChangeNotifier {
       _latest = flow;
       notifyListeners();
     }
+  }
+
+  void updateLatestCompleted(SurveyFlow flow) {
+    _latestCompleted = flow;
+    notifyListeners();
   }
 
   void clearLatest() {

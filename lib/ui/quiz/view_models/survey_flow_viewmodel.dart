@@ -1,7 +1,7 @@
+import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
-import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +15,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
     required this.surveyId,
   }) {
     load = Command0(_load);
+    submit = Command0(_submit);
   }
 
   final SurveyFlowRepository surveyFlowRepository;
@@ -29,6 +30,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlow get flow => _flow;
 
   late final Command0<void> load;
+  late final Command0<void> submit;
 
   final PageController pageController = PageController();
 
@@ -58,6 +60,19 @@ class SurveyFlowViewModel extends ChangeNotifier {
     }
   }
 
+  Future<Result<void>> _submit() async {
+    try {
+      _flow = _flow.copyWith(status: SurveyFlowStatus.completed);
+      await surveyFlowRepository.saveFlow(_flow);
+      surveyFlowState.updateLatest(_flow);
+      notifyListeners();
+      return Result.ok(null);
+    } catch (e) {
+      notifyListeners();
+      return Result.error(Exception(e.toString()));
+    }
+  }
+
   void toggleScore(String questionId, int? score) async {
     final newAnswers = Map<String, int>.from(_flow.currentAnswers);
 
@@ -70,7 +85,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
     _flow = _flow.copyWith(currentAnswers: newAnswers);
     notifyListeners();
 
-    await surveyFlowRepository.saveFlow(_flow);
+    // await surveyFlowRepository.saveFlow(_flow);
     surveyFlowState.updateLatest(_flow);
 
     if (score != null) {

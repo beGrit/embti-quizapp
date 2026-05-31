@@ -88,13 +88,6 @@ class QuizLandingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String surveyTitleForFlow(SurveyFlow flow) {
-    for (final s in surveys) {
-      if (s.id == flow.surveyId) return s.title;
-    }
-    return flow.surveyId;
-  }
-
   /// Removes a saved session from local storage and refreshes [surveyFlows].
   Future<void> deleteSurveyFlow(String flowId) async {
     await _surveyFlowRepository.deleteFlow(flowId);

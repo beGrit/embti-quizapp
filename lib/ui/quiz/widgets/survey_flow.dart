@@ -51,28 +51,49 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
                   ),
                 ],
               ),
-              actions: [_buildProgressBadge(theme)],
+              actions: [_buildProgressBadge(theme), _buildSubmitButton()],
             ),
             body: Column(
               children: [
-                LinearProgressIndicator(
-                  value: widget.viewModel.flow.completionRate,
-                  minHeight: 4,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                ListenableBuilder(
+                  listenable: widget.viewModel,
+                  builder: (context, child) {
+                    return LinearProgressIndicator(
+                      value: widget.viewModel.flow.completionRate,
+                      minHeight: 4,
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
+                    );
+                  },
                 ),
                 Expanded(
-                  child: PageView.builder(
-                    controller: widget.viewModel.pageController,
-                    itemCount: widget.viewModel.flow.totalQuestions,
-                    // physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final question = widget.viewModel.getQuestion(index);
-                      return _QuestionItem(
-                        question: question,
-                        currentScore:
-                            widget.viewModel.flow.currentAnswers[question.id],
-                        onSelect: (score) =>
-                            widget.viewModel.toggleScore(question.id, score),
+                  child: ListenableBuilder(
+                    listenable: widget.viewModel,
+                    builder: (context, child) {
+                      return PageView(
+                        controller: widget.viewModel.pageController,
+                        // physics: const NeverScrollableScrollPhysics(),
+                        children: List.generate(
+                          widget.viewModel.flow.totalQuestions,
+                          (index) {
+                            final question = widget.viewModel.getQuestion(
+                              index,
+                            );
+                            return _QuestionItem(
+                              key: ValueKey(question.id),
+                              question: question,
+                              // 每次 viewModel 通知更新，这里都会重新计算获取最新值
+                              currentScore: widget
+                                  .viewModel
+                                  .flow
+                                  .currentAnswers[question.id],
+                              onSelect: (score) => widget.viewModel.toggleScore(
+                                question.id,
+                                score,
+                              ),
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
@@ -107,6 +128,38 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return ListenableBuilder(
+      listenable: Listenable.merge([widget.viewModel, widget.viewModel.submit]),
+      builder: (context, _) {
+        final canSubmit =
+            widget.viewModel.flow.currentAnswers.length ==
+            widget.viewModel.flow.totalQuestions;
+
+        if (!canSubmit) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: widget.viewModel.submit.running
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : FilledButton(
+                  onPressed: () async {
+                    await widget.viewModel.submit.execute();
+                    if (context.mounted && widget.viewModel.submit.completed) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  child: const Text('Submit'),
+                ),
+        );
+      },
     );
   }
 
@@ -200,6 +253,7 @@ class _QuestionItem extends StatelessWidget {
   final Function(int?) onSelect;
 
   const _QuestionItem({
+    super.key,
     required this.question,
     this.currentScore,
     required this.onSelect,
@@ -303,9 +357,15 @@ class _RatingButtonListState extends State<_RatingButtonList> {
   @override
   void didUpdateWidget(covariant _RatingButtonList oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialScore != oldWidget.initialScore) {
+    if (widget.initialScore != oldWidget.initialScore &&
+        _currentScore != widget.initialScore) {
       _currentScore = widget.initialScore;
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
