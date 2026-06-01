@@ -168,6 +168,20 @@ class SurveyFlowViewModel extends ChangeNotifier {
     }
   }
 
+  void debugFinishTest() {
+    final Map<String, int> newAnswers = {};
+    for (final id in _flow.questionOrder) {
+      newAnswers[id] = 3; // Neutral score
+    }
+    _flow = _flow.copyWith(currentAnswers: newAnswers);
+    notifyListeners();
+    surveyFlowState.updateLatest(_flow);
+
+    if (pageController.hasClients) {
+      pageController.jumpToPage(_flow.totalQuestions - 1);
+    }
+  }
+
   String getQuestionId(int index) => _flow.questionOrder[index];
 
   Question getQuestion(int index) {

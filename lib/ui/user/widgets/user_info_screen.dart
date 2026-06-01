@@ -11,7 +11,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class UserInfoScreen extends StatelessWidget {
-  const UserInfoScreen({super.key});
+  final String? initialMbtiType;
+  const UserInfoScreen({super.key, this.initialMbtiType});
 
   @override
   Widget build(BuildContext context) {
@@ -21,18 +22,41 @@ class UserInfoScreen extends StatelessWidget {
         userRepository: context.read<UserRepository>(),
         userAvatarUpdateUseCase: context.read<UserAvatarUpdateUseCase>(),
       ),
-      child: const _UserInfoScreenContent(),
+      child: _UserInfoScreenContent(initialMbtiType: initialMbtiType),
     );
   }
 }
 
-class _UserInfoScreenContent extends StatelessWidget {
-  const _UserInfoScreenContent();
+class _UserInfoScreenContent extends StatefulWidget {
+  final String? initialMbtiType;
+  const _UserInfoScreenContent({this.initialMbtiType});
+
+  @override
+  State<_UserInfoScreenContent> createState() => _UserInfoScreenContentState();
+}
+
+class _UserInfoScreenContentState extends State<_UserInfoScreenContent> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialMbtiType != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final viewModel = context.read<UserInfoScreenViewModel>();
+          _editMbtiType(
+            context,
+            viewModel,
+            initialValue: widget.initialMbtiType,
+          );
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final viewModel = context.read<UserInfoScreenViewModel>();
+    final viewModel = context.watch<UserInfoScreenViewModel>();
     return Scaffold(
       appBar: const StandardAppBar(title: 'User Info'),
       backgroundColor: colorScheme.surface,
@@ -194,8 +218,12 @@ class _UserInfoScreenContent extends StatelessWidget {
     );
   }
 
-  void _editMbtiType(BuildContext context, UserInfoScreenViewModel viewModel) {
-    viewModel.tempMbtiType = viewModel.user!.mbtiType ?? '';
+  void _editMbtiType(
+    BuildContext context,
+    UserInfoScreenViewModel viewModel, {
+    String? initialValue,
+  }) {
+    viewModel.tempMbtiType = initialValue ?? viewModel.user!.mbtiType ?? '';
     _navigateToEdit(
       context,
       title: 'Select MBTI',

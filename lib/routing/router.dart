@@ -51,7 +51,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
     ),
     GoRoute(
       path: Routes.userInfo,
-      builder: (context, state) => const UserInfoScreen(),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final mbtiType = extra?['mbtiType'] as String?;
+        return UserInfoScreen(initialMbtiType: mbtiType);
+      },
     ),
     GoRoute(
       path: Routes.qRCodeScanner,

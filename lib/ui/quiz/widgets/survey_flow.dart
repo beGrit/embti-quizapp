@@ -1,5 +1,6 @@
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../view_models/survey_flow_viewmodel.dart';
@@ -51,7 +52,15 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
                   ),
                 ],
               ),
-              actions: [_buildProgressBadge(theme), _buildSubmitButton()],
+              actions: [
+                if (kDebugMode)
+                  TextButton(
+                    onPressed: () => widget.viewModel.debugFinishTest(),
+                    child: const Text('Finish'),
+                  ),
+                _buildProgressBadge(theme),
+                _buildSubmitButton(),
+              ],
             ),
             body: Column(
               children: [

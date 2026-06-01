@@ -135,7 +135,16 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
         } else if (viewModel.loadAssessmentResult.completed) {
           final result = viewModel.loadAssessmentResult.result;
           if (result is Ok && result.value != null) {
-            return SurveyFlowResult(pResult: result.value);
+            return SurveyFlowResult(
+              pResult: result.value,
+              onGoBack: () {
+                _pageController.animateToPage(
+                  1,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+            );
           } else {
             return const Center(child: Text('No assessment result found.'));
           }
@@ -191,6 +200,7 @@ class _QuizLandingPageViewIndicatorState
     if (oldWidget.initialLength != widget.initialLength) {
       setState(() {
         length = widget.initialLength;
+        currentPage = 0;
       });
     }
   }

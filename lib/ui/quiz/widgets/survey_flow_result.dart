@@ -1,11 +1,14 @@
 import 'package:emombti/domain/models/quiz/survey_models.dart';
+import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class SurveyFlowResult extends StatefulWidget {
-  const SurveyFlowResult({super.key, required this.pResult});
+  const SurveyFlowResult({super.key, required this.pResult, this.onGoBack});
 
   final AssessmentResult pResult;
+  final VoidCallback? onGoBack;
 
   @override
   State<SurveyFlowResult> createState() => _SurveyFlowResultState();
@@ -105,7 +108,43 @@ class _SurveyFlowResultState extends State<SurveyFlowResult> {
                   ),
                 ),
               ),
-
+              // --- ACTION BUTTONS ---
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () {
+                      final mbtiCode = _calculateMBTICode();
+                      context.push(
+                        Routes.userInfo,
+                        extra: {'mbtiType': mbtiCode},
+                      );
+                    },
+                    icon: const Icon(Icons.person_outline),
+                    label: const Text('Make as Your Type'),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => widget.onGoBack != null
+                        ? widget.onGoBack!()
+                        : context.go(Routes.home),
+                    icon: const Icon(Icons.check),
+                    label: const Text('Go back'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 32),
               Text(
                 'Personality Dimension Breakdown',
@@ -180,22 +219,6 @@ class _SurveyFlowResultState extends State<SurveyFlowResult> {
                   ),
                 );
               }),
-
-              const SizedBox(height: 40),
-
-              // --- ACTION BUTTON ---
-              FilledButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.check),
-                label: const Text('Back to Home'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-
               // Safe area padding padding at the very bottom
               const SizedBox(height: 24),
             ]),
