@@ -96,6 +96,16 @@ class SocialRepositoryLocal implements SocialRepository {
   }
 
   @override
+  Future<void> toggleLike(String relatedId, bool shouldLike) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+  }
+
+  @override
+  Future<void> toggleFavorite(String relatedId, bool shouldFavorite) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+  }
+
+  @override
   Future<SocialMeta> getSocialMeta(String relatedId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     return SocialMeta(

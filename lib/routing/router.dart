@@ -85,9 +85,10 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           viewModel: ArticleDetailViewModel(
             repository: context.read(),
             articleId: articleId,
-          ),
+          )..loadArticleContent.execute(),
           socialViewModel: SocialViewModel(
             repository: context.read(),
+            authRepository: context.read(),
             relatedId: articleId,
           ),
         );

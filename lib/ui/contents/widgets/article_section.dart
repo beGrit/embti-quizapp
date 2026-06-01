@@ -221,7 +221,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   @override
   void initState() {
     super.initState();
-    widget.viewModel.loadArticleContent.execute();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     _headerHeight = 260.0;
@@ -609,6 +608,7 @@ class _ArticleSocial extends StatelessWidget {
                 padding: EdgeInsets.all(16),
                 sliver: CommentSectionWidget(
                   viewModel: viewModel.commentSectionVM..init(),
+                  stickyInputViewModel: viewModel.stickyInputVM,
                 ),
               ),
             ],

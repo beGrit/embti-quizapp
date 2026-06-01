@@ -11,14 +11,15 @@ import 'package:emombti/data/repositories/quiz/quiz_repository_local.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/data/repositories/quiz/survey_flow_repository_local.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
-import 'package:emombti/data/repositories/social/social_repository_local.dart';
+import 'package:emombti/data/repositories/social/social_repository_firestore.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository_dev.dart';
 import 'package:emombti/data/services/common/advertising_service.dart';
-import 'package:emombti/data/services/common/survey_flow_service.dart';
 import 'package:emombti/data/services/common/chat_service.dart';
 import 'package:emombti/data/services/common/notification_service.dart';
 import 'package:emombti/data/services/common/notification_service_local.dart';
+import 'package:emombti/data/services/common/survey_flow_service.dart';
+import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
@@ -88,6 +89,7 @@ List<SingleChildWidget> get providersLocal {
     Provider<LocalDataService>.value(value: LocalDataService()),
     Provider<LocalDataSqliteService>.value(value: LocalDataSqliteService()),
     Provider<PocketBaseService>(create: (context) => PocketBaseService()),
+    Provider<FirestoreService>(create: (context) => FirestoreService()),
     ChangeNotifierProvider<AuthRepository>(
       create: (context) => AuthRepositoryDev(pbService: context.read()),
     ),
@@ -116,7 +118,12 @@ List<SingleChildWidget> get providersLocal {
               as VideoContentRepository,
     ),
     Provider<SocialRepository>(
-      create: (context) => SocialRepositoryLocal() as SocialRepository,
+      create: (context) =>
+          SocialRepositoryFirestore(
+                firestoreService: context.read(),
+                authRepository: context.read(),
+              )
+              as SocialRepository,
     ),
     Provider<QuizRepository>(
       create: (context) =>

@@ -1,6 +1,6 @@
 [
   {
-    "id": "1",
+    "id": "local_content_10000000-0000-4000-8000-000000000001",
     "type": "article",
     "authorName": "Sarah",
     "authorMbti": "ISTJ",
@@ -10,7 +10,7 @@
     "thumbnailUrl": "https://picsum.photos/id/1/200/300"
   },
   {
-    "id": "2",
+    "id": "local_content_20000000-0000-4000-8000-000000000002",
     "type": "article",
     "authorName": "Lin",
     "authorMbti": "INTP",
@@ -20,7 +20,7 @@
     "thumbnailUrl": "https://picsum.photos/id/10/200/300"
   },
   {
-    "id": "3",
+    "id": "local_content_30000000-0000-4000-8000-000000000003",
     "type": "article",
     "authorName": "Chen",
     "authorMbti": "ESFJ",
@@ -30,7 +30,7 @@
     "thumbnailUrl": "https://picsum.photos/id/20/200/300"
   },
   {
-    "id": "4",
+    "id": "local_content_40000000-0000-4000-8000-000000000004",
     "type": "article",
     "authorName": "Monica",
     "authorMbti": "ENTJ",
@@ -40,7 +40,7 @@
     "thumbnailUrl": "https://picsum.photos/id/30/200/300"
   },
   {
-    "id": "5",
+    "id": "local_content_50000000-0000-4000-8000-000000000005",
     "type": "article",
     "authorName": "Leo",
     "authorMbti": "ISFP",
@@ -50,7 +50,7 @@
     "thumbnailUrl": "https://picsum.photos/id/40/200/300"
   },
   {
-    "id": "6",
+    "id": "local_content_60000000-0000-4000-8000-000000000006",
     "type": "article",
     "authorName": "Shengfeng",
     "authorMbti": "INFJ",
@@ -60,7 +60,7 @@
     "thumbnailUrl": "https://picsum.photos/id/50/200/300"
   },
   {
-    "id": "7",
+    "id": "local_content_70000000-0000-4000-8000-000000000007",
     "type": "article",
     "authorName": "Alex",
     "authorMbti": "ENFP",
@@ -70,7 +70,7 @@
     "thumbnailUrl": "https://picsum.photos/id/60/200/300"
   },
   {
-    "id": "8",
+    "id": "local_content_80000000-0000-4000-8000-000000000008",
     "type": "article",
     "authorName": "Jason",
     "authorMbti": "ESTP",
@@ -80,7 +80,7 @@
     "thumbnailUrl": "https://picsum.photos/id/70/200/300"
   },
   {
-    "id": "9",
+    "id": "local_content_90000000-0000-4000-8000-000000000009",
     "type": "article",
     "authorName": "Dr. Miller",
     "authorMbti": "INTJ",
@@ -90,7 +90,7 @@
     "thumbnailUrl": "https://picsum.photos/id/80/200/300"
   },
   {
-    "id": "10",
+    "id": "local_content_10000000-0000-4000-8000-000000000010",
     "type": "article",
     "authorName": "System",
     "authorMbti": "ENTP",

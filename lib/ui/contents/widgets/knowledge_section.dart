@@ -19,8 +19,8 @@ class _KnowledgeHomeSectionState extends State<KnowledgeHomeSection> {
     },
     {
       'title': '本地书籍示例',
-      'image': 'assets/images/book_0.png',
-      'isAsset': true,
+      'image': 'https://picsum.photos/id/20/200/300',
+      'isAsset': false,
       'url': 'https://item.jd.com/100014348492.html',
     },
     {

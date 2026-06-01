@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "812205537802",
+    "project_id": "embti-6e22a",
+    "storage_bucket": "embti-6e22a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812205537802:android:63bba8f21cbe2b3b5a3df3",
+        "android_client_info": {
+          "package_name": "cn.gritsoft.emombti"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPlE8UG7V0jqvsAPCuh4nnkz81wIOvVVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
