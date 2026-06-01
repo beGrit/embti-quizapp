@@ -25,6 +25,15 @@ class SurveyFlowRepositoryLocal implements SurveyFlowRepository {
       _localDataSqliteService.saveFlow(flow);
 
   @override
-  Future<void> deleteFlow(String id) =>
-      _localDataSqliteService.deleteFlow(id);
+  Future<void> deleteFlow(String id) => _localDataSqliteService.deleteFlow(id);
+
+  @override
+  Future<AssessmentResult?> getAssessmentResult(String surveyFlowId) {
+    return _localDataSqliteService.getAssessmentResult(surveyFlowId);
+  }
+
+  @override
+  Future<void> saveAssessmentResult(AssessmentResult result) {
+    return _localDataSqliteService.saveResult(result);
+  }
 }

@@ -14,4 +14,8 @@ abstract class SurveyFlowRepository {
 
   /// Removes the [SurveyFlow] associated with the given survey ID.
   Future<void> deleteFlow(String id);
+
+  Future<AssessmentResult?> getAssessmentResult(String surveyFlowId);
+
+  Future<void> saveAssessmentResult(AssessmentResult result);
 }

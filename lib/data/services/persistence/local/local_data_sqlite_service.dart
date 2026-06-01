@@ -212,11 +212,6 @@ class LocalDataSqliteService {
         'scores': jsonEncode(result.scores.map((e) => e.toJson()).toList()),
         'timestamp': result.timestamp.toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
-      await txn.delete(
-        'survey_flows',
-        where: 'id = ?',
-        whereArgs: [result.surveyFlowId],
-      );
     });
   }
 
@@ -304,6 +299,24 @@ class LocalDataSqliteService {
           ),
         )
         .toList();
+  }
+
+  Future<AssessmentResult?> getAssessmentResult(String surveyFlowId) async {
+    final db = await database;
+    final maps = await db.query(
+      'assessment_results',
+      where: 'surveyFlowId = ?',
+      whereArgs: [surveyFlowId],
+    );
+    if (maps.isEmpty) return null;
+    final map = maps.first;
+    return AssessmentResult(
+      surveyFlowId: map['surveyFlowId'] as String,
+      timestamp: DateTime.parse(map['timestamp'] as String),
+      scores: (jsonDecode(map['scores'] as String) as List)
+          .map((e) => AxisScore.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
   }
 
   Future<void> clearAssessmentHistory() async {

@@ -3,6 +3,7 @@ import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow_list_view.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow_result.dart';
+import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
       surveyFlowRepository: context.read(),
       surveyFlowState: context.read(),
     );
+    viewModel.loadAssessmentResult.execute();
     _pageController = PageController();
   }
 
@@ -116,7 +118,32 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
   }
 
   Widget _buildResultPage() {
-    return SurveyFlowResult(viewModel: viewModel);
+    return ListenableBuilder(
+      listenable: viewModel.loadAssessmentResult,
+      builder: (context, child) {
+        if (viewModel.loadAssessmentResult.running) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (viewModel.loadAssessmentResult.error) {
+          return Center(
+            child: Text(
+              'Failed to load assessment result: ${viewModel.loadAssessmentResult.error}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          );
+        } else if (viewModel.loadAssessmentResult.completed) {
+          final result = viewModel.loadAssessmentResult.result;
+          if (result is Ok && result.value != null) {
+            return SurveyFlowResult(pResult: result.value);
+          } else {
+            return const Center(child: Text('No assessment result found.'));
+          }
+        } else {
+          return SizedBox.shrink();
+        }
+      },
+    );
   }
 
   Widget _buildLandingPage() {

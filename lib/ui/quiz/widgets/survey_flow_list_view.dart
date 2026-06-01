@@ -144,18 +144,17 @@ class _SurveyFlowListBody extends StatelessWidget {
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            textBaseline: TextBaseline.alphabetic,
             children: [
               Expanded(
                 child: Text(
                   'Continue where you left off',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: theme.textTheme.titleLarge,
                 ),
               ),
-              TextButton(
+              FilledButton(
                 onPressed: () =>
-                    viewModel.setSelectionMode(viewModel.selectionMode),
+                    viewModel.setSelectionMode(!viewModel.selectionMode),
                 child: Text(viewModel.selectionMode ? 'Done' : 'Select'),
               ),
             ],

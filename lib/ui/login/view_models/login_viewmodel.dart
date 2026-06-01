@@ -1,5 +1,5 @@
 import 'package:emombti/utils/command.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 
 import '../../../data/repositories/auth/auth_repository.dart';
@@ -53,6 +53,12 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _loginWithGoogleAction() async {
+    if (kDebugMode) {
+      return await repository.login(
+        email: '1134187280@qq.com',
+        password: 'LSFlsf123',
+      );
+    }
     final result = await repository.loginWithGoogle();
     if (result is Error<void>) {
       _log.warning('Login failed! ${result.error}');

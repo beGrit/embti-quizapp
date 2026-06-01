@@ -66,9 +66,72 @@ class SurveyFlowViewModel extends ChangeNotifier {
       await surveyFlowRepository.saveFlow(_flow);
       surveyFlowState.updateLatest(_flow);
       notifyListeners();
+      _calculateResult();
       return Result.ok(null);
     } catch (e) {
       notifyListeners();
+      return Result.error(Exception(e.toString()));
+    }
+  }
+
+  Future<Result<void>> _calculateResult() async {
+    try {
+      final answers = _flow.currentAnswers;
+      final questions = _survey.questions;
+
+      final List<AxisScore> calculatedScores = await Future(() {
+        final Map<PersonalityAxis, double> scoreSums = {};
+        final Map<PersonalityAxis, double> maxPossibleSums = {};
+
+        // Initialize trackers for all axes to handle empty or missing axes gracefully
+        for (var axis in PersonalityAxis.values) {
+          scoreSums[axis] = 0.0;
+          maxPossibleSums[axis] = 0.0;
+        }
+
+        // Loop through all questions in the survey to calculate totals
+        for (var question in questions) {
+          final answerValue = answers[question.id];
+          if (answerValue == null) continue; // Skip if unanswered
+
+          const double maxGradeValue = 4.0; // Based on AnwserGrade (0 to 4)
+          double actualGrade = answerValue.toDouble();
+
+          // Handle reverse-scored questions (e.g., 4 becomes 0, 3 becomes 1)
+          if (question.isReversed) {
+            actualGrade = maxGradeValue - actualGrade;
+          }
+
+          // Apply weight and accumulate values
+          scoreSums[question.axis] =
+              scoreSums[question.axis]! + (actualGrade * question.weight);
+          maxPossibleSums[question.axis] =
+              maxPossibleSums[question.axis]! +
+              (maxGradeValue * question.weight);
+        }
+
+        // Map accumulated sums to the final normalized AxisScore models (0.0 to 1.0)
+        return PersonalityAxis.values.map((axis) {
+          final double totalScore = scoreSums[axis]!;
+          final double maxScore = maxPossibleSums[axis]!;
+          final double normalizedValue = maxScore == 0
+              ? 0.0
+              : (totalScore / maxScore);
+
+          return AxisScore(axis: axis, value: normalizedValue);
+        }).toList();
+      });
+
+      // 3. Construct and save the final AssessmentResult model
+      final assessmentResult = AssessmentResult(
+        surveyFlowId: _flow.id,
+        scores: calculatedScores,
+        timestamp: DateTime.now(),
+      );
+      await surveyFlowRepository.saveAssessmentResult(assessmentResult);
+      notifyListeners();
+      return Result.ok(null);
+    } catch (e) {
       return Result.error(Exception(e.toString()));
     }
   }

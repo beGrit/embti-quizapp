@@ -18,6 +18,8 @@ class QuizLandingViewModel extends ChangeNotifier {
        _surveyFlowState = surveyFlowState {
     load = Command0(_load);
     startAssessment = Command0(_startAssessmentAction);
+    loadAssessmentResult = Command0(_loadAssessmentResult);
+    surveyFlowState.addListener(loadAssessmentResult.execute);
   }
 
   final QuizRepository _repository;
@@ -28,6 +30,8 @@ class QuizLandingViewModel extends ChangeNotifier {
   late final Command0<void> load;
 
   late final Command0<Map<String, String>> startAssessment;
+
+  late final Command0<AssessmentResult?> loadAssessmentResult;
 
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
@@ -157,5 +161,17 @@ class QuizLandingViewModel extends ChangeNotifier {
       totalQuestions: survey.questions.length,
       questionOrder: ids,
     );
+  }
+
+  Future<Result<AssessmentResult?>> _loadAssessmentResult() async {
+    final latestCompleted = _surveyFlowState.latestCompleted;
+    if (latestCompleted != null) {
+      final result = await _surveyFlowRepository.getAssessmentResult(
+        latestCompleted.id,
+      );
+      return Result.ok(result);
+    } else {
+      return Result.error(Exception('No completed assessment found.'));
+    }
   }
 }
