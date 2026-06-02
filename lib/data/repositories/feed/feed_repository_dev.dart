@@ -1,3 +1,5 @@
+import 'package:emombti/data/services/persistence/api/file_service.dart';
+import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/model/feed/feed_api_model.dart';
 import 'package:emombti/data/services/persistence/api/model/user/user_api_model.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
@@ -6,13 +8,16 @@ import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:http/http.dart' as http;
-import 'package:pocketbase/pocketbase.dart';
+import 'package:pocketbase/pocketbase.dart' hide FileService;
 
 import 'feed_repository.dart';
 
 class FeedRepositoryDev implements FeedRepository {
-  FeedRepositoryDev({required PocketBaseService pbService})
-    : _pbService = pbService;
+  FeedRepositoryDev({
+    required PocketBaseService pbService,
+    required FirestoreService firestoreService,
+    required FileService fileService,
+  }) : _pbService = pbService;
 
   final PocketBaseService _pbService;
 

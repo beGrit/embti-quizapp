@@ -313,4 +313,348 @@ $UserCopyWith<$Res> get author {
 }
 }
 
+
+/// @nodoc
+mixin _$Reel {
+
+ String? get id; String? get title; String? get subTitle; User get author; AppFile get videoUrl; DateTime get created; DateTime get updated; SocialMeta? get meta;
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ReelCopyWith<Reel> get copyWith => _$ReelCopyWithImpl<Reel>(this as Reel, _$identity);
+
+  /// Serializes this Reel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Reel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subTitle, subTitle) || other.subTitle == subTitle)&&(identical(other.author, author) || other.author == author)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated)&&(identical(other.meta, meta) || other.meta == meta));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,subTitle,author,videoUrl,created,updated,meta);
+
+@override
+String toString() {
+  return 'Reel(id: $id, title: $title, subTitle: $subTitle, author: $author, videoUrl: $videoUrl, created: $created, updated: $updated, meta: $meta)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ReelCopyWith<$Res>  {
+  factory $ReelCopyWith(Reel value, $Res Function(Reel) _then) = _$ReelCopyWithImpl;
+@useResult
+$Res call({
+ String? id, String? title, String? subTitle, User author, AppFile videoUrl, DateTime created, DateTime updated, SocialMeta? meta
+});
+
+
+$UserCopyWith<$Res> get author;$AppFileCopyWith<$Res> get videoUrl;$SocialMetaCopyWith<$Res>? get meta;
+
+}
+/// @nodoc
+class _$ReelCopyWithImpl<$Res>
+    implements $ReelCopyWith<$Res> {
+  _$ReelCopyWithImpl(this._self, this._then);
+
+  final Reel _self;
+  final $Res Function(Reel) _then;
+
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? title = freezed,Object? subTitle = freezed,Object? author = null,Object? videoUrl = null,Object? created = null,Object? updated = null,Object? meta = freezed,}) {
+  return _then(_self.copyWith(
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,subTitle: freezed == subTitle ? _self.subTitle : subTitle // ignore: cast_nullable_to_non_nullable
+as String?,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as User,videoUrl: null == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as AppFile,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
+as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable
+as DateTime,meta: freezed == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
+as SocialMeta?,
+  ));
+}
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res> get author {
+  
+  return $UserCopyWith<$Res>(_self.author, (value) {
+    return _then(_self.copyWith(author: value));
+  });
+}/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppFileCopyWith<$Res> get videoUrl {
+  
+  return $AppFileCopyWith<$Res>(_self.videoUrl, (value) {
+    return _then(_self.copyWith(videoUrl: value));
+  });
+}/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SocialMetaCopyWith<$Res>? get meta {
+    if (_self.meta == null) {
+    return null;
+  }
+
+  return $SocialMetaCopyWith<$Res>(_self.meta!, (value) {
+    return _then(_self.copyWith(meta: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [Reel].
+extension ReelPatterns on Reel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Reel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Reel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Reel value)  $default,){
+final _that = this;
+switch (_that) {
+case _Reel():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Reel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Reel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? title,  String? subTitle,  User author,  AppFile videoUrl,  DateTime created,  DateTime updated,  SocialMeta? meta)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Reel() when $default != null:
+return $default(_that.id,_that.title,_that.subTitle,_that.author,_that.videoUrl,_that.created,_that.updated,_that.meta);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? title,  String? subTitle,  User author,  AppFile videoUrl,  DateTime created,  DateTime updated,  SocialMeta? meta)  $default,) {final _that = this;
+switch (_that) {
+case _Reel():
+return $default(_that.id,_that.title,_that.subTitle,_that.author,_that.videoUrl,_that.created,_that.updated,_that.meta);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? title,  String? subTitle,  User author,  AppFile videoUrl,  DateTime created,  DateTime updated,  SocialMeta? meta)?  $default,) {final _that = this;
+switch (_that) {
+case _Reel() when $default != null:
+return $default(_that.id,_that.title,_that.subTitle,_that.author,_that.videoUrl,_that.created,_that.updated,_that.meta);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _Reel implements Reel {
+  const _Reel({this.id, this.title, this.subTitle, required this.author, required this.videoUrl, required this.created, required this.updated, this.meta});
+  factory _Reel.fromJson(Map<String, dynamic> json) => _$ReelFromJson(json);
+
+@override final  String? id;
+@override final  String? title;
+@override final  String? subTitle;
+@override final  User author;
+@override final  AppFile videoUrl;
+@override final  DateTime created;
+@override final  DateTime updated;
+@override final  SocialMeta? meta;
+
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ReelCopyWith<_Reel> get copyWith => __$ReelCopyWithImpl<_Reel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ReelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Reel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.subTitle, subTitle) || other.subTitle == subTitle)&&(identical(other.author, author) || other.author == author)&&(identical(other.videoUrl, videoUrl) || other.videoUrl == videoUrl)&&(identical(other.created, created) || other.created == created)&&(identical(other.updated, updated) || other.updated == updated)&&(identical(other.meta, meta) || other.meta == meta));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,subTitle,author,videoUrl,created,updated,meta);
+
+@override
+String toString() {
+  return 'Reel(id: $id, title: $title, subTitle: $subTitle, author: $author, videoUrl: $videoUrl, created: $created, updated: $updated, meta: $meta)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ReelCopyWith<$Res> implements $ReelCopyWith<$Res> {
+  factory _$ReelCopyWith(_Reel value, $Res Function(_Reel) _then) = __$ReelCopyWithImpl;
+@override @useResult
+$Res call({
+ String? id, String? title, String? subTitle, User author, AppFile videoUrl, DateTime created, DateTime updated, SocialMeta? meta
+});
+
+
+@override $UserCopyWith<$Res> get author;@override $AppFileCopyWith<$Res> get videoUrl;@override $SocialMetaCopyWith<$Res>? get meta;
+
+}
+/// @nodoc
+class __$ReelCopyWithImpl<$Res>
+    implements _$ReelCopyWith<$Res> {
+  __$ReelCopyWithImpl(this._self, this._then);
+
+  final _Reel _self;
+  final $Res Function(_Reel) _then;
+
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? title = freezed,Object? subTitle = freezed,Object? author = null,Object? videoUrl = null,Object? created = null,Object? updated = null,Object? meta = freezed,}) {
+  return _then(_Reel(
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String?,title: freezed == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String?,subTitle: freezed == subTitle ? _self.subTitle : subTitle // ignore: cast_nullable_to_non_nullable
+as String?,author: null == author ? _self.author : author // ignore: cast_nullable_to_non_nullable
+as User,videoUrl: null == videoUrl ? _self.videoUrl : videoUrl // ignore: cast_nullable_to_non_nullable
+as AppFile,created: null == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
+as DateTime,updated: null == updated ? _self.updated : updated // ignore: cast_nullable_to_non_nullable
+as DateTime,meta: freezed == meta ? _self.meta : meta // ignore: cast_nullable_to_non_nullable
+as SocialMeta?,
+  ));
+}
+
+/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserCopyWith<$Res> get author {
+  
+  return $UserCopyWith<$Res>(_self.author, (value) {
+    return _then(_self.copyWith(author: value));
+  });
+}/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppFileCopyWith<$Res> get videoUrl {
+  
+  return $AppFileCopyWith<$Res>(_self.videoUrl, (value) {
+    return _then(_self.copyWith(videoUrl: value));
+  });
+}/// Create a copy of Reel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SocialMetaCopyWith<$Res>? get meta {
+    if (_self.meta == null) {
+    return null;
+  }
+
+  return $SocialMetaCopyWith<$Res>(_self.meta!, (value) {
+    return _then(_self.copyWith(meta: value));
+  });
+}
+}
+
 // dart format on

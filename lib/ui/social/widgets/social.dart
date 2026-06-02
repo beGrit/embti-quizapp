@@ -22,37 +22,37 @@ class InteractionBarWidget extends StatelessWidget {
             if (meta == null)
               const CircularProgressIndicator()
             else ...[
-              _buildActionButton(
+              ActionButton(
                 icon: meta.isLiked ? Icons.favorite : Icons.favorite_border,
                 count: meta.likesCount,
                 suffix: ' Likes',
+                onTap: viewModel.toggleLike,
                 color: meta.isLiked
                     ? Colors.red
                     : Theme.of(context).colorScheme.secondary,
-                onTap: viewModel.toggleLike,
               ),
-              _buildActionButton(
+              ActionButton(
                 icon: meta.isFavorited ? Icons.star : Icons.star_border,
                 count: meta.favoritesCount,
                 suffix: ' Favorites',
+                onTap: viewModel.toggleFavorite,
                 color: meta.isFavorited
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.secondary,
-                onTap: viewModel.toggleFavorite,
               ),
-              _buildActionButton(
+              ActionButton(
                 icon: Icons.chat_bubble_outline,
                 count: meta.commentsCount,
                 suffix: ' Comments',
-                color: Theme.of(context).colorScheme.secondary,
                 onTap: viewModel.onCommentRequest,
+                color: Theme.of(context).colorScheme.secondary,
               ),
-              _buildActionButton(
+              ActionButton(
                 icon: Icons.share_outlined,
                 count: meta.sharesCount,
                 suffix: ' Shares',
-                color: Theme.of(context).colorScheme.secondary,
                 onTap: null,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ],
           ],
@@ -60,14 +60,26 @@ class InteractionBarWidget extends StatelessWidget {
       },
     );
   }
+}
 
-  Widget _buildActionButton({
-    required IconData icon,
-    int? count,
-    String? suffix,
-    VoidCallback? onTap,
-    Color? color,
-  }) {
+class ActionButton extends StatelessWidget {
+  const ActionButton({
+    super.key,
+    required this.icon,
+    this.count,
+    this.suffix,
+    this.onTap,
+    this.color,
+  });
+
+  final IconData icon;
+  final int? count;
+  final String? suffix;
+  final VoidCallback? onTap;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -80,7 +92,7 @@ class InteractionBarWidget extends StatelessWidget {
             // Only render the spacing and text if count is not null
             if (count != null) ...[
               Text(
-                '${NumberFormatter.formatSocialCount(count)}${suffix ?? ""}',
+                '${NumberFormatter.formatSocialCount(count ?? 0)}${suffix ?? ""}',
                 style: TextStyle(fontSize: 9),
               ),
             ] else
@@ -426,6 +438,121 @@ class _StickyInputBarWidgetState extends State<StickyInputBarWidget> {
           },
         ),
       ),
+    );
+  }
+}
+
+class SocialComposeWidget extends StatefulWidget {
+  const SocialComposeWidget({super.key, required this.viewModel});
+
+  final SocialViewModel viewModel;
+
+  @override
+  State<SocialComposeWidget> createState() => _SocialComposeWidgetState();
+}
+
+class _SocialComposeWidgetState extends State<SocialComposeWidget> {
+  @override
+  Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ValueListenableBuilder(
+        valueListenable: widget.viewModel.socialModel,
+        builder: (context, value, child) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 16,
+            children: [
+              GestureDetector(
+                onTap: () {},
+                child: Column(
+                  children: [
+                    if (!value.isLiked)
+                      Icon(
+                        Icons.favorite_rounded,
+                        color: theme.colorScheme.surfaceContainer,
+                        size: 40,
+                      ),
+                    if (value.isLiked)
+                      Icon(Icons.favorite_rounded, color: Colors.red, size: 40),
+                    Text(
+                      value.favoritesCount.toString(),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.surfaceBright,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  _showCommentsBottomSheet(context);
+                },
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.comment_rounded,
+                      color: theme.colorScheme.surfaceContainer,
+                      size: 40,
+                    ),
+                    Text(
+                      value.commentsCount.toString(),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.surfaceBright,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCommentsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.4,
+          maxChildSize: 0.9,
+          minChildSize: 0.3,
+          expand: false,
+          builder: (context, scrollController) {
+            return ValueListenableBuilder(
+              valueListenable: widget.viewModel.socialModel,
+              builder: (context, value, _) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Text(
+                          'Comments',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Text(
+                          '${value.commentsCount} comments',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

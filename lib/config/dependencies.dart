@@ -19,6 +19,8 @@ import 'package:emombti/data/services/common/chat_service.dart';
 import 'package:emombti/data/services/common/notification_service.dart';
 import 'package:emombti/data/services/common/notification_service_local.dart';
 import 'package:emombti/data/services/common/survey_flow_service.dart';
+import 'package:emombti/data/services/persistence/api/file_service.dart';
+import 'package:emombti/data/services/persistence/api/file_service_cloudflare.dart';
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_data_sqlite_service.dart';
@@ -90,6 +92,9 @@ List<SingleChildWidget> get providersLocal {
     Provider<LocalDataSqliteService>.value(value: LocalDataSqliteService()),
     Provider<PocketBaseService>(create: (context) => PocketBaseService()),
     Provider<FirestoreService>(create: (context) => FirestoreService()),
+    Provider<FileService>(
+      create: (context) => FileServiceCloudFlare() as FileService,
+    ),
     ChangeNotifierProvider<AuthRepository>(
       create: (context) => AuthRepositoryDev(pbService: context.read()),
     ),
@@ -100,7 +105,11 @@ List<SingleChildWidget> get providersLocal {
       create: (context) => ChatRepositoryDev(pbService: context.read()),
     ),
     Provider<FeedRepository>(
-      create: (context) => FeedRepositoryDev(pbService: context.read()),
+      create: (context) => FeedRepositoryDev(
+        pbService: context.read(),
+        firestoreService: context.read(),
+        fileService: context.read(),
+      ),
     ),
     Provider<ArticleContentRepository>(
       create: (context) =>
