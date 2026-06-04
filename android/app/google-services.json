@@ -12,7 +12,12 @@
           "package_name": "cn.gritsoft.emombti"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "812205537802-cotvi2d7ofsfc31uds6mennjamte08tg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBPlE8UG7V0jqvsAPCuh4nnkz81wIOvVVo"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812205537802-cotvi2d7ofsfc31uds6mennjamte08tg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "812205537802-gert5rhjvr5lol1vkeu4219riu9p3cvu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "cn.gritsoft.emombti"
+              }
+            }
+          ]
         }
       }
     }

@@ -185,8 +185,8 @@ class _HomeHeaderDelegate extends StatelessWidget {
                       hintText: 'Search for personality...',
                       elevation: const WidgetStatePropertyAll<double>(0),
                       backgroundColor: WidgetStatePropertyAll<Color>(
-                        theme.colorScheme.surfaceContainerHighest.withOpacity(
-                          0.5,
+                        theme.colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
                         ),
                       ),
                     );

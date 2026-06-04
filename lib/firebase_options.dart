@@ -66,10 +66,12 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAKohR-dGW4HVXDaZvRsHVGyy48BjErMGo',
-    appId: '1:812205537802:ios:796e364a4cfbe1f75a3df3',
+    appId: '1:812205537802:ios:8c4dbf82fe979c245a3df3',
     messagingSenderId: '812205537802',
     projectId: 'embti-6e22a',
     storageBucket: 'embti-6e22a.firebasestorage.app',
-    iosBundleId: 'cn.gritsoft.emombti',
+    iosClientId: '812205537802-o0c7htm38oro3fi5v7hebb2bem5vsbil.apps.googleusercontent.com',
+    iosBundleId: 'com.gritsoft.app.emombti',
   );
+
 }

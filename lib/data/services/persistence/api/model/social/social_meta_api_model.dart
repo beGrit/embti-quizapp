@@ -1,30 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emombti/utils/converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'social_meta_api_model.freezed.dart';
 part 'social_meta_api_model.g.dart';
 
-class FirestoreTimestampConverter implements JsonConverter<DateTime, dynamic> {
-  const FirestoreTimestampConverter();
-
-  @override
-  DateTime fromJson(dynamic json) {
-    if (json is Timestamp) {
-      return json.toDate();
-    }
-    if (json is String) {
-      return DateTime.parse(json);
-    }
-    return DateTime.now();
-  }
-
-  @override
-  dynamic toJson(DateTime object) => Timestamp.fromDate(object);
-}
-
 @freezed
 abstract class SocialMetaApiModel with _$SocialMetaApiModel {
-  @JsonSerializable(explicitToJson: true)
   const factory SocialMetaApiModel({
     @JsonKey(includeFromJson: false, includeToJson: false) String? id,
     required String relatedId,

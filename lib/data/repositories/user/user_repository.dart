@@ -13,7 +13,11 @@ abstract class UserRepository {
   Future<Result<void>> saveUser(User user);
 
   /// Create user.
-  Future<Result<void>> createUser(String email, String password);
+  Future<Result<void>> createUserUsingEmailPassword({
+    required String email,
+    required String password,
+    String? id,
+  });
 
   /// Updates the user's avatar.
   Future<Result<User>> updateAvatar(

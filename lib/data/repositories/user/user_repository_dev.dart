@@ -87,7 +87,11 @@ class UserRepositoryDev implements UserRepository {
   }
 
   @override
-  Future<Result<void>> createUser(String email, String password) async {
+  Future<Result<void>> createUserUsingEmailPassword({
+    required String email,
+    required String password,
+    String? id,
+  }) async {
     try {
       await _pbService.client
           .collection('users')

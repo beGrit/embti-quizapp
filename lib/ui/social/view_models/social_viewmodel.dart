@@ -120,7 +120,6 @@ class InteractionViewModel extends ChangeNotifier {
 
   Future<void> toggleLike() async {
     final currentMeta = socialModel.value;
-    if (currentMeta == null) return;
 
     final isLiked = !currentMeta.isLiked;
     final oldMeta = currentMeta;
@@ -139,7 +138,6 @@ class InteractionViewModel extends ChangeNotifier {
 
   Future<void> toggleFavorite() async {
     final currentMeta = socialModel.value;
-    if (currentMeta == null) return;
 
     final isFav = !currentMeta.isFavorited;
     final oldMeta = currentMeta;
@@ -168,10 +166,9 @@ class CommentSectionViewModel extends ChangeNotifier with PagingMixin<Comment> {
     required this.socialModel,
   }) : _repository = repository;
 
-  bool get isEmpty =>
-      (socialModel.value?.comments.isEmpty ?? true) && !isLoading;
+  bool get isEmpty => (socialModel.value.comments.isEmpty) && !isLoading;
 
-  List<Comment> get comments => socialModel.value?.comments ?? [];
+  List<Comment> get comments => socialModel.value.comments;
 
   Future<void> init() async {
     await refreshData();

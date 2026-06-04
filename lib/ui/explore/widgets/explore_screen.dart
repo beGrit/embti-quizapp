@@ -82,6 +82,7 @@ class _ExploreScreenState extends State<ExploreScreen>
     final vm = widget.viewModel;
 
     return MultiProvider(
+      // mount the tab view's state(viewmodel) at the explore screen.
       providers: [
         ChangeNotifierProvider<FeedPostViewModel>(
           create: (context) => FeedPostViewModel(

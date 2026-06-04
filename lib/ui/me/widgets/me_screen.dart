@@ -36,9 +36,9 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final screenSize = MediaQuery.of(context).size;
-
-    final double headerHeight = screenSize.height > 400 ? 250 : 200;
+    final double headerHeight = MediaQuery.of(context).size.height < 400
+        ? 280
+        : 250;
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MeViewModel>(

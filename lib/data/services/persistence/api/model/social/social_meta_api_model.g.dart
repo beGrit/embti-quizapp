@@ -19,7 +19,7 @@ _SocialMetaApiModel _$SocialMetaApiModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$SocialMetaApiModelToJson(_SocialMetaApiModel instance) =>
     <String, dynamic>{
       'relatedId': instance.relatedId,
-      'metrics': instance.metrics.toJson(),
+      'metrics': instance.metrics,
       'created': const FirestoreTimestampConverter().toJson(instance.created),
       'updated': const FirestoreTimestampConverter().toJson(instance.updated),
     };

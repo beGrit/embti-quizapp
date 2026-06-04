@@ -13,9 +13,10 @@ class LoginViewModel extends ChangeNotifier {
       _loginWithAccountAndPassword,
     );
     register = Command1<void, (String, String)>(_registerAction);
+    _log = Logger('LoginViewModel');
   }
-  final _log = Logger('LoginViewModel');
 
+  late final Logger _log;
   final AuthRepository repository;
   final UserRepository userRepository;
 
@@ -42,7 +43,10 @@ class LoginViewModel extends ChangeNotifier {
     final (email, password) = credentials;
     _log.info('Attempting to register user: $email');
 
-    final createResult = await userRepository.createUser(email, password);
+    final createResult = await userRepository.createUserUsingEmailPassword(
+      email: email,
+      password: password,
+    );
 
     if (createResult is Error<void>) {
       _log.severe('Failed to create user: ${createResult.error}');
@@ -53,12 +57,12 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _loginWithGoogleAction() async {
-    if (kDebugMode) {
-      return await repository.login(
-        email: '1134187280@qq.com',
-        password: 'LSFlsf123',
-      );
-    }
+    // if (kDebugMode) {
+    //   return await repository.login(
+    //     email: '1134187280@qq.com',
+    //     password: 'LSFlsf123',
+    //   );
+    // }
     final result = await repository.loginWithGoogle();
     if (result is Error<void>) {
       _log.warning('Login failed! ${result.error}');

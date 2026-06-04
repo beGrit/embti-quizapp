@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 class PocketBaseDateTimeConverter implements JsonConverter<DateTime, String> {
@@ -17,4 +18,22 @@ class PocketBaseDateTimeConverter implements JsonConverter<DateTime, String> {
 
   @override
   String toJson(DateTime object) => object.toUtc().toIso8601String();
+}
+
+class FirestoreTimestampConverter implements JsonConverter<DateTime, dynamic> {
+  const FirestoreTimestampConverter();
+
+  @override
+  DateTime fromJson(dynamic json) {
+    if (json is Timestamp) {
+      return json.toDate();
+    }
+    if (json is String) {
+      return DateTime.parse(json);
+    }
+    return DateTime.now();
+  }
+
+  @override
+  dynamic toJson(DateTime object) => Timestamp.fromDate(object);
 }

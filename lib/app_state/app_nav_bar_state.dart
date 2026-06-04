@@ -35,4 +35,14 @@ class AppNavBarState extends ChangeNotifier {
     _branchIsDark.clear();
     notifyListeners();
   }
+
+  bool _isFullScreen = false;
+  bool get isFullScreen => _isFullScreen;
+
+  set isFullScreen(bool value) {
+    if (_isFullScreen != value) {
+      _isFullScreen = value;
+      notifyListeners(); // This triggers the ListenableBuilder to rebuild
+    }
+  }
 }

@@ -2,6 +2,7 @@ import 'package:emombti/app_state/app_nav_bar_state.dart';
 import 'package:emombti/app_state/chat_state.dart';
 import 'package:emombti/app_state/survey_flow_state.dart';
 import 'package:emombti/app_state/theme_state.dart';
+import 'package:emombti/data/repositories/auth/auth_repository_firebase.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository_dev.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
@@ -13,7 +14,8 @@ import 'package:emombti/data/repositories/quiz/survey_flow_repository_local.dart
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository_firestore.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
-import 'package:emombti/data/repositories/user/user_repository_dev.dart';
+import 'package:emombti/data/repositories/user/user_repository_dev_v2.dart';
+// import 'package:emombti/data/repositories/user/user_repository_dev.dart';
 import 'package:emombti/data/services/common/advertising_service.dart';
 import 'package:emombti/data/services/common/chat_service.dart';
 import 'package:emombti/data/services/common/notification_service.dart';
@@ -33,7 +35,6 @@ import 'package:provider/single_child_widget.dart';
 import '../data/repositories/article_content/article_content_repository.dart';
 import '../data/repositories/article_content/article_content_repository_local.dart';
 import '../data/repositories/auth/auth_repository.dart';
-import '../data/repositories/auth/auth_repository_dev.dart';
 import '../data/repositories/banner_content/banner_content_repository.dart';
 import '../data/repositories/banner_content/banner_content_repository_local.dart';
 import '../data/repositories/video_content/video_content_repository.dart';
@@ -96,10 +97,11 @@ List<SingleChildWidget> get providersLocal {
       create: (context) => FileServiceCloudFlare() as FileService,
     ),
     ChangeNotifierProvider<AuthRepository>(
-      create: (context) => AuthRepositoryDev(pbService: context.read()),
+      create: (context) =>
+          AuthRepositoryFirebase(apiStroage: context.read()) as AuthRepository,
     ),
     Provider<UserRepository>(
-      create: (context) => UserRepositoryDev(pbService: context.read()),
+      create: (context) => UserRepositoryDev(apiStorage: context.read()),
     ),
     Provider<ChatRepository>(
       create: (context) => ChatRepositoryDev(pbService: context.read()),

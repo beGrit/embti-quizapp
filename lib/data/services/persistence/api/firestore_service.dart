@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'model/social/social_meta_api_model.dart';
+import 'model/user/user_api_model.dart';
 
 class FirestoreService {
   FirestoreService({FirebaseFirestore? firestore})
@@ -10,6 +11,36 @@ class FirestoreService {
 
   CollectionReference<Map<String, dynamic>> get _socialMetas =>
       _firestore.collection('social_metas');
+
+  CollectionReference<Map<String, dynamic>> get _users =>
+      _firestore.collection('users');
+
+  /// Save or update user profile data at /users/{uid}
+  Future<UserFirestoreApiModel> saveUser(UserFirestoreApiModel user) async {
+    final docRef = _users.doc(user.id);
+    await docRef.set(
+      user.toJson()..removeWhere((key, value) => value == null),
+      SetOptions(merge: true),
+    );
+    return user;
+  }
+
+  /// Fetch user profile data from /users/{uid}
+  Future<UserFirestoreApiModel?> getUser(String uid) async {
+    final snapshot = await _users.doc(uid).get();
+    final data = snapshot.data();
+
+    if (!snapshot.exists || data == null) {
+      return null;
+    }
+
+    try {
+      final apiModel = UserFirestoreApiModel.fromJson(data);
+      return apiModel;
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// Get social meta by related ID (e.g., PocketBase post ID)
   Future<SocialMetaApiModel?> getSocialMetaByRelatedId(String relatedId) async {

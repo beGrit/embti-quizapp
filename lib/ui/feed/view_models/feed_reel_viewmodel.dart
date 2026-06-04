@@ -53,6 +53,18 @@ class FeedReelViewModel extends ChangeNotifier {
         created: DateTime.now(),
         updated: DateTime.now(),
       ),
+      Reel(
+        id: '3',
+        title: 'Test Reel',
+        subTitle: 'This is a test reel',
+        author: User(id: '1', name: 'Test User'),
+        videoUrl: AppFile(
+          name: 'test.mp4',
+          uri: Uri.parse('https://storage.grit-soft.com/71565-538962840.mp4'),
+        ),
+        created: DateTime.now(),
+        updated: DateTime.now(),
+      ),
     ]);
   }
 

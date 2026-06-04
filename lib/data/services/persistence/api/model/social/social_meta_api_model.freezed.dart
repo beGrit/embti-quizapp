@@ -219,8 +219,8 @@ return $default(_that.id,_that.relatedId,_that.metrics,_that.created,_that.updat
 }
 
 /// @nodoc
+@JsonSerializable()
 
-@JsonSerializable(explicitToJson: true)
 class _SocialMetaApiModel implements SocialMetaApiModel {
   const _SocialMetaApiModel({@JsonKey(includeFromJson: false, includeToJson: false) this.id, required this.relatedId, required this.metrics, @FirestoreTimestampConverter() required this.created, @FirestoreTimestampConverter() required this.updated});
   factory _SocialMetaApiModel.fromJson(Map<String, dynamic> json) => _$SocialMetaApiModelFromJson(json);
