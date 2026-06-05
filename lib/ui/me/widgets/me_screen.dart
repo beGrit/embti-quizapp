@@ -113,7 +113,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     MeScreenAvatar(viewModel: viewModel),
                                     const SizedBox(height: 12),
                                     Text(
-                                      user?.name ?? "MBTI Explorer",
+                                      user?.name ?? "Unknown Name",
                                       style: theme.textTheme.titleLarge
                                           ?.copyWith(
                                             color: theme
@@ -125,7 +125,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     if (user != null) ...[
                                       const SizedBox(height: 4),
                                       Text(
-                                        user.email ?? "Unknown email",
+                                        user.email ?? "Unknown Email",
                                         style: theme.textTheme.bodySmall
                                             ?.copyWith(
                                               color: theme
@@ -136,20 +136,24 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                       ),
                                     ],
                                     const SizedBox(height: 8),
-                                    Chip(
-                                      label: Text(
-                                        user?.mbtiType ?? '',
-                                        style: theme.textTheme.labelMedium
-                                            ?.copyWith(
-                                              color: theme.colorScheme.tertiary,
-                                            ),
+                                    if (user != null &&
+                                        user.mbtiType != null &&
+                                        user.mbtiType != '')
+                                      Chip(
+                                        label: Text(
+                                          user?.mbtiType ?? '',
+                                          style: theme.textTheme.labelMedium
+                                              ?.copyWith(
+                                                color:
+                                                    theme.colorScheme.tertiary,
+                                              ),
+                                        ),
+                                        backgroundColor:
+                                            theme.colorScheme.tertiaryContainer,
+                                        side: BorderSide.none,
+                                        padding: EdgeInsets.zero,
+                                        visualDensity: VisualDensity.compact,
                                       ),
-                                      backgroundColor:
-                                          theme.colorScheme.tertiaryContainer,
-                                      side: BorderSide.none,
-                                      padding: EdgeInsets.zero,
-                                      visualDensity: VisualDensity.compact,
-                                    ),
                                   ],
                                 ),
                               ),

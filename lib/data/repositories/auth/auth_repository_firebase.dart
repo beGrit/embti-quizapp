@@ -5,6 +5,7 @@
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/model/user/user_api_model.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../domain/models/common/common.dart';
@@ -141,7 +142,20 @@ class AuthRepositoryFirebase extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginWithAppleId() {
-    throw UnimplementedError();
+  Future<Result<void>> loginWithAppleId() async {
+    try {
+      final appleProvider = fb.AppleAuthProvider();
+      if (kIsWeb) {
+        await fb.FirebaseAuth.instance.signInWithPopup(appleProvider);
+      } else {
+        await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
+      }
+      await _initUser(_firebaseAuth.currentUser);
+      return const Result.ok(null);
+    } on fb.FirebaseAuthException catch (e) {
+      return Result.error(e);
+    } catch (e) {
+      return Result.error(Exception(e.toString()));
+    }
   }
 }

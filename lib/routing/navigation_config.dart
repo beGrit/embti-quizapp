@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 enum NavigationConfigLabel {
-  home('Home'),
+  home('Contents'),
   explore('Explore'),
   quiz('Quiz'),
   mess('Mess'),

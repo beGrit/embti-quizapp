@@ -162,8 +162,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               label: NavigationConfigLabel.explore,
             ),
             NavigationConfig(
-              icon: Icons.explore_outlined,
-              selectedIcon: Icons.explore,
+              icon: Icons.article_outlined,
+              selectedIcon: Icons.article,
               label: NavigationConfigLabel.home,
             ),
             NavigationConfig(

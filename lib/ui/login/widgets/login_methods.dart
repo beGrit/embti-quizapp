@@ -23,19 +23,14 @@ class _LoginMethodsState extends State<LoginMethods> {
   void initState() {
     super.initState();
     widget.viewModel.loginWithGoogle.addListener(_onGoogleLoginResult);
+    widget.viewModel.loginWithAppleId.addListener(_onAppleIdLoginResult);
     tooltipKey = GlobalKey<TooltipState>();
-  }
-
-  @override
-  void didUpdateWidget(covariant LoginMethods oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    oldWidget.viewModel.loginWithGoogle.removeListener(_onGoogleLoginResult);
-    widget.viewModel.loginWithGoogle.addListener(_onGoogleLoginResult);
   }
 
   @override
   void dispose() {
     widget.viewModel.loginWithGoogle.removeListener(_onGoogleLoginResult);
+    widget.viewModel.loginWithAppleId.removeListener(_onAppleIdLoginResult);
     super.dispose();
   }
 
@@ -55,7 +50,18 @@ class _LoginMethodsState extends State<LoginMethods> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Google Login Failed')));
+        ).showSnackBar(const SnackBar(content: Text('Google Sign In Failed')));
+      }
+    }
+  }
+
+  void _onAppleIdLoginResult() {
+    if (widget.viewModel.loginWithAppleId.error) {
+      widget.viewModel.loginWithAppleId.clearResult();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Apple Sign In Failed')));
       }
     }
   }
@@ -63,115 +69,138 @@ class _LoginMethodsState extends State<LoginMethods> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListenableBuilder(
-            listenable: widget.viewModel.loginWithGoogle,
-            builder: (context, child) {
-              return Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: FilledButton.icon(
-                        onPressed: () {
-                          if (!isPolicyAgreed) {
-                            setState(() {
-                              showTipsForPolicyAgree = true;
-                            });
-                            _ensureTooltipVisible();
-                            return;
-                          }
-                          widget.viewModel.loginWithGoogle.execute();
-                        },
-                        iconAlignment: IconAlignment.start,
-                        icon: const Icon(Icons.login, size: 32),
-                        label: const Text('Google Sign In'),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          if (theme.platform == TargetPlatform.iOS)
-            ListenableBuilder(
-              listenable: widget.viewModel.loginWithAppleId,
-              builder: (context, child) {
-                return Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            if (!isPolicyAgreed) {
-                              setState(() {
-                                showTipsForPolicyAgree = true;
-                              });
-                              _ensureTooltipVisible();
-                              return;
-                            }
-                            widget.viewModel.loginWithAppleId.execute();
-                          },
-                          icon: const Icon(Icons.apple, size: 32),
-                          label: const Text('Apple Sign In'),
+    return ListenableBuilder(
+      listenable: widget.viewModel,
+      builder: (context, child) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListenableBuilder(
+                listenable: widget.viewModel.loginWithGoogle,
+                builder: (context, child) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: FilledButton.icon(
+                            onPressed: widget.viewModel.isSigning
+                                ? null
+                                : () {
+                                    if (!isPolicyAgreed) {
+                                      setState(() {
+                                        showTipsForPolicyAgree = true;
+                                      });
+                                      _ensureTooltipVisible();
+                                      return;
+                                    }
+                                    widget.viewModel.loginWithGoogle.execute();
+                                  },
+                            iconAlignment: IconAlignment.start,
+                            icon: const Icon(Icons.login, size: 32),
+                            label: const Text('Google Sign In'),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          if (theme.platform != TargetPlatform.iOS)
-            ListenableBuilder(
-              listenable: widget.viewModel.loginWithAccountAndPassword,
-              builder: (context, child) {
-                return Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            if (!isPolicyAgreed) {
-                              setState(() {
-                                showTipsForPolicyAgree = true;
-                              });
-                              _ensureTooltipVisible();
-                              return;
-                            }
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => Scaffold(
-                                  extendBodyBehindAppBar: true,
-                                  backgroundColor: theme.colorScheme.surface,
-                                  appBar: AppBar(
-                                    // backgroundColor: Colors.transparent,
-                                    elevation: 0,
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              if (theme.platform == TargetPlatform.iOS)
+                ListenableBuilder(
+                  listenable: widget.viewModel.loginWithAppleId,
+                  builder: (context, child) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 50,
+                            child: widget.viewModel.isSigning
+                                ? null
+                                : FilledButton.icon(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Color(0xFF1A1A1A),
+                                      foregroundColor: Colors.white,
+                                      disabledBackgroundColor:
+                                          Colors.grey.shade300,
+                                      disabledForegroundColor:
+                                          Colors.grey.shade600,
+                                    ),
+                                    onPressed: () {
+                                      if (!isPolicyAgreed) {
+                                        setState(() {
+                                          showTipsForPolicyAgree = true;
+                                        });
+                                        _ensureTooltipVisible();
+                                        return;
+                                      }
+                                      widget.viewModel.loginWithAppleId
+                                          .execute();
+                                    },
+                                    icon: const Icon(Icons.apple, size: 32),
+                                    label: const Text('Apple Sign In'),
                                   ),
-                                  body: LoginForm(viewModel: widget.viewModel),
-                                ),
-                                fullscreenDialog: true,
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.email, size: 32),
-                          label: const Text('Email Sign In'),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          _buildLoginPolicy(context),
-        ],
-      ),
+                      ],
+                    );
+                  },
+                ),
+              if (theme.platform != TargetPlatform.iOS)
+                ListenableBuilder(
+                  listenable: widget.viewModel.loginWithAccountAndPassword,
+                  builder: (context, child) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 50,
+                            child: widget.viewModel.isSigning
+                                ? null
+                                : ElevatedButton.icon(
+                                    onPressed: () {
+                                      if (!isPolicyAgreed) {
+                                        setState(() {
+                                          showTipsForPolicyAgree = true;
+                                        });
+                                        _ensureTooltipVisible();
+                                        return;
+                                      }
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => Scaffold(
+                                            extendBodyBehindAppBar: true,
+                                            backgroundColor:
+                                                theme.colorScheme.surface,
+                                            appBar: AppBar(
+                                              // backgroundColor: Colors.transparent,
+                                              elevation: 0,
+                                            ),
+                                            body: LoginForm(
+                                              viewModel: widget.viewModel,
+                                            ),
+                                          ),
+                                          fullscreenDialog: true,
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.email, size: 32),
+                                    label: const Text('Email Sign In'),
+                                  ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              _buildLoginPolicy(context),
+            ],
+          ),
+        );
+      },
     );
   }
 

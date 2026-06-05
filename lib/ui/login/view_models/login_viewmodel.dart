@@ -21,6 +21,8 @@ class LoginViewModel extends ChangeNotifier {
   final AuthRepository repository;
   final UserRepository userRepository;
 
+  bool isSigning = false;
+
   late Command0<void> loginWithGoogle;
   late Command0<void> loginWithAppleId;
   late Command1<void, (String, String)> loginWithAccountAndPassword;
@@ -29,6 +31,8 @@ class LoginViewModel extends ChangeNotifier {
   Future<Result<void>> _loginWithAccountAndPassword(
     (String, String) credentials,
   ) async {
+    isSigning = true;
+    notifyListeners();
     final (email, password) = credentials;
     final result = await repository.login(email: email, password: password);
 
@@ -38,6 +42,8 @@ class LoginViewModel extends ChangeNotifier {
       _log.warning('Authentication failed! ${result.error}');
     }
 
+    isSigning = false;
+    notifyListeners();
     return result;
   }
 
@@ -59,14 +65,23 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _loginWithAppleIdAction() async {
-    return await repository.loginWithAppleId();
+    isSigning = true;
+    notifyListeners();
+    Result<void> result = await repository.loginWithAppleId();
+    isSigning = false;
+    notifyListeners();
+    return result;
   }
 
   Future<Result<void>> _loginWithGoogleAction() async {
+    isSigning = true;
+    notifyListeners();
     final result = await repository.loginWithGoogle();
     if (result is Error<void>) {
       _log.warning('Login failed! ${result.error}');
     }
+    isSigning = false;
+    notifyListeners();
     return result;
   }
 
@@ -75,6 +90,7 @@ class LoginViewModel extends ChangeNotifier {
     super.dispose();
     loginWithGoogle.dispose();
     loginWithAccountAndPassword.dispose();
+    loginWithAppleId.dispose();
     register.dispose();
   }
 }
