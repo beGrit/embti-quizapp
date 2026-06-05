@@ -46,6 +46,7 @@ dependencies:
   firebase_auth: ^6.4.0
   google_sign_in: ^7.2.0
   sign_in_with_apple: ^8.1.0
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -71,17 +72,19 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo_v3.png"
+  image_path: "assets/images/logo_v2.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/images/logo_v3.png"
+    image_path: "assets/images/logo_v2.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
-  windows:
-    generate: true
-    image_path: "assets/images/logo_v3.png"
-    icon_size: 48
-  macos:
-    generate: true
-    image_path: "assets/images/logo_v3.png"
+
+flutter_native_splash:
+  color: "#42a5f5"
+  image: assets/images/logo_v2.png
+  fullscreen: true
+  android_12:
+    color: "#42a5f5"
+    image: assets/images/logo_v2.png
+    icon_background_color: "#111111"
