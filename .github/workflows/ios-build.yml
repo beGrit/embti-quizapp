@@ -1,0 +1,39 @@
+name: iOS Build IPA & R2
+
+on:
+  workflow_dispatch: # 纯手动触发
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    steps:
+      # 1. 拉取代码
+      - uses: actions/checkout@v4
+
+      # 2. 安装 Flutter
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # 3. 详细日志编译 IPA (自动处理依赖与图标)
+      - name: Build iOS IPA
+        run: |
+          flutter pub get
+          flutter pub run flutter_launcher_icons
+          # -v 会输出极其详细的日志，方便你在 GitHub Actions 里面排查任何编译错误
+          flutter build ipa --no-codesign -v
+
+      # 4. 上传产物到 R2
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          # flutter build ipa 的产物默认在 build/ios/archive/ 目录下
+          cd build/ios/archive
+          
+          # 将生成的整个 .xcarchive 文件夹或者里面的大文件打包（IPA 模式通常产生 xcarchive）
+          zip -r ios-ipa-build.zip *.xcarchive
+          
+          # 一行命令直接推送到 Cloudflare R2
+          aws s3 cp ios-ipa-build.zip s3://你的桶名/ios-ipa-build.zip --endpoint-url https://你的账户ID.r2.cloudflarestorage.com
