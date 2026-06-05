@@ -110,4 +110,9 @@ class AuthRepositoryDev extends AuthRepository {
     _user = newUser;
     notifyListeners();
   }
+
+  @override
+  Future<Result<void>> loginWithAppleId() {
+    throw UnimplementedError();
+  }
 }

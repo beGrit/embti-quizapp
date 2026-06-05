@@ -139,4 +139,9 @@ class AuthRepositoryFirebase extends AuthRepository {
       return Result.error(Exception(e.toString()));
     }
   }
+
+  @override
+  Future<Result<void>> loginWithAppleId() {
+    throw UnimplementedError();
+  }
 }

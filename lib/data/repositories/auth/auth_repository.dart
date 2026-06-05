@@ -24,6 +24,8 @@ abstract class AuthRepository extends ChangeNotifier {
 
   Future<Result<void>> loginWithGoogle();
 
+  Future<Result<void>> loginWithAppleId();
+
   /// Perform logout
   Future<Result<void>> logout();
 }

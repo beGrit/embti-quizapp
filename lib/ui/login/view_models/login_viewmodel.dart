@@ -9,6 +9,7 @@ import '../../../utils/result.dart';
 class LoginViewModel extends ChangeNotifier {
   LoginViewModel({required this.repository, required this.userRepository}) {
     loginWithGoogle = Command0<void>(_loginWithGoogleAction);
+    loginWithAppleId = Command0<void>(_loginWithAppleIdAction);
     loginWithAccountAndPassword = Command1<void, (String, String)>(
       _loginWithAccountAndPassword,
     );
@@ -21,6 +22,7 @@ class LoginViewModel extends ChangeNotifier {
   final UserRepository userRepository;
 
   late Command0<void> loginWithGoogle;
+  late Command0<void> loginWithAppleId;
   late Command1<void, (String, String)> loginWithAccountAndPassword;
   late Command1<void, (String, String)> register;
 
@@ -56,13 +58,11 @@ class LoginViewModel extends ChangeNotifier {
     return createResult;
   }
 
+  Future<Result<void>> _loginWithAppleIdAction() async {
+    return await repository.loginWithAppleId();
+  }
+
   Future<Result<void>> _loginWithGoogleAction() async {
-    // if (kDebugMode) {
-    //   return await repository.login(
-    //     email: '1134187280@qq.com',
-    //     password: 'LSFlsf123',
-    //   );
-    // }
     final result = await repository.loginWithGoogle();
     if (result is Error<void>) {
       _log.warning('Login failed! ${result.error}');

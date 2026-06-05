@@ -5,7 +5,7 @@
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../utils/result.dart';
+import '../../../../utils/result.dart';
 
 class SharedPreferencesService {
   static const _tokenKey = 'TOKEN';

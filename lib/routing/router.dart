@@ -30,7 +30,7 @@ import 'package:provider/provider.dart';
 import 'routes.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.home,
+  initialLocation: Routes.quizLanding,
   refreshListenable: authRepository,
   redirect: _redirect,
   routes: [
@@ -152,9 +152,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           navigationShell: navigationShell,
           routeBottom: [
             NavigationConfig(
-              icon: Icons.explore_outlined,
-              selectedIcon: Icons.explore,
-              label: NavigationConfigLabel.home,
+              icon: Icons.hub_outlined,
+              selectedIcon: Icons.hub,
+              label: NavigationConfigLabel.quiz,
             ),
             NavigationConfig(
               icon: Icons.people_outline,
@@ -162,9 +162,9 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               label: NavigationConfigLabel.explore,
             ),
             NavigationConfig(
-              icon: Icons.hub_outlined,
-              selectedIcon: Icons.hub,
-              label: NavigationConfigLabel.quiz,
+              icon: Icons.explore_outlined,
+              selectedIcon: Icons.explore,
+              label: NavigationConfigLabel.home,
             ),
             NavigationConfig(
               icon: Icons.chat_bubble_outline,
@@ -183,8 +183,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.home,
-              builder: (context, state) => const HomeScreen(),
+              path: Routes.quizLanding,
+              builder: (context, state) => QuizLandingScreen(),
             ),
           ],
         ),
@@ -201,8 +201,8 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.quizLanding,
-              builder: (context, state) => QuizLandingScreen(),
+              path: Routes.home,
+              builder: (context, state) => const HomeScreen(),
             ),
           ],
         ),
@@ -234,7 +234,7 @@ Future<String?> _redirect(BuildContext context, GoRouterState state) async {
     return Routes.login;
   }
   if (isLogin) {
-    return Routes.home;
+    return Routes.quizLanding;
   }
   return null;
 }

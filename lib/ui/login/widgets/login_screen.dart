@@ -2,7 +2,6 @@ import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_background.dart';
 import 'package:emombti/ui/login/widgets/login_logo.dart';
 import 'package:emombti/ui/login/widgets/login_methods.dart';
-import 'package:emombti/ui/login/widgets/login_policy.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -60,7 +59,6 @@ class LoginScreenLayout extends StatelessWidget {
                   children: [
                     AnimatedLoginLogo(),
                     LoginMethods(viewModel: viewModel),
-                    LoginPolicy(),
                   ],
                 ),
               ),

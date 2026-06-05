@@ -4,7 +4,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../../../../domain/models/quiz/survey_models.dart';
-import '../../../../domain/models/user/user.dart';
 
 class LocalDataSqliteService {
   late final Future<Database>? _database;
@@ -25,7 +24,7 @@ class LocalDataSqliteService {
       path,
       version: 3,
       onCreate: (db, version) async {
-        // 1. Survey 静态数据表 (缓存从 JSON 加载的题目)
+        // Survey (Questions, Flow, Result)
         await db.execute('''
           CREATE TABLE surveys (
             id TEXT PRIMARY KEY,
@@ -33,8 +32,6 @@ class LocalDataSqliteService {
             data_json TEXT NOT NULL
           )
         ''');
-
-        // 2. SurveyFlow 进度表 (记录当前正在进行的测试)
         await db.execute('''
           CREATE TABLE survey_flows (
             id TEXT PRIMARY KEY,
@@ -47,30 +44,11 @@ class LocalDataSqliteService {
             currentAnswers TEXT   -- 存储为 JSON Map
           )
         ''');
-
-        // 3. AssessmentResult 结果表 (存储已完成的报告)
         await db.execute('''
           CREATE TABLE assessment_results (
             surveyFlowId TEXT PRIMARY KEY,
             scores TEXT,          -- 存储为 JSON List
             timestamp TEXT NOT NULL
-          )
-        ''');
-
-        await db.execute('''
-          CREATE TABLE survey_responses (
-            surveyFlowId TEXT PRIMARY KEY,
-            surveyId TEXT NOT NULL,
-            answers_json TEXT NOT NULL,
-            submitted_at TEXT NOT NULL
-          )
-        ''');
-
-        // 5. User tables
-        await db.execute('''
-          CREATE TABLE users (
-            id TEXT PRIMARY KEY,
-            data_json TEXT NOT NULL
           )
         ''');
       },
@@ -85,48 +63,8 @@ class LocalDataSqliteService {
             )
           ''');
         }
-        if (oldVersion < 3) {
-          await db.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-              id TEXT PRIMARY KEY,
-              data_json TEXT NOT NULL
-            )
-          ''');
-        }
       },
     );
-  }
-
-  // --- User Logic ---
-
-  Future<User?> getUserById(String id) async {
-    final db = await database;
-    final maps = await db.query('users', where: 'id = ?', whereArgs: [id]);
-    if (maps.isEmpty) return null;
-    return User.fromJson(jsonDecode(maps.first['data_json'] as String));
-  }
-
-  Future<void> saveUser(User user) async {
-    final db = await database;
-    await db.insert('users', {
-      'id': user.id,
-      'data_json': jsonEncode(user.toJson()),
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
-  // --- Survey 缓存逻辑 ---
-
-  Future<void> cacheSurveys(List<Survey> surveys) async {
-    final db = await database;
-    final batch = db.batch();
-    for (var survey in surveys) {
-      batch.insert('surveys', {
-        'id': survey.id,
-        'title': survey.title,
-        'data_json': jsonEncode(survey.toJson()),
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
-    }
-    await batch.commit(noResult: true);
   }
 
   Future<Survey?> getSurvey(String id) async {
@@ -202,8 +140,6 @@ class LocalDataSqliteService {
     await db.delete('survey_flows', where: 'id = ?', whereArgs: [id]);
   }
 
-  // --- AssessmentResult (结果) 逻辑 ---
-
   Future<void> saveResult(AssessmentResult result) async {
     final db = await database;
     await db.transaction((txn) async {
@@ -215,7 +151,6 @@ class LocalDataSqliteService {
     });
   }
 
-  /// Persists [response] and [result] and clears the active [SurveyFlow] row.
   Future<void> saveSubmission(
     SurveyResponse response,
     AssessmentResult result,
