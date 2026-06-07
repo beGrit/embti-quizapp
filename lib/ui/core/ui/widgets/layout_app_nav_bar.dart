@@ -1,6 +1,6 @@
-import 'package:emombti/app_state/app_nav_bar_state.dart';
-import 'package:emombti/app_state/chat_state.dart';
-import 'package:emombti/app_state/theme_state.dart';
+import 'package:emombti/app_state/app_nav_bar.dart';
+import 'package:emombti/app_state/chat.dart';
+import 'package:emombti/app_state/theme.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/core/ui/view_models/layout_app_nav_bar_viewmodel.dart';
 import 'package:flutter/material.dart';

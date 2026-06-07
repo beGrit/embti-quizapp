@@ -46,6 +46,9 @@ Map<String, dynamic> _$SurveyToJson(_Survey instance) => <String, dynamic>{
 _SurveyFlow _$SurveyFlowFromJson(Map<String, dynamic> json) => _SurveyFlow(
   id: json['id'] as String,
   surveyId: json['surveyId'] as String,
+  survey: json['survey'] == null
+      ? null
+      : Survey.fromJson(json['survey'] as Map<String, dynamic>),
   status:
       $enumDecodeNullable(_$SurveyFlowStatusEnumMap, json['status']) ??
       SurveyFlowStatus.idle,
@@ -72,6 +75,7 @@ Map<String, dynamic> _$SurveyFlowToJson(_SurveyFlow instance) =>
     <String, dynamic>{
       'id': instance.id,
       'surveyId': instance.surveyId,
+      'survey': instance.survey,
       'status': _$SurveyFlowStatusEnumMap[instance.status]!,
       'startTime': instance.startTime?.toIso8601String(),
       'endTime': instance.endTime?.toIso8601String(),
@@ -101,6 +105,9 @@ Map<String, dynamic> _$AxisScoreToJson(_AxisScore instance) =>
 _AssessmentResult _$AssessmentResultFromJson(Map<String, dynamic> json) =>
     _AssessmentResult(
       surveyFlowId: json['surveyFlowId'] as String,
+      surveyFlow: json['surveyFlow'] == null
+          ? null
+          : SurveyFlow.fromJson(json['surveyFlow'] as Map<String, dynamic>),
       scores: (json['scores'] as List<dynamic>)
           .map((e) => AxisScore.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -110,20 +117,7 @@ _AssessmentResult _$AssessmentResultFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$AssessmentResultToJson(_AssessmentResult instance) =>
     <String, dynamic>{
       'surveyFlowId': instance.surveyFlowId,
+      'surveyFlow': instance.surveyFlow,
       'scores': instance.scores,
       'timestamp': instance.timestamp.toIso8601String(),
-    };
-
-_SurveyResponse _$SurveyResponseFromJson(Map<String, dynamic> json) =>
-    _SurveyResponse(
-      surveyFlowId: json['surveyFlowId'] as String,
-      surveyId: json['surveyId'] as String,
-      answers: Map<String, int>.from(json['answers'] as Map),
-    );
-
-Map<String, dynamic> _$SurveyResponseToJson(_SurveyResponse instance) =>
-    <String, dynamic>{
-      'surveyFlowId': instance.surveyFlowId,
-      'surveyId': instance.surveyId,
-      'answers': instance.answers,
     };

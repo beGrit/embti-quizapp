@@ -1,12 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'article_content.dart';
-part 'banner_content.dart';
-// Generated files for the entire library
 part 'content.freezed.dart';
 part 'content.g.dart';
-part 'knowledge_content.dart';
-part 'video_content.dart';
 
 @Freezed(unionKey: 'type', unionValueCase: FreezedUnionCase.snake)
 sealed class Content with _$Content {

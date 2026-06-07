@@ -3,15 +3,15 @@ import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/chat/widgets/room_detail_screen.dart';
 import 'package:emombti/ui/chat/widgets/rooms_screen.dart';
-import 'package:emombti/ui/contents/view_models/article_viewmodel.dart';
-import 'package:emombti/ui/contents/widgets/article_section.dart';
 import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/explore/widgets/explore_screen.dart';
 import 'package:emombti/ui/feed/widgets/feed_post_editor.dart';
 import 'package:emombti/ui/feed/widgets/feed_viewer_photo.dart';
-import 'package:emombti/ui/home/widgets/home_screen.dart';
+import 'package:emombti/ui/knowledge/view_models/knowledge_contents_artile_detail_viewmodel.dart';
+import 'package:emombti/ui/knowledge/widgets/knowledge_contents_article.dart';
+import 'package:emombti/ui/knowledge/widgets/knowledge_contents_screen.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_screen.dart';
 import 'package:emombti/ui/me/widgets/me_screen.dart';
@@ -30,7 +30,7 @@ import 'package:provider/provider.dart';
 import 'routes.dart';
 
 GoRouter router(AuthRepository authRepository) => GoRouter(
-  initialLocation: Routes.quizLanding,
+  initialLocation: Routes.home,
   refreshListenable: authRepository,
   redirect: _redirect,
   routes: [
@@ -81,16 +81,19 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
       path: '${Routes.article}/:id',
       builder: (context, state) {
         final articleId = state.pathParameters['id'] ?? '';
+        ArticleDetailViewModel viewModel = ArticleDetailViewModel(
+          repository: context.read(),
+          articleId: articleId,
+        );
+        viewModel.loadArticleContent.execute();
+        SocialViewModel socialViewModel = SocialViewModel(
+          repository: context.read(),
+          authRepository: context.read(),
+          relatedId: articleId,
+        );
         return ArticleDetailScreen(
-          viewModel: ArticleDetailViewModel(
-            repository: context.read(),
-            articleId: articleId,
-          )..loadArticleContent.execute(),
-          socialViewModel: SocialViewModel(
-            repository: context.read(),
-            authRepository: context.read(),
-            relatedId: articleId,
-          ),
+          viewModel: viewModel,
+          socialViewModel: socialViewModel,
         );
       },
     ),
@@ -102,8 +105,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         final flowId = state.uri.queryParameters['flowId'] ?? '';
         return SurveyFlowScreen(
           viewModel: SurveyFlowViewModel(
-            surveyFlowRepository: context.read(),
-            quizRepository: context.read(),
+            repository: context.read(),
             surveyFlowState: context.read(),
             flowId: flowId,
             surveyId: surveyId,
@@ -128,6 +130,11 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           heroTag: extra['heroTag'] as String, // Grabbed from extra
         );
       },
+    ),
+    GoRoute(
+      name: Routes.knowledgeContents,
+      path: Routes.knowledgeContents,
+      builder: (context, state) => const KnowledgeContentsScreen(),
     ),
     GoRoute(
       path: Routes.feedPostEditor,
@@ -162,17 +169,12 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               label: NavigationConfigLabel.explore,
             ),
             NavigationConfig(
-              icon: Icons.article_outlined,
-              selectedIcon: Icons.article,
-              label: NavigationConfigLabel.home,
-            ),
-            NavigationConfig(
               icon: Icons.chat_bubble_outline,
               selectedIcon: Icons.chat_bubble,
               label: NavigationConfigLabel.mess,
             ),
             NavigationConfig(
-              icon: Icons.storage_outlined,
+              icon: Icons.settings,
               selectedIcon: Icons.storage,
               label: NavigationConfigLabel.me,
             ),
@@ -195,14 +197,6 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
               builder: (context, state) => ExploreScreen(
                 viewModel: ExploreViewModel(appNavBarState: context.read()),
               ),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.home,
-              builder: (context, state) => const HomeScreen(),
             ),
           ],
         ),
@@ -234,7 +228,7 @@ Future<String?> _redirect(BuildContext context, GoRouterState state) async {
     return Routes.login;
   }
   if (isLogin) {
-    return Routes.quizLanding;
+    return Routes.home;
   }
   return null;
 }

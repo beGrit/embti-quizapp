@@ -1,5 +1,5 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/app_state/theme_state.dart';
+import 'package:emombti/app_state/theme.dart';
 import 'package:flutter/material.dart';
 
 enum ThemeModeOption { system, light, dark }

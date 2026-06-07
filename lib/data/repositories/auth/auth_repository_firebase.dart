@@ -18,13 +18,27 @@ class AuthRepositoryFirebase extends AuthRepository {
     required FirestoreService apiStroage,
     fb.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
-  }) : _firebaseAuth = firebaseAuth ?? fb.FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn.instance,
-       _apiStroage = apiStroage;
+  }) {
+    _firebaseAuth = firebaseAuth ?? fb.FirebaseAuth.instance;
+    _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
+    _apiStroage = apiStroage;
+    _firebaseAuth.authStateChanges().listen((fb.User? fbUser) async {
+      if (_isInitialAuthChecked) {
+        _isInitialAuthChecked = true;
+        if (fbUser != null) {
+          await _initUser(fbUser);
+        } else {
+          updateAuthenticatedUser(null);
+        }
+      }
+    });
+  }
 
-  final fb.FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
-  final FirestoreService _apiStroage;
+  late final fb.FirebaseAuth _firebaseAuth;
+  late final GoogleSignIn _googleSignIn;
+  late final FirestoreService _apiStroage;
+
+  bool _isInitialAuthChecked = false;
 
   User? _user;
 

@@ -1,10 +1,12 @@
-import 'package:emombti/app_state/survey_flow_state.dart';
+import 'package:emombti/app_state/quiz.dart';
+import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow_list_view.dart';
 import 'package:emombti/ui/quiz/widgets/survey_flow_result.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class QuizLandingScreen extends StatefulWidget {
@@ -74,7 +76,10 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
             ListTile(
               leading: const Icon(Icons.menu_book_rounded),
               title: const Text('Knowledge'),
-              onTap: () => Navigator.pop(context),
+              onTap: () async {
+                Navigator.pop(context);
+                await context.pushNamed(Routes.knowledgeContents);
+              },
             ),
             ListTile(
               leading: const Icon(Icons.question_answer_rounded),
@@ -89,7 +94,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
           ],
         ),
       ),
-      body: Consumer<SurveyFlowState>(
+      body: Consumer<QuizState>(
         builder: (context, surveyFlowState, child) {
           return Center(
             child: Column(

@@ -1,12 +1,12 @@
 abstract final class Routes {
-  static const login = '/login';
-  static const logout = '/logout';
-  static const home = '/';
-  static const me = '/me';
-  static const meStandalone = '/me-standalone';
-  static const settings = '/settings';
-  static const userInfo = '/user_info';
-  static const qRCodeScanner = '/qr_code/scanner';
+  static const String login = '/login';
+  static const String logout = '/logout';
+  static const String knowledgeContents = '/knowledge_contents';
+  static const String me = '/me';
+  static const String meStandalone = '/me-standalone';
+  static const String settings = '/settings';
+  static const String userInfo = '/user_info';
+  static const String qRCodeScanner = '/qr_code/scanner';
   static const String quizLanding = '/quiz_landing';
   static const String surveyFlow = '/quiz/survey_flow';
   static const String surveyResult = '/quiz/result';
@@ -20,4 +20,5 @@ abstract final class Routes {
   static const String feedPostEditor = '/feed/post/editor';
   static const String feedPhotoView = '/feed_photo_view';
   static const String feedback = '/me/feedback';
+  static const String home = quizLanding;
 }

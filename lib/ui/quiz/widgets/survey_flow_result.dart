@@ -131,9 +131,8 @@ class _SurveyFlowResultState extends State<SurveyFlowResult> {
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    onPressed: () => widget.onGoBack != null
-                        ? widget.onGoBack!()
-                        : context.go(Routes.home),
+                    onPressed: () =>
+                        widget.onGoBack != null ? widget.onGoBack!() : null,
                     icon: const Icon(Icons.check),
                     label: const Text('Go back'),
                     style: OutlinedButton.styleFrom(

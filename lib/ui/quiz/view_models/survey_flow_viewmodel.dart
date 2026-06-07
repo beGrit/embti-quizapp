@@ -1,6 +1,5 @@
-import 'package:emombti/app_state/survey_flow_state.dart';
+import 'package:emombti/app_state/quiz.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
-import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
@@ -8,8 +7,7 @@ import 'package:flutter/material.dart';
 
 class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlowViewModel({
-    required this.surveyFlowRepository,
-    required this.quizRepository,
+    required this.repository,
     required this.surveyFlowState,
     required this.flowId,
     required this.surveyId,
@@ -18,9 +16,8 @@ class SurveyFlowViewModel extends ChangeNotifier {
     submit = Command0(_submit);
   }
 
-  final SurveyFlowRepository surveyFlowRepository;
-  final QuizRepository quizRepository;
-  final SurveyFlowState surveyFlowState;
+  final QuizRepository repository;
+  final QuizState surveyFlowState;
   final String flowId;
   final String surveyId;
 
@@ -36,8 +33,8 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   Future<Result<void>> _load() async {
     try {
-      final savedFlow = await surveyFlowRepository.getFlowById(flowId);
-      final survey = await quizRepository.getSurveyById(surveyId);
+      final savedFlow = await repository.getFlowById(flowId);
+      final survey = await repository.getSurveyById(surveyId);
       if (savedFlow != null && survey != null) {
         _flow = savedFlow;
         _survey = survey;
@@ -63,7 +60,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   Future<Result<void>> _submit() async {
     try {
       _flow = _flow.copyWith(status: SurveyFlowStatus.completed);
-      await surveyFlowRepository.saveFlow(_flow);
+      await repository.saveFlow(_flow);
       surveyFlowState.updateLatest(_flow);
       notifyListeners();
       _calculateResult();
@@ -128,7 +125,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
         scores: calculatedScores,
         timestamp: DateTime.now(),
       );
-      await surveyFlowRepository.saveAssessmentResult(assessmentResult);
+      await repository.saveAssessmentResult(assessmentResult);
       notifyListeners();
       return Result.ok(null);
     } catch (e) {
@@ -148,7 +145,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
     _flow = _flow.copyWith(currentAnswers: newAnswers);
     notifyListeners();
 
-    // await surveyFlowRepository.saveFlow(_flow);
+    // await quizRepository.saveFlow(_flow);
     surveyFlowState.updateLatest(_flow);
 
     if (score != null) {

@@ -36,14 +36,6 @@ class _ExploreScreenState extends State<ExploreScreen>
     final double value = _tabController.animation!.value;
     final int targetIndex = value.round();
     widget.viewModel.onTabAnimation(targetIndex);
-    // ThemeState themeController = context.read<ThemeState>();
-    // final bool hasThemeOverride =
-    //     widget.viewModel.tabs[targetIndex].themeDataName != null;
-    // if (hasThemeOverride) {
-    //   themeController.overrideGlobalTheme(themeController.materialTheme.dark());
-    // } else {
-    //   themeController.resetToSystemTheme();
-    // }
   }
 
   void _onTabControllerChanged() {

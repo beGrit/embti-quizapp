@@ -1,6 +1,4 @@
-import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../view_models/login_viewmodel.dart';
 
@@ -162,7 +160,6 @@ class _LoginFormState extends State<LoginForm> {
     if (widget.viewModel.loginWithAccountAndPassword.completed) {
       widget.viewModel.loginWithAccountAndPassword.clearResult();
       widget.viewModel.register.clearResult();
-      context.go(Routes.home);
     }
 
     if (widget.viewModel.loginWithAccountAndPassword.error) {

@@ -149,53 +149,53 @@ class _LoginMethodsState extends State<LoginMethods> {
                     );
                   },
                 ),
-              if (theme.platform != TargetPlatform.iOS)
-                ListenableBuilder(
-                  listenable: widget.viewModel.loginWithAccountAndPassword,
-                  builder: (context, child) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            height: 50,
-                            child: widget.viewModel.isSigning
-                                ? null
-                                : ElevatedButton.icon(
-                                    onPressed: () {
-                                      if (!isPolicyAgreed) {
-                                        setState(() {
-                                          showTipsForPolicyAgree = true;
-                                        });
-                                        _ensureTooltipVisible();
-                                        return;
-                                      }
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => Scaffold(
-                                            extendBodyBehindAppBar: true,
-                                            backgroundColor:
-                                                theme.colorScheme.surface,
-                                            appBar: AppBar(
-                                              // backgroundColor: Colors.transparent,
-                                              elevation: 0,
-                                            ),
-                                            body: LoginForm(
-                                              viewModel: widget.viewModel,
-                                            ),
+              SizedBox(height: 16),
+              ListenableBuilder(
+                listenable: widget.viewModel.loginWithAccountAndPassword,
+                builder: (context, child) {
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: widget.viewModel.isSigning
+                              ? null
+                              : ElevatedButton.icon(
+                                  onPressed: () {
+                                    if (!isPolicyAgreed) {
+                                      setState(() {
+                                        showTipsForPolicyAgree = true;
+                                      });
+                                      _ensureTooltipVisible();
+                                      return;
+                                    }
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => Scaffold(
+                                          extendBodyBehindAppBar: true,
+                                          backgroundColor:
+                                              theme.colorScheme.surface,
+                                          appBar: AppBar(
+                                            // backgroundColor: Colors.transparent,
+                                            elevation: 0,
                                           ),
-                                          fullscreenDialog: true,
+                                          body: LoginForm(
+                                            viewModel: widget.viewModel,
+                                          ),
                                         ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.email, size: 32),
-                                    label: const Text('Email Sign In'),
-                                  ),
-                          ),
+                                        fullscreenDialog: true,
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.email, size: 32),
+                                  label: const Text('Email Sign In'),
+                                ),
                         ),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                    ],
+                  );
+                },
+              ),
               _buildLoginPolicy(context),
             ],
           ),

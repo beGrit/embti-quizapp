@@ -1,4 +1,4 @@
-import 'package:emombti/app_state/app_nav_bar_state.dart';
+import 'package:emombti/app_state/app_nav_bar.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:flutter/material.dart';
 

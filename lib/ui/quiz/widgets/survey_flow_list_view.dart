@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:emombti/app_state/survey_flow_state.dart';
+import 'package:emombti/app_state/quiz.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
@@ -49,13 +49,13 @@ class _SurveyFlowListViewState extends State<SurveyFlowListView> {
 
   @override
   Widget build(BuildContext context) {
-    final surveyFlowState = context.watch<SurveyFlowState>();
+    final surveyFlowState = context.watch<QuizState>();
     return Scaffold(
       body: _buildLandingPage(surveyFlowState, Theme.of(context)),
     );
   }
 
-  Widget _buildLandingPage(SurveyFlowState surveyFlowState, ThemeData theme) {
+  Widget _buildLandingPage(QuizState surveyFlowState, ThemeData theme) {
     return ListenableBuilder(
       listenable: Listenable.merge([
         widget.viewModel,
@@ -131,7 +131,7 @@ class _SurveyFlowListBody extends StatelessWidget {
   });
 
   final QuizLandingViewModel viewModel;
-  final SurveyFlowState surveyFlowState;
+  final QuizState surveyFlowState;
   final ThemeData theme;
   final Future<void> Function(Map<String, String> queryParameters) onOpenFlow;
 
@@ -197,7 +197,7 @@ class _SurveyFlowListBody extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               itemCount: surveyFlowState.surveyFlows.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              separatorBuilder: (context, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final flow = surveyFlowState.surveyFlows[index];
                 return _SurveyFlowTile(

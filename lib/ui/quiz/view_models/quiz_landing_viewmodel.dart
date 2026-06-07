@@ -1,9 +1,8 @@
-import 'package:emombti/app_state/survey_flow_state.dart';
-import 'package:emombti/data/repositories/quiz/survey_flow_repository.dart';
+import 'package:emombti/app_state/quiz.dart';
+import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../data/repositories/quiz/quiz_repository.dart';
 import '../../../domain/models/quiz/survey_models.dart';
 import '../../../utils/command.dart';
 import '../../../utils/result.dart';
@@ -11,10 +10,9 @@ import '../../../utils/result.dart';
 class QuizLandingViewModel extends ChangeNotifier {
   QuizLandingViewModel({
     required QuizRepository repository,
-    required SurveyFlowRepository surveyFlowRepository,
-    required SurveyFlowState surveyFlowState,
-  }) : _surveyFlowRepository = surveyFlowRepository,
-       _repository = repository,
+    required QuizRepository surveyFlowRepository,
+    required QuizState surveyFlowState,
+  }) : _repository = surveyFlowRepository,
        _surveyFlowState = surveyFlowState {
     load = Command0(_load);
     startAssessment = Command0(_startAssessmentAction);
@@ -23,8 +21,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   }
 
   final QuizRepository _repository;
-  final SurveyFlowRepository _surveyFlowRepository;
-  final SurveyFlowState _surveyFlowState;
+  final QuizState _surveyFlowState;
 
   /// Command to load available surveys.
   late final Command0<void> load;
@@ -84,7 +81,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   Future<void> deleteSelectedSurveyFlows() async {
     final ids = List<String>.from(_selectedFlowIds);
     for (final id in ids) {
-      await _surveyFlowRepository.deleteFlow(id);
+      await _repository.deleteFlow(id);
     }
     _selectedFlowIds.clear();
     _selectionMode = false;
@@ -94,7 +91,7 @@ class QuizLandingViewModel extends ChangeNotifier {
 
   /// Removes a saved session from local storage and refreshes [surveyFlows].
   Future<void> deleteSurveyFlow(String flowId) async {
-    await _surveyFlowRepository.deleteFlow(flowId);
+    await _repository.deleteFlow(flowId);
     _selectedFlowIds.remove(flowId);
     await _refreshSurveyFlows();
     if (_surveyFlowState.surveyFlows.isEmpty) {
@@ -125,7 +122,7 @@ class QuizLandingViewModel extends ChangeNotifier {
 
   Future<void> _refreshSurveyFlows() async {
     try {
-      final flows = await _surveyFlowRepository.getFlows();
+      final flows = await _repository.getFlows();
       _surveyFlowState.setSurveyFlows(flows);
     } catch (e) {
       debugPrint('Error fetching survey flows: $e');
@@ -141,7 +138,7 @@ class QuizLandingViewModel extends ChangeNotifier {
 
     if (surveys.isNotEmpty) {
       SurveyFlow newSurveyFlow = _genNewSurveyFlow(surveys[0]);
-      await _surveyFlowRepository.saveFlow(newSurveyFlow);
+      await _repository.saveFlow(newSurveyFlow);
       await _refreshSurveyFlows();
       return Result.ok({'flowId': newSurveyFlow.id, 'surveyId': surveys[0].id});
     }
@@ -166,9 +163,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   Future<Result<AssessmentResult?>> _loadAssessmentResult() async {
     final latestCompleted = _surveyFlowState.latestCompleted;
     if (latestCompleted != null) {
-      final result = await _surveyFlowRepository.getAssessmentResult(
-        latestCompleted.id,
-      );
+      final result = await _repository.getAssessmentResult(latestCompleted.id);
       return Result.ok(result);
     } else {
       return Result.error(Exception('No completed assessment found.'));

@@ -61,6 +61,7 @@ sealed class SurveyFlow with _$SurveyFlow {
   const factory SurveyFlow({
     required String id, // Unique ID for this specific flow instance
     required String surveyId,
+    Survey? survey,
     @Default(SurveyFlowStatus.idle) SurveyFlowStatus status,
 
     DateTime? startTime,
@@ -109,6 +110,7 @@ sealed class AssessmentResult with _$AssessmentResult {
   const AssessmentResult._();
   const factory AssessmentResult({
     required String surveyFlowId,
+    SurveyFlow? surveyFlow,
     required List<AxisScore> scores,
     required DateTime timestamp,
   }) = _AssessmentResult;
@@ -124,16 +126,4 @@ sealed class AssessmentResult with _$AssessmentResult {
     }
     return sum;
   }
-}
-
-@freezed
-sealed class SurveyResponse with _$SurveyResponse {
-  const factory SurveyResponse({
-    required String surveyFlowId,
-    required String surveyId,
-    required Map<String, int> answers, // { "q_id": 1~5 }
-  }) = _SurveyResponse;
-
-  factory SurveyResponse.fromJson(Map<String, dynamic> json) =>
-      _$SurveyResponseFromJson(json);
 }

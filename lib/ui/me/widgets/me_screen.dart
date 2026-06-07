@@ -124,16 +124,18 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                     ),
                                     if (user != null) ...[
                                       const SizedBox(height: 4),
-                                      Text(
-                                        user.email ?? "Unknown Email",
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: theme
-                                                  .colorScheme
-                                                  .surfaceContainer
-                                                  .withValues(alpha: 0.8),
-                                            ),
-                                      ),
+                                      if (user.email != null &&
+                                          user.email!.isNotEmpty)
+                                        Text(
+                                          user.email ?? '',
+                                          style: theme.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: theme
+                                                    .colorScheme
+                                                    .surfaceContainer
+                                                    .withValues(alpha: 0.8),
+                                              ),
+                                        ),
                                     ],
                                     const SizedBox(height: 8),
                                     if (user != null &&
@@ -141,7 +143,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                                         user.mbtiType != '')
                                       Chip(
                                         label: Text(
-                                          user?.mbtiType ?? '',
+                                          user.mbtiType ?? '',
                                           style: theme.textTheme.labelMedium
                                               ?.copyWith(
                                                 color:
