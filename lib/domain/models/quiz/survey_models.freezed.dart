@@ -554,7 +554,8 @@ as List<Question>,
 mixin _$SurveyFlow {
 
  String get id;// Unique ID for this specific flow instance
- String get surveyId; Survey? get survey; SurveyFlowStatus get status; DateTime? get startTime; DateTime? get endTime; int get totalQuestions; List<String> get questionOrder; Map<String, int> get currentAnswers;
+ String get surveyId; String? get userId;// Associated user ID
+ Survey? get survey; SurveyFlowStatus get status; DateTime? get startTime; DateTime? get endTime; int get totalQuestions; List<String> get questionOrder; Map<String, int> get currentAnswers;
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -567,16 +568,16 @@ $SurveyFlowCopyWith<SurveyFlow> get copyWith => _$SurveyFlowCopyWithImpl<SurveyF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other.questionOrder, questionOrder)&&const DeepCollectionEquality().equals(other.currentAnswers, currentAnswers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other.questionOrder, questionOrder)&&const DeepCollectionEquality().equals(other.currentAnswers, currentAnswers));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,surveyId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(questionOrder),const DeepCollectionEquality().hash(currentAnswers));
+int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(questionOrder),const DeepCollectionEquality().hash(currentAnswers));
 
 @override
 String toString() {
-  return 'SurveyFlow(id: $id, surveyId: $surveyId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
+  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
 }
 
 
@@ -587,7 +588,7 @@ abstract mixin class $SurveyFlowCopyWith<$Res>  {
   factory $SurveyFlowCopyWith(SurveyFlow value, $Res Function(SurveyFlow) _then) = _$SurveyFlowCopyWithImpl;
 @useResult
 $Res call({
- String id, String surveyId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
+ String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
 });
 
 
@@ -604,11 +605,12 @@ class _$SurveyFlowCopyWithImpl<$Res>
 
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? surveyId = null,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,surveyId: null == surveyId ? _self.surveyId : surveyId // ignore: cast_nullable_to_non_nullable
-as String,survey: freezed == survey ? _self.survey : survey // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,survey: freezed == survey ? _self.survey : survey // ignore: cast_nullable_to_non_nullable
 as Survey?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SurveyFlowStatus,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
@@ -709,10 +711,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String surveyId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SurveyFlow() when $default != null:
-return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
   return orElse();
 
 }
@@ -730,10 +732,10 @@ return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTim
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String surveyId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)  $default,) {final _that = this;
 switch (_that) {
 case _SurveyFlow():
-return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);}
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -747,10 +749,10 @@ return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTim
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String surveyId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,) {final _that = this;
 switch (_that) {
 case _SurveyFlow() when $default != null:
-return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
   return null;
 
 }
@@ -762,12 +764,14 @@ return $default(_that.id,_that.surveyId,_that.survey,_that.status,_that.startTim
 @JsonSerializable()
 
 class _SurveyFlow extends SurveyFlow {
-  const _SurveyFlow({required this.id, required this.surveyId, this.survey, this.status = SurveyFlowStatus.idle, this.startTime, this.endTime, this.totalQuestions = 0, final  List<String> questionOrder = const [], final  Map<String, int> currentAnswers = const {}}): _questionOrder = questionOrder,_currentAnswers = currentAnswers,super._();
+  const _SurveyFlow({required this.id, required this.surveyId, this.userId, this.survey, this.status = SurveyFlowStatus.idle, this.startTime, this.endTime, this.totalQuestions = 0, final  List<String> questionOrder = const [], final  Map<String, int> currentAnswers = const {}}): _questionOrder = questionOrder,_currentAnswers = currentAnswers,super._();
   factory _SurveyFlow.fromJson(Map<String, dynamic> json) => _$SurveyFlowFromJson(json);
 
 @override final  String id;
 // Unique ID for this specific flow instance
 @override final  String surveyId;
+@override final  String? userId;
+// Associated user ID
 @override final  Survey? survey;
 @override@JsonKey() final  SurveyFlowStatus status;
 @override final  DateTime? startTime;
@@ -801,16 +805,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other._questionOrder, _questionOrder)&&const DeepCollectionEquality().equals(other._currentAnswers, _currentAnswers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other._questionOrder, _questionOrder)&&const DeepCollectionEquality().equals(other._currentAnswers, _currentAnswers));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,surveyId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(_questionOrder),const DeepCollectionEquality().hash(_currentAnswers));
+int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(_questionOrder),const DeepCollectionEquality().hash(_currentAnswers));
 
 @override
 String toString() {
-  return 'SurveyFlow(id: $id, surveyId: $surveyId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
+  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
 }
 
 
@@ -821,7 +825,7 @@ abstract mixin class _$SurveyFlowCopyWith<$Res> implements $SurveyFlowCopyWith<$
   factory _$SurveyFlowCopyWith(_SurveyFlow value, $Res Function(_SurveyFlow) _then) = __$SurveyFlowCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String surveyId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
+ String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
 });
 
 
@@ -838,11 +842,12 @@ class __$SurveyFlowCopyWithImpl<$Res>
 
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? surveyId = null,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
   return _then(_SurveyFlow(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,surveyId: null == surveyId ? _self.surveyId : surveyId // ignore: cast_nullable_to_non_nullable
-as String,survey: freezed == survey ? _self.survey : survey // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,survey: freezed == survey ? _self.survey : survey // ignore: cast_nullable_to_non_nullable
 as Survey?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as SurveyFlowStatus,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
@@ -1132,7 +1137,8 @@ as double,
 /// @nodoc
 mixin _$AssessmentResult {
 
- String get surveyFlowId; SurveyFlow? get surveyFlow; List<AxisScore> get scores; DateTime get timestamp;
+ String get surveyFlowId; String? get userId;// Associated user ID
+ SurveyFlow? get surveyFlow; String? get type; List<AxisScore> get scores; DateTime get timestamp;
 /// Create a copy of AssessmentResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1145,16 +1151,16 @@ $AssessmentResultCopyWith<AssessmentResult> get copyWith => _$AssessmentResultCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AssessmentResult&&(identical(other.surveyFlowId, surveyFlowId) || other.surveyFlowId == surveyFlowId)&&(identical(other.surveyFlow, surveyFlow) || other.surveyFlow == surveyFlow)&&const DeepCollectionEquality().equals(other.scores, scores)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AssessmentResult&&(identical(other.surveyFlowId, surveyFlowId) || other.surveyFlowId == surveyFlowId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.surveyFlow, surveyFlow) || other.surveyFlow == surveyFlow)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.scores, scores)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,surveyFlowId,surveyFlow,const DeepCollectionEquality().hash(scores),timestamp);
+int get hashCode => Object.hash(runtimeType,surveyFlowId,userId,surveyFlow,type,const DeepCollectionEquality().hash(scores),timestamp);
 
 @override
 String toString() {
-  return 'AssessmentResult(surveyFlowId: $surveyFlowId, surveyFlow: $surveyFlow, scores: $scores, timestamp: $timestamp)';
+  return 'AssessmentResult(surveyFlowId: $surveyFlowId, userId: $userId, surveyFlow: $surveyFlow, type: $type, scores: $scores, timestamp: $timestamp)';
 }
 
 
@@ -1165,7 +1171,7 @@ abstract mixin class $AssessmentResultCopyWith<$Res>  {
   factory $AssessmentResultCopyWith(AssessmentResult value, $Res Function(AssessmentResult) _then) = _$AssessmentResultCopyWithImpl;
 @useResult
 $Res call({
- String surveyFlowId, SurveyFlow? surveyFlow, List<AxisScore> scores, DateTime timestamp
+ String surveyFlowId, String? userId, SurveyFlow? surveyFlow, String? type, List<AxisScore> scores, DateTime timestamp
 });
 
 
@@ -1182,11 +1188,13 @@ class _$AssessmentResultCopyWithImpl<$Res>
 
 /// Create a copy of AssessmentResult
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? surveyFlowId = null,Object? surveyFlow = freezed,Object? scores = null,Object? timestamp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? surveyFlowId = null,Object? userId = freezed,Object? surveyFlow = freezed,Object? type = freezed,Object? scores = null,Object? timestamp = null,}) {
   return _then(_self.copyWith(
 surveyFlowId: null == surveyFlowId ? _self.surveyFlowId : surveyFlowId // ignore: cast_nullable_to_non_nullable
-as String,surveyFlow: freezed == surveyFlow ? _self.surveyFlow : surveyFlow // ignore: cast_nullable_to_non_nullable
-as SurveyFlow?,scores: null == scores ? _self.scores : scores // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,surveyFlow: freezed == surveyFlow ? _self.surveyFlow : surveyFlow // ignore: cast_nullable_to_non_nullable
+as SurveyFlow?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String?,scores: null == scores ? _self.scores : scores // ignore: cast_nullable_to_non_nullable
 as List<AxisScore>,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
@@ -1282,10 +1290,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String surveyFlowId,  SurveyFlow? surveyFlow,  List<AxisScore> scores,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String surveyFlowId,  String? userId,  SurveyFlow? surveyFlow,  String? type,  List<AxisScore> scores,  DateTime timestamp)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AssessmentResult() when $default != null:
-return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp);case _:
+return $default(_that.surveyFlowId,_that.userId,_that.surveyFlow,_that.type,_that.scores,_that.timestamp);case _:
   return orElse();
 
 }
@@ -1303,10 +1311,10 @@ return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String surveyFlowId,  SurveyFlow? surveyFlow,  List<AxisScore> scores,  DateTime timestamp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String surveyFlowId,  String? userId,  SurveyFlow? surveyFlow,  String? type,  List<AxisScore> scores,  DateTime timestamp)  $default,) {final _that = this;
 switch (_that) {
 case _AssessmentResult():
-return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp);}
+return $default(_that.surveyFlowId,_that.userId,_that.surveyFlow,_that.type,_that.scores,_that.timestamp);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1320,10 +1328,10 @@ return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String surveyFlowId,  SurveyFlow? surveyFlow,  List<AxisScore> scores,  DateTime timestamp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String surveyFlowId,  String? userId,  SurveyFlow? surveyFlow,  String? type,  List<AxisScore> scores,  DateTime timestamp)?  $default,) {final _that = this;
 switch (_that) {
 case _AssessmentResult() when $default != null:
-return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp);case _:
+return $default(_that.surveyFlowId,_that.userId,_that.surveyFlow,_that.type,_that.scores,_that.timestamp);case _:
   return null;
 
 }
@@ -1335,11 +1343,14 @@ return $default(_that.surveyFlowId,_that.surveyFlow,_that.scores,_that.timestamp
 @JsonSerializable()
 
 class _AssessmentResult extends AssessmentResult {
-  const _AssessmentResult({required this.surveyFlowId, this.surveyFlow, required final  List<AxisScore> scores, required this.timestamp}): _scores = scores,super._();
+  const _AssessmentResult({required this.surveyFlowId, this.userId, this.surveyFlow, this.type, required final  List<AxisScore> scores, required this.timestamp}): _scores = scores,super._();
   factory _AssessmentResult.fromJson(Map<String, dynamic> json) => _$AssessmentResultFromJson(json);
 
 @override final  String surveyFlowId;
+@override final  String? userId;
+// Associated user ID
 @override final  SurveyFlow? surveyFlow;
+@override final  String? type;
  final  List<AxisScore> _scores;
 @override List<AxisScore> get scores {
   if (_scores is EqualUnmodifiableListView) return _scores;
@@ -1362,16 +1373,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AssessmentResult&&(identical(other.surveyFlowId, surveyFlowId) || other.surveyFlowId == surveyFlowId)&&(identical(other.surveyFlow, surveyFlow) || other.surveyFlow == surveyFlow)&&const DeepCollectionEquality().equals(other._scores, _scores)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AssessmentResult&&(identical(other.surveyFlowId, surveyFlowId) || other.surveyFlowId == surveyFlowId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.surveyFlow, surveyFlow) || other.surveyFlow == surveyFlow)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other._scores, _scores)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,surveyFlowId,surveyFlow,const DeepCollectionEquality().hash(_scores),timestamp);
+int get hashCode => Object.hash(runtimeType,surveyFlowId,userId,surveyFlow,type,const DeepCollectionEquality().hash(_scores),timestamp);
 
 @override
 String toString() {
-  return 'AssessmentResult(surveyFlowId: $surveyFlowId, surveyFlow: $surveyFlow, scores: $scores, timestamp: $timestamp)';
+  return 'AssessmentResult(surveyFlowId: $surveyFlowId, userId: $userId, surveyFlow: $surveyFlow, type: $type, scores: $scores, timestamp: $timestamp)';
 }
 
 
@@ -1382,7 +1393,7 @@ abstract mixin class _$AssessmentResultCopyWith<$Res> implements $AssessmentResu
   factory _$AssessmentResultCopyWith(_AssessmentResult value, $Res Function(_AssessmentResult) _then) = __$AssessmentResultCopyWithImpl;
 @override @useResult
 $Res call({
- String surveyFlowId, SurveyFlow? surveyFlow, List<AxisScore> scores, DateTime timestamp
+ String surveyFlowId, String? userId, SurveyFlow? surveyFlow, String? type, List<AxisScore> scores, DateTime timestamp
 });
 
 
@@ -1399,11 +1410,13 @@ class __$AssessmentResultCopyWithImpl<$Res>
 
 /// Create a copy of AssessmentResult
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? surveyFlowId = null,Object? surveyFlow = freezed,Object? scores = null,Object? timestamp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? surveyFlowId = null,Object? userId = freezed,Object? surveyFlow = freezed,Object? type = freezed,Object? scores = null,Object? timestamp = null,}) {
   return _then(_AssessmentResult(
 surveyFlowId: null == surveyFlowId ? _self.surveyFlowId : surveyFlowId // ignore: cast_nullable_to_non_nullable
-as String,surveyFlow: freezed == surveyFlow ? _self.surveyFlow : surveyFlow // ignore: cast_nullable_to_non_nullable
-as SurveyFlow?,scores: null == scores ? _self._scores : scores // ignore: cast_nullable_to_non_nullable
+as String,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,surveyFlow: freezed == surveyFlow ? _self.surveyFlow : surveyFlow // ignore: cast_nullable_to_non_nullable
+as SurveyFlow?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String?,scores: null == scores ? _self._scores : scores // ignore: cast_nullable_to_non_nullable
 as List<AxisScore>,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));

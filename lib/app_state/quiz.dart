@@ -1,21 +1,9 @@
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
-import 'package:emombti/domain/constants/status.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:flutter/foundation.dart';
 
 class QuizState extends ChangeNotifier {
-  SyncStatus get syncStatus => repository.syncStatus;
-
   final QuizRepository repository;
-
-  Future<void> load() async {
-    try {
-      final flows = await repository.getFlows();
-      setSurveyFlows(flows);
-    } catch (e) {
-      debugPrint('Error initializing SurveyFlowService: $e');
-    } finally {}
-  }
 
   QuizState({required this.repository});
 

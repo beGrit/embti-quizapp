@@ -1,15 +1,12 @@
 import 'dart:convert';
-
 import 'package:emombti/config/assets.dart';
-import 'package:emombti/data/services/persistence/local/local_storage.dart';
 import 'package:emombti/domain/models/content/content.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../../../../domain/models/quiz/survey_models.dart';
 
-class LocalStorageSqlite implements LocalStorage {
+class LocalStorageSqlite {
   late final Future<Database>? _database;
 
   LocalStorageSqlite() {
@@ -25,44 +22,53 @@ class LocalStorageSqlite implements LocalStorage {
     final path = join(dbPath, 'emombti_quiz.db');
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
-        // Survey (Questions, Flow, Result)
-        await db.execute('''
-          CREATE TABLE surveys (
-            id TEXT PRIMARY KEY,
-            title TEXT NOT NULL,
-            data_json TEXT NOT NULL
-          )
-        ''');
         await db.execute('''
           CREATE TABLE survey_flows (
             id TEXT PRIMARY KEY,
             surveyId TEXT NOT NULL,
+            userId TEXT,
             status TEXT NOT NULL,
             startTime TEXT,
             endTime TEXT,
             totalQuestions INTEGER,
-            questionOrder TEXT,   -- 存储为 JSON List
-            currentAnswers TEXT   -- 存储为 JSON Map
+            questionOrder TEXT,   -- JSON List
+            currentAnswers TEXT   -- JSON Map
           )
         ''');
         await db.execute('''
           CREATE TABLE assessment_results (
             surveyFlowId TEXT PRIMARY KEY,
-            scores TEXT,          -- 存储为 JSON List
+            userId TEXT,
             timestamp TEXT NOT NULL
+          )
+        ''');
+        await db.execute('''
+          CREATE TABLE axis_scores (
+            surveyFlowId TEXT NOT NULL,
+            axis INTEGER NOT NULL,
+            value REAL NOT NULL,
+            PRIMARY KEY (surveyFlowId, axis),
+            FOREIGN KEY (surveyFlowId) REFERENCES assessment_results (surveyFlowId) ON DELETE CASCADE
           )
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
+        if (oldVersion < 4) {
+          try {
+            await db.execute('ALTER TABLE survey_flows ADD COLUMN userId TEXT');
+          } catch (_) {}
+          try {
+            await db.execute('ALTER TABLE assessment_results ADD COLUMN userId TEXT');
+          } catch (_) {}
           await db.execute('''
-            CREATE TABLE IF NOT EXISTS survey_responses (
-              surveyFlowId TEXT PRIMARY KEY,
-              surveyId TEXT NOT NULL,
-              answers_json TEXT NOT NULL,
-              submitted_at TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS axis_scores (
+              surveyFlowId TEXT NOT NULL,
+              axis INTEGER NOT NULL,
+              value REAL NOT NULL,
+              PRIMARY KEY (surveyFlowId, axis),
+              FOREIGN KEY (surveyFlowId) REFERENCES assessment_results (surveyFlowId) ON DELETE CASCADE
             )
           ''');
         }
@@ -70,20 +76,12 @@ class LocalStorageSqlite implements LocalStorage {
     );
   }
 
-  @override
-  Future<Survey?> getSurvey(String id) async {
-    final db = await database;
-    final maps = await db.query('surveys', where: 'id = ?', whereArgs: [id]);
-    if (maps.isEmpty) return null;
-    return Survey.fromJson(jsonDecode(maps.first['data_json'] as String));
-  }
-
-  @override
   Future<void> saveFlow(SurveyFlow flow) async {
     final db = await database;
     await db.insert('survey_flows', {
       'id': flow.id,
       'surveyId': flow.surveyId,
+      'userId': flow.userId,
       'status': flow.status.name,
       'startTime': flow.startTime?.toIso8601String(),
       'endTime': flow.endTime?.toIso8601String(),
@@ -97,6 +95,7 @@ class LocalStorageSqlite implements LocalStorage {
     return SurveyFlow(
       id: map['id'] as String,
       surveyId: map['surveyId'] as String,
+      userId: map['userId'] as String?,
       status: SurveyFlowStatus.values.firstWhere(
         (e) => e.name == map['status'],
       ),
@@ -116,7 +115,6 @@ class LocalStorageSqlite implements LocalStorage {
     );
   }
 
-  @override
   Future<SurveyFlow?> getFlow(String id) async {
     final db = await database;
     final maps = await db.query(
@@ -128,7 +126,6 @@ class LocalStorageSqlite implements LocalStorage {
     return _surveyFlowFromRow(maps.first);
   }
 
-  @override
   Future<List<SurveyFlow>> getFlows({String? surveyId}) async {
     final db = await database;
     final maps = await db.query(
@@ -140,33 +137,47 @@ class LocalStorageSqlite implements LocalStorage {
     return maps.map(_surveyFlowFromRow).toList();
   }
 
-  @override
   Future<void> deleteFlow(String id) async {
     final db = await database;
     await db.delete('survey_flows', where: 'id = ?', whereArgs: [id]);
   }
 
-  @override
   Future<void> saveResult(AssessmentResult result) async {
     final db = await database;
     await db.transaction((txn) async {
       await txn.insert('assessment_results', {
         'surveyFlowId': result.surveyFlowId,
-        'scores': jsonEncode(result.scores.map((e) => e.toJson()).toList()),
+        'userId': result.userId,
         'timestamp': result.timestamp.toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
+
+      for (final score in result.scores) {
+        await txn.insert('axis_scores', {
+          'surveyFlowId': result.surveyFlowId,
+          'axis': score.axis.index,
+          'value': score.value,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
+      }
     });
   }
 
-  @override
   Future<void> saveSubmission(AssessmentResult result) async {
     final db = await database;
     await db.transaction((txn) async {
       await txn.insert('assessment_results', {
         'surveyFlowId': result.surveyFlowId,
-        'scores': jsonEncode(result.scores.map((e) => e.toJson()).toList()),
+        'userId': result.userId,
         'timestamp': result.timestamp.toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
+
+      for (final score in result.scores) {
+        await txn.insert('axis_scores', {
+          'surveyFlowId': result.surveyFlowId,
+          'axis': score.axis.index,
+          'value': score.value,
+        }, conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+
       await txn.delete(
         'survey_flows',
         where: 'id = ?',
@@ -175,27 +186,39 @@ class LocalStorageSqlite implements LocalStorage {
     });
   }
 
-  @override
   Future<List<AssessmentResult>> getAllAssessmentResults() async {
     final db = await database;
-    final maps = await db.query(
+    final resultsMaps = await db.query(
       'assessment_results',
       orderBy: 'timestamp DESC',
     );
-    return maps
-        .map(
-          (map) => AssessmentResult(
-            surveyFlowId: map['surveyFlowId'] as String,
-            timestamp: DateTime.parse(map['timestamp'] as String),
-            scores: (jsonDecode(map['scores'] as String) as List)
-                .map((e) => AxisScore.fromJson(e as Map<String, dynamic>))
-                .toList(),
-          ),
-        )
-        .toList();
+
+    final List<AssessmentResult> results = [];
+    for (final resMap in resultsMaps) {
+      final surveyFlowId = resMap['surveyFlowId'] as String;
+      final scoresMaps = await db.query(
+        'axis_scores',
+        where: 'surveyFlowId = ?',
+        whereArgs: [surveyFlowId],
+      );
+
+      final scores = scoresMaps
+          .map((s) => AxisScore(
+                axis: PersonalityAxis.values[s['axis'] as int],
+                value: s['value'] as double,
+              ))
+          .toList();
+
+      results.add(AssessmentResult(
+        surveyFlowId: surveyFlowId,
+        userId: resMap['userId'] as String?,
+        timestamp: DateTime.parse(resMap['timestamp'] as String),
+        scores: scores,
+      ));
+    }
+    return results;
   }
 
-  @override
   Future<AssessmentResult?> getAssessmentResult(String surveyFlowId) async {
     final db = await database;
     final maps = await db.query(
@@ -205,24 +228,36 @@ class LocalStorageSqlite implements LocalStorage {
     );
     if (maps.isEmpty) return null;
     final map = maps.first;
+
+    final scoresMaps = await db.query(
+      'axis_scores',
+      where: 'surveyFlowId = ?',
+      whereArgs: [surveyFlowId],
+    );
+
+    final scores = scoresMaps
+        .map((s) => AxisScore(
+              axis: PersonalityAxis.values[s['axis'] as int],
+              value: s['value'] as double,
+            ))
+        .toList();
+
     return AssessmentResult(
       surveyFlowId: map['surveyFlowId'] as String,
+      userId: map['userId'] as String?,
       timestamp: DateTime.parse(map['timestamp'] as String),
-      scores: (jsonDecode(map['scores'] as String) as List)
-          .map((e) => AxisScore.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      scores: scores,
     );
   }
 
-  @override
   Future<void> clearAssessmentHistory() async {
     final db = await database;
     await db.transaction((txn) async {
+      await txn.delete('axis_scores');
       await txn.delete('assessment_results');
     });
   }
 
-  @override
   Future<List<Content>> getMockFeed() async {
     final articles = await getArticleContents();
     final videos = await getVideoContents();
@@ -233,16 +268,13 @@ class LocalStorageSqlite implements LocalStorage {
     return combined;
   }
 
-  @override
   Future<List<ArticleContent>> getArticleContents() async {
     final json = await _loadStringAsset(AppAssets.articlesJson);
     return json.map<ArticleContent>((e) => ArticleContent.fromJson(e)).toList();
   }
 
-  @override
   Future<ArticleContent?> getArticleContentById(String id) async {
     final articles = await getArticleContents();
-
     try {
       return articles.firstWhere((article) => article.id == id);
     } catch (e) {
@@ -250,13 +282,11 @@ class LocalStorageSqlite implements LocalStorage {
     }
   }
 
-  @override
   Future<List<VideoContent>> getVideoContents() async {
     final json = await _loadStringAsset(AppAssets.videosJson);
     return json.map<VideoContent>((e) => VideoContent.fromJson(e)).toList();
   }
 
-  @override
   Future<List<KnowledgeContent>> getKnowledgeContents() async {
     final json = await _loadStringAsset(AppAssets.knowledgeJson);
     return json
@@ -264,19 +294,11 @@ class LocalStorageSqlite implements LocalStorage {
         .toList();
   }
 
-  @override
   Future<List<BannerContent>> getBannerContents() async {
     final json = await _loadStringAsset(AppAssets.bannersJson);
     return json.map<BannerContent>((e) => BannerContent.fromJson(e)).toList();
   }
 
-  @override
-  Future<List<Survey>> getQuizzes() async {
-    final json = await _loadStringAsset(AppAssets.quizzesJson);
-    return json.map<Survey>((e) => Survey.fromJson(e)).toList();
-  }
-
-  @override
   Future<List<AssessmentResult>> getAssessmentResults() async {
     final json = await _loadStringAsset(AppAssets.assessmentResultsJson);
     return json

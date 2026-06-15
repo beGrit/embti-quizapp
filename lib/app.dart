@@ -5,6 +5,7 @@ import 'package:emombti/manager/app_state_manager.dart';
 import 'package:emombti/manager/connectivity_manager.dart';
 import 'package:emombti/manager/repository_manager.dart';
 import 'package:emombti/manager/storage_manager.dart';
+import 'package:emombti/manager/sync_manager.dart';
 import 'package:emombti/routing/router.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/ui/widgets/notification.dart';
@@ -23,6 +24,7 @@ class MainApp extends StatefulWidget {
     await repositoryManager.buildRepositories(storageManager);
     var connectivityManager = ConnectivityManager();
     await connectivityManager.load();
+    var syncManager = SyncManager(cm: connectivityManager);
     var appStateManager = AppStateManager();
     await appStateManager.buildAppState(
       storageManager: storageManager,
@@ -34,6 +36,7 @@ class MainApp extends StatefulWidget {
         repositoryManager: repositoryManager,
         appStateManager: appStateManager,
         connectivityManager: connectivityManager,
+        syncManager: syncManager,
         child: const MainApp(),
       ),
     );

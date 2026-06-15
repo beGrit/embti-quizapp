@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emombti/data/services/persistence/api/model/quiz/quiz_api_model.dart';
+import 'package:emombti/domain/models/quiz/survey_models.dart';
 
 import 'model/social/social_meta_api_model.dart';
 import 'model/user/user_api_model.dart';
@@ -8,6 +10,10 @@ class FirestoreService {
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
+
+  String generateFirestoreId() {
+    return _firestore.collection('any_collection').doc().id;
+  }
 
   CollectionReference<Map<String, dynamic>> get _socialMetas =>
       _firestore.collection('social_metas');
@@ -228,5 +234,43 @@ class FirestoreService {
     ]);
 
     return {'isLiked': results[0].exists, 'isFavorited': results[1].exists};
+  }
+
+  Future<void> saveSurveyFlow(SurveyFlowApiModel surveyFlow) async {
+    try {
+      _firestore.databaseId;
+      if (surveyFlow.id == null) {
+        surveyFlow = surveyFlow.copyWith(id: generateFirestoreId());
+      }
+      final DocumentReference docRef = _firestore
+          .collection('user_survey_flows')
+          .doc(surveyFlow.userId)
+          .collection('survey_flows')
+          .doc(surveyFlow.id);
+      await docRef.set(surveyFlow.toJson(), SetOptions(merge: true));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deleteSurveyFlow(SurveyFlow surveyFlow) async {}
+
+  Future<void> saveAssessmentResult(
+    String userId,
+    String surveyFlowId,
+    AssessmentResultApiModel result,
+  ) async {
+    try {
+      final DocumentReference docRef = _firestore
+          .collection('user_survey_flows')
+          .doc(userId)
+          .collection('survey_flows')
+          .doc(surveyFlowId)
+          .collection('contents')
+          .doc('result');
+      docRef.set(result.toJson());
+    } catch (e) {
+      rethrow;
+    }
   }
 }

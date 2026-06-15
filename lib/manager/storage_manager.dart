@@ -4,6 +4,8 @@ import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_keyvalue_storage.dart';
 import 'package:emombti/data/services/persistence/local/local_keyvalue_storage_sharedpreferences.dart';
 import 'package:emombti/data/services/persistence/local/local_storage.dart';
+import 'package:emombti/data/services/persistence/local/local_storage_facade.dart';
+import 'package:emombti/data/services/persistence/local/local_storage_file.dart';
 import 'package:emombti/data/services/persistence/local/local_storage_sqlite.dart';
 import 'package:emombti/domain/constants/status.dart';
 import 'package:flutter/foundation.dart';
@@ -27,7 +29,10 @@ class StorageManager extends ChangeNotifier {
       fileServiceCloudFlare = FileServiceCloudFlare();
       firestoreService = FirestoreService();
       pocketBaseService = PocketBaseService();
-      localStorage = LocalStorageSqlite();
+      localStorage = LocalStorageFacade(
+        sqlite: LocalStorageSqlite(),
+        file: LocalStorageFile(),
+      );
       status = InitializationStatus.success;
     } catch (e) {
       status = InitializationStatus.failure;

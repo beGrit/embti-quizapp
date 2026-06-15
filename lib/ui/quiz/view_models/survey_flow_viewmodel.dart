@@ -5,6 +5,8 @@ import 'package:emombti/utils/command.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
+enum SurveyFlowPageMode { unknown, read, edit }
+
 class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlowViewModel({
     required this.repository,
@@ -20,6 +22,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   final QuizState surveyFlowState;
   final String flowId;
   final String surveyId;
+  SurveyFlowPageMode pageMode = SurveyFlowPageMode.unknown;
 
   Survey _survey = Survey(id: '', title: '', questions: []);
   SurveyFlow _flow = SurveyFlow(id: '', surveyId: '');
@@ -38,6 +41,9 @@ class SurveyFlowViewModel extends ChangeNotifier {
       if (savedFlow != null && survey != null) {
         _flow = savedFlow;
         _survey = survey;
+        pageMode = _flow.status == SurveyFlowStatus.completed
+            ? SurveyFlowPageMode.read
+            : SurveyFlowPageMode.edit;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (pageController.hasClients) {
             final lastIndex = _flow.currentAnswers.length;

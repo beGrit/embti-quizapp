@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/routing/routes.dart';
@@ -96,9 +97,15 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                         return Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.network(
-                              'https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg',
+                            CachedNetworkImage(
+                              imageUrl:
+                                  'https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg',
                               fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
                             ),
                             Container(
                               color: Colors.black.withValues(alpha: 0.3),

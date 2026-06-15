@@ -23,13 +23,10 @@ class AuthRepositoryFirebase extends AuthRepository {
     _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
     _apiStroage = apiStroage;
     _firebaseAuth.authStateChanges().listen((fb.User? fbUser) async {
-      if (_isInitialAuthChecked) {
-        _isInitialAuthChecked = true;
-        if (fbUser != null) {
-          await _initUser(fbUser);
-        } else {
-          updateAuthenticatedUser(null);
-        }
+      if (fbUser != null) {
+        await _initUser(fbUser);
+      } else {
+        updateAuthenticatedUser(null);
       }
     });
   }
@@ -37,8 +34,6 @@ class AuthRepositoryFirebase extends AuthRepository {
   late final fb.FirebaseAuth _firebaseAuth;
   late final GoogleSignIn _googleSignIn;
   late final FirestoreService _apiStroage;
-
-  bool _isInitialAuthChecked = false;
 
   User? _user;
 
@@ -77,7 +72,7 @@ class AuthRepositoryFirebase extends AuthRepository {
           created: DateTime.now(),
           updated: DateTime.now(),
         );
-        await _apiStroage.saveUser(apiModel);
+        _apiStroage.saveUser(apiModel);
       } else {
         user = User(
           id: apiModel.id,
@@ -110,7 +105,6 @@ class AuthRepositoryFirebase extends AuthRepository {
         email: email,
         password: password,
       );
-      await _initUser(_firebaseAuth.currentUser);
       return const Result.ok(null);
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);
@@ -130,7 +124,6 @@ class AuthRepositoryFirebase extends AuthRepository {
 
       // Once signed in, return the UserCredential
       await _firebaseAuth.signInWithCredential(credential);
-      await _initUser(_firebaseAuth.currentUser);
       return const Result.ok(null);
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);
@@ -164,7 +157,6 @@ class AuthRepositoryFirebase extends AuthRepository {
       } else {
         await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
       }
-      await _initUser(_firebaseAuth.currentUser);
       return const Result.ok(null);
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);

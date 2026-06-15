@@ -1,5 +1,7 @@
 import 'package:emombti/app_state/quiz.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
+import 'package:emombti/domain/constants/status.dart';
+import 'package:emombti/manager/sync_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -7,21 +9,42 @@ import '../../../domain/models/quiz/survey_models.dart';
 import '../../../utils/command.dart';
 import '../../../utils/result.dart';
 
+enum QuizLandingPageMode { unknown, read, edit }
+
 class QuizLandingViewModel extends ChangeNotifier {
   QuizLandingViewModel({
     required QuizRepository repository,
     required QuizRepository surveyFlowRepository,
     required QuizState surveyFlowState,
+    required SyncManager syncManager,
   }) : _repository = surveyFlowRepository,
-       _surveyFlowState = surveyFlowState {
+       _surveyFlowState = surveyFlowState,
+       _syncManager = syncManager {
     load = Command0(_load);
     startAssessment = Command0(_startAssessmentAction);
     loadAssessmentResult = Command0(_loadAssessmentResult);
+    sync = Command0(_syncAction);
     surveyFlowState.addListener(loadAssessmentResult.execute);
+
+    // Find existing job if any
+    _activeSyncJob = _syncManager.jobs.cast<SyncJob?>().firstWhere(
+      (j) => j?.key == 'sync_quiz_repository',
+      orElse: () => null,
+    );
+    _activeSyncJob?.addListener(notifyListeners);
   }
 
   final QuizRepository _repository;
   final QuizState _surveyFlowState;
+  final SyncManager _syncManager;
+  SyncJob? _activeSyncJob;
+
+  @override
+  void dispose() {
+    _activeSyncJob?.removeListener(notifyListeners);
+    _surveyFlowState.removeListener(loadAssessmentResult.execute);
+    super.dispose();
+  }
 
   /// Command to load available surveys.
   late final Command0<void> load;
@@ -30,6 +53,11 @@ class QuizLandingViewModel extends ChangeNotifier {
 
   late final Command0<AssessmentResult?> loadAssessmentResult;
 
+  late final Command0<void> sync;
+
+  SyncStatus get quizSyncStatus => _activeSyncJob?.status ?? SyncStatus.none;
+
+  String? get quizSyncError => _activeSyncJob?.error;
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
 
@@ -167,6 +195,26 @@ class QuizLandingViewModel extends ChangeNotifier {
       return Result.ok(result);
     } else {
       return Result.error(Exception('No completed assessment found.'));
+    }
+  }
+
+  Future<Result<void>> _syncAction() async {
+    try {
+      final job = SyncJob(
+        id: 'sync_quiz_${DateTime.now().millisecondsSinceEpoch}',
+        key: 'sync_quiz_repository',
+        type: SyncType.localToRemote,
+        payload: () => _repository.syncLocalToRemote(),
+      );
+
+      _activeSyncJob?.removeListener(notifyListeners);
+      _activeSyncJob = job;
+      _activeSyncJob?.addListener(notifyListeners);
+
+      await _syncManager.addSyncJob(job, unique: true);
+      return Result.ok(null);
+    } catch (e) {
+      return Result.error(Exception(e.toString()));
     }
   }
 }

@@ -32,7 +32,6 @@ class RepositoryManager extends ChangeNotifier {
     quizRepository = QuizRepositoryDev(
       localStorage: storageManager.localStorage,
     );
-    quizRepository.load();
     chatRepository = ChatRepositoryDev(
       pbService: storageManager.pocketBaseService,
     );

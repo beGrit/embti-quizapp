@@ -1,12 +1,12 @@
-import 'package:emombti/domain/constants/status.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../domain/models/quiz/survey_models.dart';
 
 /// Repository responsible for managing the state of an active survey session.
-abstract class QuizRepository {
-  SyncStatus syncStatus = SyncStatus.none;
+abstract class QuizRepository extends ChangeNotifier {
+  Future<void> syncLocalToRemote();
 
-  Future<void> load();
+  Future<void> syncRemoteFromLocal();
 
   /// Retrieves all available personality surveys.
   Future<List<Survey>> getAvailableSurveys();
@@ -36,6 +36,4 @@ abstract class QuizRepository {
   Future<AssessmentResult?> getAssessmentResult(String surveyFlowId);
 
   Future<void> saveAssessmentResult(AssessmentResult result);
-
-  Future<void> sync();
 }

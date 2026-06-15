@@ -14,6 +14,8 @@ abstract class LocalStorage {
   Future<List<Survey>> getQuizzes();
   Future<List<AssessmentResult>> getAssessmentResults();
   Future<Survey?> getSurvey(String id);
+  Future<void> saveSurvey(Survey survey);
+  Future<void> deleteSurvey(String id);
   Future<void> saveFlow(SurveyFlow flow);
   Future<SurveyFlow?> getFlow(String id);
   Future<List<SurveyFlow>> getFlows({String? surveyId});

@@ -159,12 +159,16 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : FilledButton(
-                  onPressed: () async {
-                    await widget.viewModel.submit.execute();
-                    if (context.mounted && widget.viewModel.submit.completed) {
-                      Navigator.of(context).pop();
-                    }
-                  },
+                  onPressed:
+                      widget.viewModel.pageMode != SurveyFlowPageMode.edit
+                      ? null
+                      : () async {
+                          await widget.viewModel.submit.execute();
+                          if (context.mounted &&
+                              widget.viewModel.submit.completed) {
+                            Navigator.of(context).pop();
+                          }
+                        },
                   child: const Text('Submit'),
                 ),
         );

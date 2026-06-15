@@ -1,14 +1,14 @@
 import 'package:emombti/data/services/persistence/local/local_storage.dart';
-import 'package:emombti/domain/constants/status.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
 import 'quiz_repository.dart';
 
 /// Local implementation of [QuizRepository] backed by SQLite
 class QuizRepositoryDev extends ChangeNotifier implements QuizRepository {
   final LocalStorage localStorage;
-  SyncStatus syncStatus = SyncStatus.none;
+  final _log = Logger('QuizRepositoryDev');
 
   QuizRepositoryDev({required this.localStorage});
 
@@ -23,14 +23,7 @@ class QuizRepositoryDev extends ChangeNotifier implements QuizRepository {
   }
 
   @override
-  Future<Survey?> getSurveyById(String id) async {
-    final surveys = await getAvailableSurveys();
-    try {
-      return surveys.firstWhere((s) => s.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
+  Future<Survey?> getSurveyById(String id) => localStorage.getSurvey(id);
 
   @override
   Future<List<AssessmentResult>> getAssessmentHistory() async {
@@ -71,12 +64,10 @@ class QuizRepositoryDev extends ChangeNotifier implements QuizRepository {
   }
 
   @override
-  Future<void> sync() {
-    throw UnimplementedError();
+  Future<void> syncLocalToRemote() async {
+    _log.info('Syncing local to remote');
   }
 
   @override
-  Future<void> load() async {
-    sync();
-  }
+  Future<void> syncRemoteFromLocal() async {}
 }

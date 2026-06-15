@@ -1,4 +1,5 @@
 import 'package:emombti/app_state/quiz.dart';
+import 'package:emombti/domain/constants/status.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/quiz/view_models/quiz_landing_viewmodel.dart';
@@ -27,6 +28,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
       repository: context.read(),
       surveyFlowRepository: context.read(),
       surveyFlowState: context.read(),
+      syncManager: context.read(),
     );
     viewModel.loadAssessmentResult.execute();
     _pageController = PageController();
@@ -34,6 +36,8 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
 
   @override
   void dispose() {
+    viewModel.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -52,6 +56,25 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
           },
         ),
         actions: [
+          ListenableBuilder(
+            listenable: viewModel,
+            builder: (context, child) {
+              if (viewModel.quizSyncStatus == SyncStatus.running) {
+                return const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                );
+              }
+              return IconButton(
+                icon: const Icon(Icons.sync_rounded),
+                onPressed: () => viewModel.sync.execute(),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.notifications_none_rounded),
             onPressed: () {},

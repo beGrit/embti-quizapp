@@ -17,7 +17,6 @@ class AppStateManager extends ChangeNotifier {
   }) async {
     appNavBarState = AppNavBarState();
     surveyFlowState = QuizState(repository: repositoryManager.quizRepository);
-    await surveyFlowState.load();
     chatState = ChatState();
     notifyListeners();
   }

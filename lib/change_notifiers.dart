@@ -15,8 +15,10 @@ import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_storage.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/manager/app_state_manager.dart';
+import 'package:emombti/manager/connectivity_manager.dart';
 import 'package:emombti/manager/repository_manager.dart';
 import 'package:emombti/manager/storage_manager.dart';
+import 'package:emombti/manager/sync_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,8 @@ class MainAppChangeNotifers extends StatelessWidget {
     required this.storageManager,
     required this.repositoryManager,
     required this.appStateManager,
+    required this.connectivityManager,
+    required this.syncManager,
   });
 
   final Widget child;
@@ -34,6 +38,8 @@ class MainAppChangeNotifers extends StatelessWidget {
   final StorageManager storageManager;
   final RepositoryManager repositoryManager;
   final AppStateManager appStateManager;
+  final ConnectivityManager connectivityManager;
+  final SyncManager syncManager;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +90,7 @@ class MainAppChangeNotifers extends StatelessWidget {
             Provider<SocialRepository>.value(
               value: repositoryManager.socialRepository,
             ),
-            Provider<QuizRepository>.value(
+            ChangeNotifierProvider<QuizRepository>.value(
               value: repositoryManager.quizRepository,
             ),
             Provider<PolicyService>(create: (context) => LocalPolicyService()),
@@ -129,10 +135,20 @@ class MainAppChangeNotifers extends StatelessWidget {
               ),
               ChangeNotifierProvider.value(value: appStateManager.chatState),
             ],
-            child: child,
+            child: _buildForConnectivityManager(),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildForConnectivityManager() {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: connectivityManager),
+        ChangeNotifierProvider.value(value: syncManager),
+      ],
+      child: child,
     );
   }
 }

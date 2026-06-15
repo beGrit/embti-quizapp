@@ -318,6 +318,30 @@ class _PostListTile extends StatelessWidget {
                                     photoUrl,
                                     fit: BoxFit.cover,
                                     height: 200,
+                                    loadingBuilder:
+                                        (
+                                          BuildContext context,
+                                          Widget child,
+                                          ImageChunkEvent? loadingProgress,
+                                        ) {
+                                          if (loadingProgress == null) {
+                                            return child; // Image is fully loaded, show it
+                                          }
+
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value:
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          );
+                                        },
                                     errorBuilder:
                                         (context, error, stackTrace) =>
                                             Container(
