@@ -46,3 +46,19 @@ app.*.map.json
 
 # Local files 
 .local_workspace
+
+
+# Firebase local CLI cache and debug logs
+.firebase/
+firebase-debug.log
+*-debug.log
+firebase.json
+
+# Firebase client runtime configurations (Generated keys)
+lib/firebase_options.dart
+.firebaserc
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+macos/Runner/GoogleService-Info.plist

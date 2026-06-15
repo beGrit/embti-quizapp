@@ -2,10 +2,12 @@ import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:emombti/app_state/theme.dart';
 import 'package:emombti/change_notifiers.dart';
 import 'package:emombti/manager/app_state_manager.dart';
+import 'package:emombti/manager/connectivity_manager.dart';
 import 'package:emombti/manager/repository_manager.dart';
 import 'package:emombti/manager/storage_manager.dart';
 import 'package:emombti/routing/router.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
+import 'package:emombti/ui/core/ui/widgets/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
@@ -19,6 +21,8 @@ class MainApp extends StatefulWidget {
     await storageManager.buildStorage();
     var repositoryManager = RepositoryManager();
     await repositoryManager.buildRepositories(storageManager);
+    var connectivityManager = ConnectivityManager();
+    await connectivityManager.load();
     var appStateManager = AppStateManager();
     await appStateManager.buildAppState(
       storageManager: storageManager,
@@ -29,6 +33,7 @@ class MainApp extends StatefulWidget {
         storageManager: storageManager,
         repositoryManager: repositoryManager,
         appStateManager: appStateManager,
+        connectivityManager: connectivityManager,
         child: const MainApp(),
       ),
     );
@@ -86,6 +91,12 @@ class _MainAppState extends State<MainApp> {
             ],
             supportedLocales: const [Locale('en'), Locale('zh')],
             routerConfig: _routerConfig,
+            builder: (context, routerWidget) {
+              return NotificationWrapper(
+                connectivityManager: context.read<ConnectivityManager>(),
+                child: routerWidget ?? const SizedBox.shrink(),
+              );
+            },
           );
         },
       ),
