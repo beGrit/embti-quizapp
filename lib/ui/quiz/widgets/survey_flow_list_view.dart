@@ -211,7 +211,7 @@ class _SurveyFlowListBody extends StatelessWidget {
                     'flowId': flow.id,
                     'surveyId': flow.surveyId,
                   }),
-                  onDelete: () => viewModel.deleteSurveyFlow(flow.id),
+                  onDelete: () => viewModel.deleteSurveyFlow(flow),
                 );
               },
             ),

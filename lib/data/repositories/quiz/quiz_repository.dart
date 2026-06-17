@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
-
 import '../../../domain/models/quiz/survey_models.dart';
 
 /// Repository responsible for managing the state of an active survey session.
-abstract class QuizRepository extends ChangeNotifier {
+abstract class QuizRepository {
+  Future<void> sync(String userId);
+
   Future<void> syncLocalToRemote();
 
   Future<void> syncRemoteFromLocal();
@@ -31,7 +31,7 @@ abstract class QuizRepository extends ChangeNotifier {
   Future<void> saveFlow(SurveyFlow flow);
 
   /// Removes the [SurveyFlow] associated with the given survey ID.
-  Future<void> deleteFlow(String id);
+  Future<void> deleteFlow(SurveyFlow flow);
 
   Future<AssessmentResult?> getAssessmentResult(String surveyFlowId);
 

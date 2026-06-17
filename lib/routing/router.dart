@@ -1,4 +1,4 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/chat/widgets/room_detail_screen.dart';
@@ -29,9 +29,9 @@ import 'package:provider/provider.dart';
 
 import 'routes.dart';
 
-GoRouter router(AuthRepository authRepository) => GoRouter(
+GoRouter router(AuthState authState) => GoRouter(
   initialLocation: Routes.home,
-  refreshListenable: authRepository,
+  refreshListenable: authState,
   redirect: _redirect,
   routes: [
     // Login Route
@@ -41,6 +41,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         viewModel: LoginViewModel(
           repository: context.read(),
           userRepository: context.read(),
+          authState: context.read(),
         ),
       ),
     ),
@@ -88,7 +89,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
         viewModel.loadArticleContent.execute();
         SocialViewModel socialViewModel = SocialViewModel(
           repository: context.read(),
-          authRepository: context.read(),
+          authState: context.read(),
           relatedId: articleId,
         );
         return ArticleDetailScreen(
@@ -107,6 +108,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
           viewModel: SurveyFlowViewModel(
             repository: context.read(),
             surveyFlowState: context.read(),
+            authState: context.read(),
             flowId: flowId,
             surveyId: surveyId,
           ),
@@ -222,7 +224,7 @@ GoRouter router(AuthRepository authRepository) => GoRouter(
 );
 
 Future<String?> _redirect(BuildContext context, GoRouterState state) async {
-  final bool isLoggedIn = await context.read<AuthRepository>().isAuthenticated;
+  final bool isLoggedIn = context.read<AuthState>().isAuthenticated;
   final bool isLogin = state.matchedLocation == Routes.login;
   if (!isLoggedIn) {
     return Routes.login;

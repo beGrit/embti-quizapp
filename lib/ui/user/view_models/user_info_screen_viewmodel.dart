@@ -1,4 +1,4 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
@@ -9,18 +9,18 @@ import 'package:image_picker/image_picker.dart';
 
 class UserInfoScreenViewModel extends ChangeNotifier {
   UserInfoScreenViewModel({
-    required AuthRepository authRepository,
     required UserRepository userRepository,
     required UserAvatarUpdateUseCase userAvatarUpdateUseCase,
-  }) : _authRepository = authRepository,
+    required AuthState authState,
+  }) : _authState = authState,
        _userRepository = userRepository,
        _userAvatarUpdateUseCase = userAvatarUpdateUseCase;
 
-  final AuthRepository _authRepository;
   final UserRepository _userRepository;
   final UserAvatarUpdateUseCase _userAvatarUpdateUseCase;
+  final AuthState _authState;
 
-  User? get user => _authRepository.user;
+  User? get user => _authState.user;
 
   late final Command0<void> updateNameCommand = Command0(_updateName);
   late final Command0<void> updateIntroduceCommand = Command0(_updateIntroduce);
@@ -60,19 +60,20 @@ class UserInfoScreenViewModel extends ChangeNotifier {
     final result = await _userRepository.saveUser(updatedUser);
 
     if (result is Ok<void>) {
-      _authRepository.updateAuthenticatedUser(updatedUser);
+      _authState.updateAuthenticatedUser(updatedUser);
     }
     return result;
   }
 
   Future<Result<void>> _updateAvatar() async {
     Future<Result<User>> result = _userAvatarUpdateUseCase.pickAndUploadAvatar(
+      user?.id ?? '',
       ImagePicker(),
     );
     result.then(
       (value) => {
         if (value is Ok)
-          {_authRepository.updateAuthenticatedUser((value as Ok).value)},
+          {_authState.updateAuthenticatedUser((value as Ok).value)},
       },
     );
     return result;

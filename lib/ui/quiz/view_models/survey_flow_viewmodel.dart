@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/quiz.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/domain/models/quiz/survey_models.dart';
@@ -11,6 +12,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlowViewModel({
     required this.repository,
     required this.surveyFlowState,
+    required this.authState,
     required this.flowId,
     required this.surveyId,
   }) {
@@ -20,6 +22,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   final QuizRepository repository;
   final QuizState surveyFlowState;
+  final AuthState authState;
   final String flowId;
   final String surveyId;
   SurveyFlowPageMode pageMode = SurveyFlowPageMode.unknown;
@@ -65,7 +68,11 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   Future<Result<void>> _submit() async {
     try {
-      _flow = _flow.copyWith(status: SurveyFlowStatus.completed);
+      _flow = _flow.copyWith(
+        status: SurveyFlowStatus.completed,
+        userId: authState.userId,
+        synchronized: false,
+      );
       await repository.saveFlow(_flow);
       surveyFlowState.updateLatest(_flow);
       notifyListeners();

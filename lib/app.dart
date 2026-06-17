@@ -1,4 +1,5 @@
 import 'package:appflowy_editor/appflowy_editor.dart';
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/theme.dart';
 import 'package:emombti/change_notifiers.dart';
 import 'package:emombti/manager/app_state_manager.dart';
@@ -18,20 +19,22 @@ import 'ui/core/localization/app_localizations.dart';
 
 class MainApp extends StatefulWidget {
   static Future<void> main() async {
-    var storageManager = StorageManager();
+    var authState = AuthState();
+    var storageManager = StorageManager(authState: authState);
     await storageManager.buildStorage();
     var repositoryManager = RepositoryManager();
     await repositoryManager.buildRepositories(storageManager);
     var connectivityManager = ConnectivityManager();
     await connectivityManager.load();
     var syncManager = SyncManager(cm: connectivityManager);
-    var appStateManager = AppStateManager();
+    var appStateManager = AppStateManager(authState: authState);
     await appStateManager.buildAppState(
       storageManager: storageManager,
       repositoryManager: repositoryManager,
     );
     runApp(
       MainAppChangeNotifers(
+        authState: authState,
         storageManager: storageManager,
         repositoryManager: repositoryManager,
         appStateManager: appStateManager,
@@ -51,12 +54,12 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   _MainAppState();
   late final GoRouter _routerConfig;
-  late final ThemeData _themeData;
 
   @override
   void initState() {
     super.initState();
-    _routerConfig = router(context.read());
+    final appStateManager = context.read<AppStateManager>();
+    _routerConfig = router(appStateManager.authState);
   }
 
   @override

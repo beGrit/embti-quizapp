@@ -249,7 +249,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 
   void _onScroll() {
-    final vm = widget.socialViewModel.commentSectionVM;
+    final vm = widget.socialViewModel;
 
     // 1. Status Guard: prevent calls if loading, no more data, or not attached
     if (!_scrollController.hasClients || vm.isLoading || !vm.hasMore) return;
@@ -283,7 +283,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             ],
           ),
         ),
-        StickyInputBarWidget(viewModel: widget.socialViewModel.stickyInputVM),
+        StickyInputBarWidget(viewModel: widget.socialViewModel),
       ],
     );
   }
@@ -593,9 +593,7 @@ class _ArticleSocial extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: InteractionBarWidget(
-                    viewModel: viewModel.interactionVM..init(),
-                  ),
+                  child: InteractionBarWidget(viewModel: viewModel),
                 ),
               ),
 
@@ -608,8 +606,7 @@ class _ArticleSocial extends StatelessWidget {
               SliverPadding(
                 padding: EdgeInsets.all(16),
                 sliver: CommentSectionWidget(
-                  viewModel: viewModel.commentSectionVM..init(),
-                  stickyInputViewModel: viewModel.stickyInputVM,
+                  viewModel: viewModel
                 ),
               ),
             ],

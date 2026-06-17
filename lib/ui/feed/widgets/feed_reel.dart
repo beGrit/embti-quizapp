@@ -51,7 +51,7 @@ class _FeedReelState extends State<FeedReel> {
                   feedReel: item,
                   socialViewModel: SocialViewModel(
                     repository: context.read(),
-                    authRepository: context.read(),
+                    authState: context.read(),
                     relatedId: item.id ?? '',
                   ),
                 );

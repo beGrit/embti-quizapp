@@ -1,7 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/user/user_repository.dart';
-import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/user/view_models/user_info_screen_viewmodel.dart';
@@ -18,9 +15,9 @@ class UserInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<UserInfoScreenViewModel>(
       create: (context) => UserInfoScreenViewModel(
-        authRepository: context.read<AuthRepository>(),
-        userRepository: context.read<UserRepository>(),
-        userAvatarUpdateUseCase: context.read<UserAvatarUpdateUseCase>(),
+        authState: context.read(),
+        userRepository: context.read(),
+        userAvatarUpdateUseCase: context.read(),
       ),
       child: _UserInfoScreenContent(initialMbtiType: initialMbtiType),
     );

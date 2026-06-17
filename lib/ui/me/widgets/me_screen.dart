@@ -1,6 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -43,10 +41,8 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MeViewModel>(
-          create: (context) => MeViewModel(
-            context.read<AuthRepository>(),
-            context.read<UserAvatarUpdateUseCase>(),
-          ),
+          create: (context) =>
+              MeViewModel(context.read(), context.read(), context.read()),
         ),
       ],
       builder: (context, _) {

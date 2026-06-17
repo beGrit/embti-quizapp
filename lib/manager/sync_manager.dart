@@ -94,10 +94,20 @@ class SyncManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addSyncJob(SyncJob job, {bool unique = false}) async {
-    if (unique && job.key != null) {
-      final exists = _jobs.any((j) => j.key == job.key);
-      if (exists) return;
+  Future<void> addSyncJob(
+    SyncJob job, {
+    bool unique = false,
+    bool override = false,
+  }) async {
+    if (job.key != null) {
+      if (override) {
+        _jobs.removeWhere(
+          (j) => j.key == job.key && j.status != SyncStatus.running,
+        );
+      } else if (unique) {
+        final exists = _jobs.any((j) => j.key == job.key);
+        if (exists) return;
+      }
     }
 
     job.pendingTime = DateTime.now();

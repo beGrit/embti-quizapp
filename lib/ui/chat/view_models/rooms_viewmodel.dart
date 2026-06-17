@@ -1,5 +1,5 @@
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/chat.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/utils/command.dart';
@@ -8,23 +8,23 @@ import 'package:flutter/material.dart';
 
 class RoomsViewModel extends ChangeNotifier {
   RoomsViewModel({
-    required AuthRepository authRepository,
+    required AuthState authState,
     required ChatRepository chatRepository,
     required ChatState chatState,
-  }) : _authRepository = authRepository,
+  }) : _authState = authState,
        _chatRepository = chatRepository,
        _chatState = chatState {
     loadRoomsCommand = Command0<void>(_loadRoomsInternal);
   }
 
-  final AuthRepository _authRepository;
+  final AuthState _authState;
   final ChatRepository _chatRepository;
   final ChatState _chatState;
 
   late final Command0<void> loadRoomsCommand;
 
   Future<Result<void>> _loadRoomsInternal() async {
-    final user = _authRepository.user;
+    final user = _authState.user;
     if (user == null) {
       return Result.error(Exception('User not authenticated'));
     }

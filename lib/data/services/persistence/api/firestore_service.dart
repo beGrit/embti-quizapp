@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emombti/data/services/persistence/api/model/quiz/quiz_api_model.dart';
-import 'package:emombti/domain/models/quiz/survey_models.dart';
 
 import 'model/social/social_meta_api_model.dart';
 import 'model/user/user_api_model.dart';
@@ -236,24 +235,68 @@ class FirestoreService {
     return {'isLiked': results[0].exists, 'isFavorited': results[1].exists};
   }
 
-  Future<void> saveSurveyFlow(SurveyFlowApiModel surveyFlow) async {
+  Future<void> saveSurveyFlow(
+    String userId,
+    SurveyFlowApiModel surveyFlow,
+  ) async {
     try {
-      _firestore.databaseId;
       if (surveyFlow.id == null) {
         surveyFlow = surveyFlow.copyWith(id: generateFirestoreId());
       }
+
       final DocumentReference docRef = _firestore
           .collection('user_survey_flows')
-          .doc(surveyFlow.userId)
+          .doc(userId)
           .collection('survey_flows')
           .doc(surveyFlow.id);
-      await docRef.set(surveyFlow.toJson(), SetOptions(merge: true));
+
+      await _firestore.runTransaction((transaction) async {
+        transaction.set(docRef, surveyFlow.toJson(), SetOptions(merge: true));
+      });
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<void> deleteSurveyFlow(SurveyFlow surveyFlow) async {}
+  Future<SurveyFlowApiModel?> getSurveyFlow(
+    String userId,
+    String flowId,
+  ) async {
+    final doc = await _firestore
+        .collection('user_survey_flows')
+        .doc(userId)
+        .collection('survey_flows')
+        .doc(flowId)
+        .get();
+    if (!doc.exists || doc.data() == null) return null;
+    final model = SurveyFlowApiModel.fromJson(doc.data()!);
+    if (model.deleted == true) return null;
+    return model;
+  }
+
+  Future<List<SurveyFlowApiModel>> getSurveyFlows(String userId) async {
+    final query = await _firestore
+        .collection('user_survey_flows')
+        .doc(userId)
+        .collection('survey_flows')
+        .where('deleted', isNotEqualTo: true)
+        .get();
+    return query.docs
+        .map((doc) => SurveyFlowApiModel.fromJson(doc.data()))
+        .toList();
+  }
+
+  Future<void> deleteSurveyFlow(String userId, String flowId) async {
+    final DocumentReference docRef = _firestore
+        .collection('user_survey_flows')
+        .doc(userId)
+        .collection('survey_flows')
+        .doc(flowId);
+
+    await _firestore.runTransaction((transaction) async {
+      transaction.update(docRef, {'deleted': true});
+    });
+  }
 
   Future<void> saveAssessmentResult(
     String userId,
@@ -268,9 +311,38 @@ class FirestoreService {
           .doc(surveyFlowId)
           .collection('contents')
           .doc('result');
-      docRef.set(result.toJson());
+
+      await _firestore.runTransaction((transaction) async {
+        transaction.set(docRef, result.toJson());
+      });
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<AssessmentResultApiModel?> getAssessmentResult(
+    String userId,
+    String surveyFlowId,
+  ) async {
+    final doc = await _firestore
+        .collection('user_survey_flows')
+        .doc(userId)
+        .collection('survey_flows')
+        .doc(surveyFlowId)
+        .collection('contents')
+        .doc('result')
+        .get();
+    if (!doc.exists || doc.data() == null) return null;
+    return AssessmentResultApiModel.fromJson(doc.data()!);
+  }
+
+  Future<List<AssessmentResultApiModel>> getAllAssessmentResults(
+    String userId,
+  ) async {
+    final flows = await getSurveyFlows(userId);
+    final results = await Future.wait(
+      flows.map((flow) => getAssessmentResult(userId, flow.id!)),
+    );
+    return results.whereType<AssessmentResultApiModel>().toList();
   }
 }

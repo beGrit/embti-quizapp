@@ -1,6 +1,4 @@
 import 'package:emombti/app_state/chat.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
@@ -17,9 +15,9 @@ class RoomsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<RoomsViewModel>(
       create: (context) => RoomsViewModel(
-        authRepository: context.read<AuthRepository>(),
-        chatRepository: context.read<ChatRepository>(),
-        chatState: context.read<ChatState>(),
+        authState: context.read(),
+        chatRepository: context.read(),
+        chatState: context.read(),
       )..loadRoomsCommand.execute(),
       builder: (context, _) {
         return Scaffold(

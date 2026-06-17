@@ -1,7 +1,5 @@
-import 'dart:async';
-
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/chat.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/utils/command.dart';
@@ -11,23 +9,23 @@ import 'package:flutter/material.dart';
 class RoomDetailViewModel extends ChangeNotifier {
   RoomDetailViewModel({
     required this.room,
-    required AuthRepository authRepository,
+    required AuthState authState,
     required ChatRepository chatRepository,
     required ChatState chatState,
-  }) : _authRepository = authRepository,
+  }) : _authState = authState,
        _chatRepository = chatRepository,
        _chatState = chatState {
         loadMessagesCommand = Command0(_loadMessages);
     }
 
   final Room room;
-  final AuthRepository _authRepository;
+  final AuthState _authState;
   final ChatRepository _chatRepository;
   final ChatState _chatState;
 
   late final Command0<void> loadMessagesCommand;
 
-  String? get currentUserId => _authRepository.user?.id;
+  String? get currentUserId => _authState.userId;
 
   void init() async {
     _chatState.setActiveRoom(room.id);
@@ -45,7 +43,7 @@ class RoomDetailViewModel extends ChangeNotifier {
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
-    final user = _authRepository.user;
+    final user = _authState.user;
     if (user == null) return;
 
     final message = Message(

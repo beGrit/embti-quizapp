@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/services/persistence/api/file_service_cloudflare.dart';
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
@@ -11,6 +12,7 @@ import 'package:emombti/domain/constants/status.dart';
 import 'package:flutter/foundation.dart';
 
 class StorageManager extends ChangeNotifier {
+  final AuthState authState;
   String? baseDir;
   InitializationStatus status = InitializationStatus.initial;
   Object? error;
@@ -20,6 +22,22 @@ class StorageManager extends ChangeNotifier {
   late final FileServiceCloudFlare fileServiceCloudFlare;
   late final FirestoreService firestoreService;
   late final PocketBaseService pocketBaseService;
+
+  StorageManager({required this.authState}) {
+    authState.addListener(_onAuthStateChanged);
+  }
+
+  @override
+  void dispose() {
+    authState.removeListener(_onAuthStateChanged);
+    super.dispose();
+  }
+
+  void _onAuthStateChanged() {
+    if (status == InitializationStatus.success) {
+      localStorage.switchUser(authState.userId);
+    }
+  }
 
   Future<void> buildStorage() async {
     status = InitializationStatus.loading;

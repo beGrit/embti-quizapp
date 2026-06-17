@@ -61,7 +61,7 @@ sealed class SurveyFlow with _$SurveyFlow {
   const factory SurveyFlow({
     required String id, // Unique ID for this specific flow instance
     required String surveyId,
-    String? userId, // Associated user ID
+    String? userId,
     Survey? survey,
     @Default(SurveyFlowStatus.idle) SurveyFlowStatus status,
 
@@ -71,6 +71,7 @@ sealed class SurveyFlow with _$SurveyFlow {
     @Default(0) int totalQuestions,
     @Default([]) List<String> questionOrder,
     @Default({}) Map<String, int> currentAnswers,
+    @Default(false) bool synchronized,
   }) = _SurveyFlow;
 
   factory SurveyFlow.fromJson(Map<String, dynamic> json) =>
@@ -111,7 +112,7 @@ sealed class AssessmentResult with _$AssessmentResult {
   const AssessmentResult._();
   const factory AssessmentResult({
     required String surveyFlowId,
-    String? userId, // Associated user ID
+    String? userId,
     SurveyFlow? surveyFlow,
     String? type,
     required List<AxisScore> scores,

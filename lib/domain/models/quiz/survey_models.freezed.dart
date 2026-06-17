@@ -554,8 +554,7 @@ as List<Question>,
 mixin _$SurveyFlow {
 
  String get id;// Unique ID for this specific flow instance
- String get surveyId; String? get userId;// Associated user ID
- Survey? get survey; SurveyFlowStatus get status; DateTime? get startTime; DateTime? get endTime; int get totalQuestions; List<String> get questionOrder; Map<String, int> get currentAnswers;
+ String get surveyId; String? get userId; Survey? get survey; SurveyFlowStatus get status; DateTime? get startTime; DateTime? get endTime; int get totalQuestions; List<String> get questionOrder; Map<String, int> get currentAnswers; bool get synchronized;
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -568,16 +567,16 @@ $SurveyFlowCopyWith<SurveyFlow> get copyWith => _$SurveyFlowCopyWithImpl<SurveyF
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other.questionOrder, questionOrder)&&const DeepCollectionEquality().equals(other.currentAnswers, currentAnswers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other.questionOrder, questionOrder)&&const DeepCollectionEquality().equals(other.currentAnswers, currentAnswers)&&(identical(other.synchronized, synchronized) || other.synchronized == synchronized));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(questionOrder),const DeepCollectionEquality().hash(currentAnswers));
+int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(questionOrder),const DeepCollectionEquality().hash(currentAnswers),synchronized);
 
 @override
 String toString() {
-  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
+  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers, synchronized: $synchronized)';
 }
 
 
@@ -588,7 +587,7 @@ abstract mixin class $SurveyFlowCopyWith<$Res>  {
   factory $SurveyFlowCopyWith(SurveyFlow value, $Res Function(SurveyFlow) _then) = _$SurveyFlowCopyWithImpl;
 @useResult
 $Res call({
- String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
+ String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers, bool synchronized
 });
 
 
@@ -605,7 +604,7 @@ class _$SurveyFlowCopyWithImpl<$Res>
 
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,Object? synchronized = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,surveyId: null == surveyId ? _self.surveyId : surveyId // ignore: cast_nullable_to_non_nullable
@@ -617,7 +616,8 @@ as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: ca
 as DateTime?,totalQuestions: null == totalQuestions ? _self.totalQuestions : totalQuestions // ignore: cast_nullable_to_non_nullable
 as int,questionOrder: null == questionOrder ? _self.questionOrder : questionOrder // ignore: cast_nullable_to_non_nullable
 as List<String>,currentAnswers: null == currentAnswers ? _self.currentAnswers : currentAnswers // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, int>,synchronized: null == synchronized ? _self.synchronized : synchronized // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of SurveyFlow
@@ -711,10 +711,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers,  bool synchronized)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SurveyFlow() when $default != null:
-return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers,_that.synchronized);case _:
   return orElse();
 
 }
@@ -732,10 +732,10 @@ return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers,  bool synchronized)  $default,) {final _that = this;
 switch (_that) {
 case _SurveyFlow():
-return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);}
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers,_that.synchronized);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -749,10 +749,10 @@ return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String surveyId,  String? userId,  Survey? survey,  SurveyFlowStatus status,  DateTime? startTime,  DateTime? endTime,  int totalQuestions,  List<String> questionOrder,  Map<String, int> currentAnswers,  bool synchronized)?  $default,) {final _that = this;
 switch (_that) {
 case _SurveyFlow() when $default != null:
-return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers);case _:
+return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_that.startTime,_that.endTime,_that.totalQuestions,_that.questionOrder,_that.currentAnswers,_that.synchronized);case _:
   return null;
 
 }
@@ -764,14 +764,13 @@ return $default(_that.id,_that.surveyId,_that.userId,_that.survey,_that.status,_
 @JsonSerializable()
 
 class _SurveyFlow extends SurveyFlow {
-  const _SurveyFlow({required this.id, required this.surveyId, this.userId, this.survey, this.status = SurveyFlowStatus.idle, this.startTime, this.endTime, this.totalQuestions = 0, final  List<String> questionOrder = const [], final  Map<String, int> currentAnswers = const {}}): _questionOrder = questionOrder,_currentAnswers = currentAnswers,super._();
+  const _SurveyFlow({required this.id, required this.surveyId, this.userId, this.survey, this.status = SurveyFlowStatus.idle, this.startTime, this.endTime, this.totalQuestions = 0, final  List<String> questionOrder = const [], final  Map<String, int> currentAnswers = const {}, this.synchronized = false}): _questionOrder = questionOrder,_currentAnswers = currentAnswers,super._();
   factory _SurveyFlow.fromJson(Map<String, dynamic> json) => _$SurveyFlowFromJson(json);
 
 @override final  String id;
 // Unique ID for this specific flow instance
 @override final  String surveyId;
 @override final  String? userId;
-// Associated user ID
 @override final  Survey? survey;
 @override@JsonKey() final  SurveyFlowStatus status;
 @override final  DateTime? startTime;
@@ -791,6 +790,7 @@ class _SurveyFlow extends SurveyFlow {
   return EqualUnmodifiableMapView(_currentAnswers);
 }
 
+@override@JsonKey() final  bool synchronized;
 
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
@@ -805,16 +805,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other._questionOrder, _questionOrder)&&const DeepCollectionEquality().equals(other._currentAnswers, _currentAnswers));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SurveyFlow&&(identical(other.id, id) || other.id == id)&&(identical(other.surveyId, surveyId) || other.surveyId == surveyId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.survey, survey) || other.survey == survey)&&(identical(other.status, status) || other.status == status)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.totalQuestions, totalQuestions) || other.totalQuestions == totalQuestions)&&const DeepCollectionEquality().equals(other._questionOrder, _questionOrder)&&const DeepCollectionEquality().equals(other._currentAnswers, _currentAnswers)&&(identical(other.synchronized, synchronized) || other.synchronized == synchronized));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(_questionOrder),const DeepCollectionEquality().hash(_currentAnswers));
+int get hashCode => Object.hash(runtimeType,id,surveyId,userId,survey,status,startTime,endTime,totalQuestions,const DeepCollectionEquality().hash(_questionOrder),const DeepCollectionEquality().hash(_currentAnswers),synchronized);
 
 @override
 String toString() {
-  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers)';
+  return 'SurveyFlow(id: $id, surveyId: $surveyId, userId: $userId, survey: $survey, status: $status, startTime: $startTime, endTime: $endTime, totalQuestions: $totalQuestions, questionOrder: $questionOrder, currentAnswers: $currentAnswers, synchronized: $synchronized)';
 }
 
 
@@ -825,7 +825,7 @@ abstract mixin class _$SurveyFlowCopyWith<$Res> implements $SurveyFlowCopyWith<$
   factory _$SurveyFlowCopyWith(_SurveyFlow value, $Res Function(_SurveyFlow) _then) = __$SurveyFlowCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers
+ String id, String surveyId, String? userId, Survey? survey, SurveyFlowStatus status, DateTime? startTime, DateTime? endTime, int totalQuestions, List<String> questionOrder, Map<String, int> currentAnswers, bool synchronized
 });
 
 
@@ -842,7 +842,7 @@ class __$SurveyFlowCopyWithImpl<$Res>
 
 /// Create a copy of SurveyFlow
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? surveyId = null,Object? userId = freezed,Object? survey = freezed,Object? status = null,Object? startTime = freezed,Object? endTime = freezed,Object? totalQuestions = null,Object? questionOrder = null,Object? currentAnswers = null,Object? synchronized = null,}) {
   return _then(_SurveyFlow(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,surveyId: null == surveyId ? _self.surveyId : surveyId // ignore: cast_nullable_to_non_nullable
@@ -854,7 +854,8 @@ as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: ca
 as DateTime?,totalQuestions: null == totalQuestions ? _self.totalQuestions : totalQuestions // ignore: cast_nullable_to_non_nullable
 as int,questionOrder: null == questionOrder ? _self._questionOrder : questionOrder // ignore: cast_nullable_to_non_nullable
 as List<String>,currentAnswers: null == currentAnswers ? _self._currentAnswers : currentAnswers // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, int>,synchronized: null == synchronized ? _self.synchronized : synchronized // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -1137,8 +1138,7 @@ as double,
 /// @nodoc
 mixin _$AssessmentResult {
 
- String get surveyFlowId; String? get userId;// Associated user ID
- SurveyFlow? get surveyFlow; String? get type; List<AxisScore> get scores; DateTime get timestamp;
+ String get surveyFlowId; String? get userId; SurveyFlow? get surveyFlow; String? get type; List<AxisScore> get scores; DateTime get timestamp;
 /// Create a copy of AssessmentResult
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1348,7 +1348,6 @@ class _AssessmentResult extends AssessmentResult {
 
 @override final  String surveyFlowId;
 @override final  String? userId;
-// Associated user ID
 @override final  SurveyFlow? surveyFlow;
 @override final  String? type;
  final  List<AxisScore> _scores;

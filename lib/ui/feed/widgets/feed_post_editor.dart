@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:appflowy_editor/appflowy_editor.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/feed/view_models/feed_post_editor_viewmodel.dart';
@@ -47,8 +45,8 @@ class _FeedPostEditorState extends State<FeedPostEditor> {
     ThemeData theme = Theme.of(context);
     return ChangeNotifierProvider(
       create: (context) => FeedPostEditorViewModel(
-        authRepository: context.read<AuthRepository>(),
-        feedRepository: context.read<FeedRepository>(),
+        authState: context.read(),
+        feedRepository: context.read(),
       ),
       child: Consumer<FeedPostEditorViewModel>(
         builder: (context, viewModel, child) {

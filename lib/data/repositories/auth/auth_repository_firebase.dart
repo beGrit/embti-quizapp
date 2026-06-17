@@ -22,32 +22,15 @@ class AuthRepositoryFirebase extends AuthRepository {
     _firebaseAuth = firebaseAuth ?? fb.FirebaseAuth.instance;
     _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
     _apiStroage = apiStroage;
-    _firebaseAuth.authStateChanges().listen((fb.User? fbUser) async {
-      if (fbUser != null) {
-        await _initUser(fbUser);
-      } else {
-        updateAuthenticatedUser(null);
-      }
-    });
   }
 
   late final fb.FirebaseAuth _firebaseAuth;
   late final GoogleSignIn _googleSignIn;
   late final FirestoreService _apiStroage;
 
-  User? _user;
-
-  @override
-  User? get user => _user;
-
-  @override
-  Future<bool> get isAuthenticated async {
-    return _user != null;
-  }
-
-  Future<void> _initUser(fb.User? firebaseUser) async {
+  Future<User?> _initUser(fb.User? firebaseUser) async {
     if (firebaseUser == null) {
-      updateAuthenticatedUser(null);
+      return null;
     } else {
       UserFirestoreApiModel? apiModel = await _apiStroage.getUser(
         firebaseUser.uid,
@@ -85,27 +68,26 @@ class AuthRepositoryFirebase extends AuthRepository {
               : null,
         );
       }
-      updateAuthenticatedUser(user);
+      return user;
     }
   }
 
   @override
-  void updateAuthenticatedUser(User? newUser) {
-    _user = newUser;
-    notifyListeners();
-  }
-
-  @override
-  Future<Result<void>> login({
+  Future<Result<User>> login({
     required String email,
     required String password,
   }) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return const Result.ok(null);
+      final user = await _initUser(userCredential.user);
+      if (user != null) {
+        return Result.ok(user);
+      } else {
+        return Result.error(Exception('Failed to get user after login'));
+      }
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);
     } catch (e) {
@@ -114,7 +96,7 @@ class AuthRepositoryFirebase extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginWithGoogle() async {
+  Future<Result<User>> loginWithGoogle() async {
     try {
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
@@ -123,8 +105,13 @@ class AuthRepositoryFirebase extends AuthRepository {
       );
 
       // Once signed in, return the UserCredential
-      await _firebaseAuth.signInWithCredential(credential);
-      return const Result.ok(null);
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final user = await _initUser(userCredential.user);
+      if (user != null) {
+        return Result.ok(user);
+      } else {
+        return Result.error(Exception('Failed to get user after Google login'));
+      }
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);
     } catch (e) {
@@ -133,7 +120,7 @@ class AuthRepositoryFirebase extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginWithWechat() async {
+  Future<Result<User>> loginWithWechat() async {
     return Result.error(Exception('Wechat login not implemented'));
   }
 
@@ -141,7 +128,6 @@ class AuthRepositoryFirebase extends AuthRepository {
   Future<Result<void>> logout() async {
     try {
       await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
-      updateAuthenticatedUser(null);
       return const Result.ok(null);
     } catch (e) {
       return Result.error(Exception(e.toString()));
@@ -149,19 +135,37 @@ class AuthRepositoryFirebase extends AuthRepository {
   }
 
   @override
-  Future<Result<void>> loginWithAppleId() async {
+  Future<Result<User>> loginWithAppleId() async {
     try {
       final appleProvider = fb.AppleAuthProvider();
+      fb.UserCredential userCredential;
       if (kIsWeb) {
-        await fb.FirebaseAuth.instance.signInWithPopup(appleProvider);
+        userCredential = await fb.FirebaseAuth.instance.signInWithPopup(appleProvider);
       } else {
-        await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
+        userCredential = await fb.FirebaseAuth.instance.signInWithProvider(appleProvider);
       }
-      return const Result.ok(null);
+      final user = await _initUser(userCredential.user);
+      if (user != null) {
+        return Result.ok(user);
+      } else {
+        return Result.error(Exception('Failed to get user after Apple login'));
+      }
     } on fb.FirebaseAuthException catch (e) {
       return Result.error(e);
     } catch (e) {
       return Result.error(Exception(e.toString()));
     }
+  }
+
+  @override
+  Future<Result<User>> fetchAuthenticatedUser() async {
+    final fbUser = _firebaseAuth.currentUser;
+    if (fbUser != null) {
+      final user = await _initUser(fbUser);
+      if (user != null) {
+        return Result.ok(user);
+      }
+    }
+    return Result.error(Exception('No authenticated user'));
   }
 }

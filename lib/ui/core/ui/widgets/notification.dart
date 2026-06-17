@@ -79,6 +79,11 @@ class _NotificationWrapperState extends State<NotificationWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return ListenableBuilder(
+      listenable: widget.connectivityManager,
+      builder: (context, _) {
+        return widget.child;
+      },
+    );
   }
 }

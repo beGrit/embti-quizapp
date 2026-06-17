@@ -1,6 +1,4 @@
 import 'package:emombti/app_state/chat.dart';
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +16,9 @@ class RoomDetailScreen extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: RoomDetailViewModel(
         room: room,
-        authRepository: context.read<AuthRepository>(),
-        chatRepository: context.read<ChatRepository>(),
-        chatState: context.read<ChatState>(),
+        authState: context.read(),
+        chatRepository: context.read(),
+        chatState: context.read(),
       ),
       child: const _RoomDetailContent(),
     );

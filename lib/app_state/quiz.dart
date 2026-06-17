@@ -17,13 +17,27 @@ class QuizState extends ChangeNotifier {
   SurveyFlow? get latestCompleted => _latestCompleted;
   bool get hasLatestCompleted => _latestCompleted != null;
 
+  SurveyFlow? getSurveyFlowById(String id) {
+    return _surveyFlows.where((flow) => flow.id == id).firstOrNull;
+  }
+
   void setSurveyFlows(List<SurveyFlow> flows) {
     _surveyFlows = flows;
+    _setUpLatest();
+    notifyListeners();
+  }
+
+  void removeSurveyFlow(SurveyFlow flow) {
+    _surveyFlows.removeWhere((__) => __.id == flow.id);
+    _setUpLatest();
+    notifyListeners();
+  }
+
+  void _setUpLatest() {
     _latest = _surveyFlows.isEmpty ? null : _surveyFlows.first;
     _latestCompleted = _surveyFlows
         .where((flow) => flow.status == SurveyFlowStatus.completed)
         .firstOrNull;
-    notifyListeners();
   }
 
   void updateLatest(SurveyFlow flow) {

@@ -25,9 +25,10 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
   void initState() {
     super.initState();
     viewModel = QuizLandingViewModel(
+      authState: context.read(),
       repository: context.read(),
       surveyFlowRepository: context.read(),
-      surveyFlowState: context.read(),
+      quizState: context.read(),
       syncManager: context.read(),
     );
     viewModel.loadAssessmentResult.execute();
@@ -118,7 +119,7 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
         ),
       ),
       body: Consumer<QuizState>(
-        builder: (context, surveyFlowState, child) {
+        builder: (context, quizState, child) {
           return Center(
             child: Column(
               children: [
@@ -126,14 +127,13 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
                   child: PageView(
                     controller: _pageController,
                     children: [
-                      if (surveyFlowState.hasLatestCompleted)
-                        _buildResultPage(),
+                      if (quizState.hasLatestCompleted) _buildResultPage(),
                       child ?? SizedBox.shrink(),
                     ],
                   ),
                 ),
                 _QuizLandingPageViewIndicator(
-                  initialLength: surveyFlowState.hasLatestCompleted ? 2 : 1,
+                  initialLength: quizState.hasLatestCompleted ? 2 : 1,
                   pageController: _pageController,
                 ),
               ],

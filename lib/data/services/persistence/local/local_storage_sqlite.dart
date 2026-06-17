@@ -1,16 +1,30 @@
 import 'dart:convert';
+
 import 'package:emombti/config/assets.dart';
 import 'package:emombti/domain/models/content/content.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+
 import '../../../../domain/models/quiz/survey_models.dart';
 
 class LocalStorageSqlite {
-  late final Future<Database>? _database;
+  Future<Database>? _database;
+  String? _currentUserId;
 
   LocalStorageSqlite() {
     _database = _initDB();
+  }
+
+  Future<void> switchUser(String? userId) async {
+    if (_currentUserId == userId) return;
+
+    final db = await _database;
+    await db?.close();
+
+    _currentUserId = userId;
+    _database = _initDB();
+    await _database;
   }
 
   Future<Database> get database async {
@@ -19,28 +33,32 @@ class LocalStorageSqlite {
 
   Future<Database> _initDB() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'emombti_quiz.db');
+    final dbName = _currentUserId != null
+        ? 'emombti_quiz_$_currentUserId.db'
+        : 'emombti_quiz.db';
+    final path = join(dbPath, dbName);
+
     return await openDatabase(
       path,
-      version: 4,
+      version: 9, // Increment version for schema change (removing userId)
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE survey_flows (
             id TEXT PRIMARY KEY,
             surveyId TEXT NOT NULL,
-            userId TEXT,
             status TEXT NOT NULL,
             startTime TEXT,
             endTime TEXT,
             totalQuestions INTEGER,
             questionOrder TEXT,   -- JSON List
-            currentAnswers TEXT   -- JSON Map
+            currentAnswers TEXT,  -- JSON Map
+            synchronized INTEGER NOT NULL DEFAULT 0,
+            deleted INTEGER NOT NULL DEFAULT 0
           )
         ''');
         await db.execute('''
           CREATE TABLE assessment_results (
             surveyFlowId TEXT PRIMARY KEY,
-            userId TEXT,
             timestamp TEXT NOT NULL
           )
         ''');
@@ -55,15 +73,34 @@ class LocalStorageSqlite {
         ''');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 4) {
-          try {
-            await db.execute('ALTER TABLE survey_flows ADD COLUMN userId TEXT');
-          } catch (_) {}
-          try {
-            await db.execute('ALTER TABLE assessment_results ADD COLUMN userId TEXT');
-          } catch (_) {}
+        if (oldVersion < 9) {
+          // Simplest for dev: drop and recreate to remove userId if present
+          await db.execute('DROP TABLE IF EXISTS axis_scores');
+          await db.execute('DROP TABLE IF EXISTS assessment_results');
+          await db.execute('DROP TABLE IF EXISTS survey_flows');
+
           await db.execute('''
-            CREATE TABLE IF NOT EXISTS axis_scores (
+            CREATE TABLE survey_flows (
+              id TEXT PRIMARY KEY,
+              surveyId TEXT NOT NULL,
+              status TEXT NOT NULL,
+              startTime TEXT,
+              endTime TEXT,
+              totalQuestions INTEGER,
+              questionOrder TEXT,   -- JSON List
+              currentAnswers TEXT,  -- JSON Map
+              synchronized INTEGER NOT NULL DEFAULT 0,
+              deleted INTEGER NOT NULL DEFAULT 0
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE assessment_results (
+              surveyFlowId TEXT PRIMARY KEY,
+              timestamp TEXT NOT NULL
+            )
+          ''');
+          await db.execute('''
+            CREATE TABLE axis_scores (
               surveyFlowId TEXT NOT NULL,
               axis INTEGER NOT NULL,
               value REAL NOT NULL,
@@ -81,13 +118,13 @@ class LocalStorageSqlite {
     await db.insert('survey_flows', {
       'id': flow.id,
       'surveyId': flow.surveyId,
-      'userId': flow.userId,
       'status': flow.status.name,
       'startTime': flow.startTime?.toIso8601String(),
       'endTime': flow.endTime?.toIso8601String(),
       'totalQuestions': flow.totalQuestions,
       'questionOrder': jsonEncode(flow.questionOrder),
       'currentAnswers': jsonEncode(flow.currentAnswers),
+      'synchronized': flow.synchronized ? 1 : 0,
     }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -95,7 +132,6 @@ class LocalStorageSqlite {
     return SurveyFlow(
       id: map['id'] as String,
       surveyId: map['surveyId'] as String,
-      userId: map['userId'] as String?,
       status: SurveyFlowStatus.values.firstWhere(
         (e) => e.name == map['status'],
       ),
@@ -112,6 +148,7 @@ class LocalStorageSqlite {
       currentAnswers: Map<String, int>.from(
         jsonDecode(map['currentAnswers'] as String),
       ),
+      synchronized: (map['synchronized'] as int) == 1,
     );
   }
 
@@ -119,7 +156,7 @@ class LocalStorageSqlite {
     final db = await database;
     final maps = await db.query(
       'survey_flows',
-      where: 'id = ?',
+      where: 'id = ? AND deleted = 0',
       whereArgs: [id],
     );
     if (maps.isEmpty) return null;
@@ -128,10 +165,16 @@ class LocalStorageSqlite {
 
   Future<List<SurveyFlow>> getFlows({String? surveyId}) async {
     final db = await database;
+    String whereClause = 'deleted = 0';
+    List<Object?>? whereArgs;
+    if (surveyId != null) {
+      whereClause += ' AND surveyId = ?';
+      whereArgs = [surveyId];
+    }
     final maps = await db.query(
       'survey_flows',
-      where: surveyId != null ? 'surveyId = ?' : null,
-      whereArgs: surveyId != null ? [surveyId] : null,
+      where: whereClause,
+      whereArgs: whereArgs,
       orderBy: 'startTime DESC',
     );
     return maps.map(_surveyFlowFromRow).toList();
@@ -139,7 +182,12 @@ class LocalStorageSqlite {
 
   Future<void> deleteFlow(String id) async {
     final db = await database;
-    await db.delete('survey_flows', where: 'id = ?', whereArgs: [id]);
+    await db.update(
+      'survey_flows',
+      {'deleted': 1, 'synchronized': 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<void> saveResult(AssessmentResult result) async {
@@ -147,7 +195,6 @@ class LocalStorageSqlite {
     await db.transaction((txn) async {
       await txn.insert('assessment_results', {
         'surveyFlowId': result.surveyFlowId,
-        'userId': result.userId,
         'timestamp': result.timestamp.toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
 
@@ -166,7 +213,6 @@ class LocalStorageSqlite {
     await db.transaction((txn) async {
       await txn.insert('assessment_results', {
         'surveyFlowId': result.surveyFlowId,
-        'userId': result.userId,
         'timestamp': result.timestamp.toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
 
@@ -203,18 +249,21 @@ class LocalStorageSqlite {
       );
 
       final scores = scoresMaps
-          .map((s) => AxisScore(
-                axis: PersonalityAxis.values[s['axis'] as int],
-                value: s['value'] as double,
-              ))
+          .map(
+            (s) => AxisScore(
+              axis: PersonalityAxis.values[s['axis'] as int],
+              value: s['value'] as double,
+            ),
+          )
           .toList();
 
-      results.add(AssessmentResult(
-        surveyFlowId: surveyFlowId,
-        userId: resMap['userId'] as String?,
-        timestamp: DateTime.parse(resMap['timestamp'] as String),
-        scores: scores,
-      ));
+      results.add(
+        AssessmentResult(
+          surveyFlowId: surveyFlowId,
+          timestamp: DateTime.parse(resMap['timestamp'] as String),
+          scores: scores,
+        ),
+      );
     }
     return results;
   }
@@ -236,15 +285,16 @@ class LocalStorageSqlite {
     );
 
     final scores = scoresMaps
-        .map((s) => AxisScore(
-              axis: PersonalityAxis.values[s['axis'] as int],
-              value: s['value'] as double,
-            ))
+        .map(
+          (s) => AxisScore(
+            axis: PersonalityAxis.values[s['axis'] as int],
+            value: s['value'] as double,
+          ),
+        )
         .toList();
 
     return AssessmentResult(
       surveyFlowId: map['surveyFlowId'] as String,
-      userId: map['userId'] as String?,
       timestamp: DateTime.parse(map['timestamp'] as String),
       scores: scores,
     );

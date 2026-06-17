@@ -1,5 +1,3 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/app_state/theme.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/core/ui/widgets/policy.dart';
@@ -14,8 +12,9 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SettingsViewModel>(
       create: (context) => SettingsViewModel(
-        authRepository: context.read<AuthRepository>(),
-        themeController: context.read<ThemeState>(),
+        authRepository: context.read(),
+        themeController: context.read(),
+        authState: context.read(),
       ),
       child: const _SettingsScreenContent(),
     );

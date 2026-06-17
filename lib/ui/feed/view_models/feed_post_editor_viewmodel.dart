@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/domain/models/common/common.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
@@ -17,22 +17,27 @@ typedef SavePostParams = ({
 
 class FeedPostEditorViewModel extends ChangeNotifier {
   FeedPostEditorViewModel({
-    required AuthRepository authRepository,
+    required AuthState authState,
     required FeedRepository feedRepository,
-  }) : _authRepository = authRepository,
+  }) : _authState = authState,
        _feedRepository = feedRepository {
     saveCommand = Command1<Post, SavePostParams>(_savePost);
   }
 
-  final AuthRepository _authRepository;
+  final AuthState _authState;
   final FeedRepository _feedRepository;
 
   late final Command1<Post, SavePostParams> saveCommand;
 
   Future<Result<Post>> _savePost(SavePostParams params) async {
+    final user = _authState.user;
+    if (user == null) {
+      return Result.error(Exception('User not authenticated'));
+    }
+
     final newPost = Post(
       id: '',
-      author: _authRepository.user!,
+      author: user,
       created: DateTime.now(),
       title: params.title,
       body: jsonEncode(params.body),

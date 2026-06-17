@@ -1,249 +1,165 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/domain/models/social/social.dart';
+import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/ui/core/ui/view_models/paging.dart';
-import 'package:emombti/ui/social/models/social_model.dart';
+import 'package:emombti/ui/social/state/social.dart';
 import 'package:flutter/widgets.dart';
 
-class SocialViewModel extends ChangeNotifier {
+class SocialViewModel extends ChangeNotifier with PagingMixin<Comment> {
   final SocialRepository _repository;
-  final AuthRepository _authRepository;
+  final AuthState _authState;
   final String relatedId;
 
-  final SocialModel socialModel = SocialModel(
-    SocialMeta(
-      likesCount: 0,
-      commentsCount: 0,
-      favoritesCount: 0,
-      isLiked: false,
-      isFavorited: false,
-      comments: [],
-      id: '',
-      relatedId: '',
-    ),
+  final SocialState socialModel = SocialState(
+    SocialMeta(id: '', relatedId: ''),
   );
 
-  late final InteractionViewModel interactionVM;
-  late final CommentSectionViewModel commentSectionVM;
-  late final StickyInputViewModel stickyInputVM;
+  // Loading states
+  bool _isInitialLoading = true;
+  bool get isInitialLoading => _isInitialLoading;
 
-  bool _isLoading = true;
-  bool get isLoading => _isLoading;
+  bool _isInteractionLoading = false;
+  bool get isInteractionLoading => _isInteractionLoading;
+
+  final FocusNode focusNode = FocusNode();
+  bool _isCommentSubmitting = false;
+  bool get isCommentSubmitting => _isCommentSubmitting;
 
   SocialViewModel({
     required SocialRepository repository,
-    required AuthRepository authRepository,
+    required AuthState authState,
     required this.relatedId,
   }) : _repository = repository,
-       _authRepository = authRepository {
+       _authState = authState {
     _init();
   }
 
   Future<void> _init() async {
     try {
-      _isLoading = true;
-      interactionVM = InteractionViewModel(
-        repository: _repository,
-        relatedId: relatedId,
-        socialModel: socialModel,
-        onCommentRequest: () => stickyInputVM.requestFocus(),
-      );
+      _isInitialLoading = true;
+      notifyListeners();
 
-      commentSectionVM = CommentSectionViewModel(
-        repository: _repository,
-        relatedId: relatedId,
-        socialModel: socialModel,
-      );
+      // Load social meta data (likes, favorites counts, user's interaction status)
+      await _loadSocialMeta();
 
-      stickyInputVM = StickyInputViewModel(
-        repository: _repository,
-        authRepository: _authRepository,
-        relatedId: relatedId,
-        socialModel: socialModel,
-        commentSectionVM: commentSectionVM,
-      );
+      // Load initial comments using paging mixin
+      await refreshData();
 
-      _isLoading = false;
+      _isInitialLoading = false;
       notifyListeners();
     } catch (e) {
-      _isLoading = false;
+      _isInitialLoading = false;
       debugPrint("Failed to initialize SocialViewModel: $e");
       notifyListeners();
     }
   }
 
-  @override
-  void dispose() {
-    interactionVM.dispose();
-    commentSectionVM.dispose();
-    stickyInputVM.dispose();
-    socialModel.dispose();
-    super.dispose();
-  }
-}
-
-class InteractionViewModel extends ChangeNotifier {
-  final SocialRepository _repository;
-  final String relatedId;
-  final SocialModel socialModel;
-  final VoidCallback? onCommentRequest;
-
-  bool _isLoading = false;
-
-  InteractionViewModel({
-    required SocialRepository repository,
-    required this.relatedId,
-    required this.socialModel,
-    this.onCommentRequest,
-  }) : _repository = repository;
+  // --- Interaction related methods ---
 
   SocialMeta? get meta => socialModel.value;
-  bool get isLoading => _isLoading;
 
-  Future<void> init() async {
-    if (_isLoading) return;
+  Future<void> _loadSocialMeta() async {
+    if (_isInteractionLoading) return;
 
-    _isLoading = true;
+    _isInteractionLoading = true;
     notifyListeners();
 
     try {
-      final meta = await _repository.getSocialMeta(relatedId);
-      socialModel.setMetrics(meta);
+      final result = await _repository.getSocialMeta(relatedId);
+      socialModel.setMetrics(result);
+      notifyListeners();
     } catch (e) {
-      debugPrint("Error initializing InteractionViewModel: $e");
-      // Handle error state if necessary
+      debugPrint("Error loading social meta: $e");
     } finally {
-      _isLoading = false;
+      _isInteractionLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> toggleLike() async {
     final currentMeta = socialModel.value;
-
     final isLiked = !currentMeta.isLiked;
     final oldMeta = currentMeta;
 
     // Optimistic UI update
     socialModel.toggleLike(isLiked);
+    notifyListeners();
 
     try {
-      await _repository.toggleLike(relatedId, isLiked);
+      User? user = _authState.user;
+      if (user == null) {
+        throw Exception('User not logged in.');
+      }
+      await _repository.toggleLike(user, relatedId, isLiked);
+      notifyListeners();
     } catch (e) {
       debugPrint("Error toggling like: $e");
-      // Rollback on error
+      // Rollback on error for unexpected exceptions
       socialModel.setMetrics(oldMeta);
+      notifyListeners();
     }
   }
 
   Future<void> toggleFavorite() async {
     final currentMeta = socialModel.value;
-
     final isFav = !currentMeta.isFavorited;
     final oldMeta = currentMeta;
 
     // Optimistic UI update
     socialModel.toggleFavorite(isFav);
+    notifyListeners();
 
     try {
-      await _repository.toggleFavorite(relatedId, isFav);
+      User? user = _authState.user;
+      if (user == null) {
+        throw Exception('User not logged in.');
+      }
+      await _repository.toggleFavorite(user, relatedId, isFav);
     } catch (e) {
       debugPrint("Error toggling favorite: $e");
-      // Rollback on error
+      // Rollback on error for unexpected exceptions
       socialModel.setMetrics(oldMeta);
+      notifyListeners();
     }
   }
-}
 
-class CommentSectionViewModel extends ChangeNotifier with PagingMixin<Comment> {
-  final SocialRepository _repository;
-  final String relatedId;
-  final SocialModel socialModel;
+  // --- Comment section related methods (integrating PagingMixin) ---
 
-  CommentSectionViewModel({
-    required SocialRepository repository,
-    required this.relatedId,
-    required this.socialModel,
-  }) : _repository = repository;
-
-  bool get isEmpty => (socialModel.value.comments.isEmpty) && !isLoading;
+  bool get areCommentsEmpty =>
+      (socialModel.value.comments.isEmpty) && !isLoading;
 
   List<Comment> get comments => socialModel.value.comments;
-
-  Future<void> init() async {
-    await refreshData();
-  }
 
   @override
   Future<void> refreshData() async {
     await super.refreshData();
     socialModel.setComments(dataItems);
+    notifyListeners();
   }
 
   @override
   Future<void> loadNextPage() async {
     await super.loadNextPage();
     socialModel.setComments(dataItems);
+    notifyListeners();
   }
 
   @override
-  Future<List<Comment>> loadData(int page, int pageSize) {
-    return _repository.getCommentsByPage(
+  Future<List<Comment>> loadData(int page, int pageSize) async {
+    final result = await _repository.getCommentsByPage(
       relatedId,
       page: page,
       pageSize: pageSize,
     );
+    return result;
   }
 
   void handleNewComment(Comment newComment) {
     socialModel.addComment(newComment);
+    dataItems.insert(0, newComment);
     notifyListeners();
   }
-
-  Future<void> toggleLike(String commentId) async {
-    // Note: Local update for comment like can also be moved to SocialModel if needed
-    try {
-      final currentComments = List<Comment>.from(comments);
-      final index = currentComments.indexWhere((c) => c.id == commentId);
-      if (index != -1) {
-        final comment = currentComments[index];
-        final isLiked = !comment.isLiked;
-
-        currentComments[index] = comment.copyWith(
-          isLiked: isLiked,
-          likesCount: isLiked ? comment.likesCount + 1 : comment.likesCount - 1,
-        );
-        socialModel.setComments(currentComments);
-
-        // Note: You would usually call the repository here to persist the like
-      }
-    } catch (e) {
-      debugPrint("Toggle Like Error: $e");
-    }
-  }
-}
-
-class StickyInputViewModel extends ChangeNotifier {
-  final SocialRepository _repository;
-  final AuthRepository _authRepository;
-  final String relatedId;
-  final SocialModel socialModel;
-  final CommentSectionViewModel commentSectionVM;
-
-  final FocusNode focusNode = FocusNode();
-
-  bool _isSubmitting = false;
-
-  StickyInputViewModel({
-    required SocialRepository repository,
-    required AuthRepository authRepository,
-    required this.relatedId,
-    required this.socialModel,
-    required this.commentSectionVM,
-  }) : _repository = repository,
-       _authRepository = authRepository;
-
-  bool get isSubmitting => _isSubmitting;
 
   void requestFocus() {
     if (focusNode.canRequestFocus) {
@@ -251,40 +167,39 @@ class StickyInputViewModel extends ChangeNotifier {
     }
   }
 
+  void onCommentInputRequested() {
+    requestFocus();
+  }
+
   Future<void> submitComment(String commentText) async {
     commentText = commentText.trim();
-    if (commentText.isEmpty || _isSubmitting) return;
+    if (commentText.isEmpty || _isCommentSubmitting) return;
 
     try {
-      _isSubmitting = true;
+      _isCommentSubmitting = true;
       notifyListeners();
-
-      // Uses the internal relatedId
-      await _repository.postComment(relatedId, commentText);
-
-      // Create a local comment object and update socialModel
-      final user = _authRepository.user;
-      final newComment = Comment(
-        id: DateTime.now().millisecondsSinceEpoch.toString(), // Temporary ID
-        userId: user?.id ?? 'guest',
-        authorName: user?.name ?? 'Anonymous',
-        authorMbti: user?.mbtiType ?? 'XXXX',
-        authorAvatarUrl: user?.avatar?.uri.toString(),
-        content: commentText,
-        createdAt: DateTime.now(),
+      User? user = _authState.user;
+      if (user == null) {
+        throw Exception('User not logged in.');
+      }
+      final result = await _repository.postComment(
+        user,
+        relatedId,
+        commentText,
       );
-
-      commentSectionVM.handleNewComment(newComment);
+      handleNewComment(result);
+      focusNode.unfocus();
     } catch (e) {
       debugPrint("Submit Comment Error: $e");
     } finally {
-      _isSubmitting = false;
+      _isCommentSubmitting = false;
       notifyListeners();
     }
   }
 
   @override
   void dispose() {
+    socialModel.dispose();
     focusNode.dispose();
     super.dispose();
   }

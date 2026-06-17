@@ -31,6 +31,7 @@ class RepositoryManager extends ChangeNotifier {
     );
     quizRepository = QuizRepositoryDev(
       localStorage: storageManager.localStorage,
+      firestoreService: storageManager.firestoreService,
     );
     chatRepository = ChatRepositoryDev(
       pbService: storageManager.pocketBaseService,
@@ -50,7 +51,6 @@ class RepositoryManager extends ChangeNotifier {
     );
     socialRepository = SocialRepositoryFirestore(
       firestoreService: storageManager.firestoreService,
-      authRepository: authRepository,
     );
 
     notifyListeners();

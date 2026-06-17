@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/quiz.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/domain/constants/status.dart';
@@ -15,16 +16,18 @@ class QuizLandingViewModel extends ChangeNotifier {
   QuizLandingViewModel({
     required QuizRepository repository,
     required QuizRepository surveyFlowRepository,
-    required QuizState surveyFlowState,
+    required QuizState quizState,
+    required AuthState authState,
     required SyncManager syncManager,
   }) : _repository = surveyFlowRepository,
-       _surveyFlowState = surveyFlowState,
-       _syncManager = syncManager {
+       _quizState = quizState,
+       _syncManager = syncManager,
+       _authState = authState {
     load = Command0(_load);
     startAssessment = Command0(_startAssessmentAction);
     loadAssessmentResult = Command0(_loadAssessmentResult);
     sync = Command0(_syncAction);
-    surveyFlowState.addListener(loadAssessmentResult.execute);
+    quizState.addListener(loadAssessmentResult.execute);
 
     // Find existing job if any
     _activeSyncJob = _syncManager.jobs.cast<SyncJob?>().firstWhere(
@@ -35,14 +38,15 @@ class QuizLandingViewModel extends ChangeNotifier {
   }
 
   final QuizRepository _repository;
-  final QuizState _surveyFlowState;
+  final QuizState _quizState;
   final SyncManager _syncManager;
+  final AuthState _authState;
   SyncJob? _activeSyncJob;
 
   @override
   void dispose() {
     _activeSyncJob?.removeListener(notifyListeners);
-    _surveyFlowState.removeListener(loadAssessmentResult.execute);
+    _quizState.removeListener(loadAssessmentResult.execute);
     super.dispose();
   }
 
@@ -61,7 +65,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
 
-  bool get hasExistingSurveyFlows => _surveyFlowState.surveyFlows.isNotEmpty;
+  bool get hasExistingSurveyFlows => _quizState.surveyFlows.isNotEmpty;
 
   bool _selectionMode = false;
   bool get selectionMode => _selectionMode;
@@ -72,8 +76,8 @@ class QuizLandingViewModel extends ChangeNotifier {
   int get selectedFlowCount => _selectedFlowIds.length;
 
   bool get allFlowsSelected =>
-      _surveyFlowState.surveyFlows.isNotEmpty &&
-      _selectedFlowIds.length == _surveyFlowState.surveyFlows.length;
+      _quizState.surveyFlows.isNotEmpty &&
+      _selectedFlowIds.length == _quizState.surveyFlows.length;
 
   bool isFlowSelected(String flowId) => _selectedFlowIds.contains(flowId);
 
@@ -100,7 +104,7 @@ class QuizLandingViewModel extends ChangeNotifier {
     } else {
       _selectedFlowIds
         ..clear()
-        ..addAll(_surveyFlowState.surveyFlows.map((f) => f.id));
+        ..addAll(_quizState.surveyFlows.map((f) => f.id));
     }
     notifyListeners();
   }
@@ -109,7 +113,12 @@ class QuizLandingViewModel extends ChangeNotifier {
   Future<void> deleteSelectedSurveyFlows() async {
     final ids = List<String>.from(_selectedFlowIds);
     for (final id in ids) {
-      await _repository.deleteFlow(id);
+      SurveyFlow? surveyFlow = _quizState.getSurveyFlowById(id);
+      surveyFlow = surveyFlow?.copyWith(userId: _authState.userId);
+      if (surveyFlow != null) {
+        _quizState.removeSurveyFlow(surveyFlow);
+        await _repository.deleteFlow(surveyFlow);
+      }
     }
     _selectedFlowIds.clear();
     _selectionMode = false;
@@ -118,14 +127,15 @@ class QuizLandingViewModel extends ChangeNotifier {
   }
 
   /// Removes a saved session from local storage and refreshes [surveyFlows].
-  Future<void> deleteSurveyFlow(String flowId) async {
-    await _repository.deleteFlow(flowId);
-    _selectedFlowIds.remove(flowId);
-    await _refreshSurveyFlows();
-    if (_surveyFlowState.surveyFlows.isEmpty) {
+  Future<void> deleteSurveyFlow(SurveyFlow flow) async {
+    flow = flow.copyWith(userId: _authState.userId);
+    _selectedFlowIds.remove(flow.id);
+    _quizState.removeSurveyFlow(flow);
+    if (_quizState.surveyFlows.isEmpty) {
       _selectionMode = false;
     }
     notifyListeners();
+    await _repository.deleteFlow(flow);
   }
 
   Future<Result<void>> _load() async {
@@ -136,9 +146,9 @@ class QuizLandingViewModel extends ChangeNotifier {
       await _refreshSurveyFlows();
 
       _selectedFlowIds.removeWhere(
-        (id) => !_surveyFlowState.surveyFlows.any((f) => f.id == id),
+        (id) => !_quizState.surveyFlows.any((f) => f.id == id),
       );
-      if (_surveyFlowState.surveyFlows.isEmpty) {
+      if (_quizState.surveyFlows.isEmpty) {
         _selectionMode = false;
       }
       notifyListeners();
@@ -151,7 +161,7 @@ class QuizLandingViewModel extends ChangeNotifier {
   Future<void> _refreshSurveyFlows() async {
     try {
       final flows = await _repository.getFlows();
-      _surveyFlowState.setSurveyFlows(flows);
+      _quizState.setSurveyFlows(flows);
     } catch (e) {
       debugPrint('Error fetching survey flows: $e');
     }
@@ -180,16 +190,18 @@ class QuizLandingViewModel extends ChangeNotifier {
 
     return SurveyFlow(
       id: const Uuid().v4(), // Generate a unique ID for this flow
+      userId: _authState.userId,
       surveyId: survey.id,
       status: SurveyFlowStatus.inProgress,
       startTime: DateTime.now(),
       totalQuestions: survey.questions.length,
       questionOrder: ids,
+      synchronized: false,
     );
   }
 
   Future<Result<AssessmentResult?>> _loadAssessmentResult() async {
-    final latestCompleted = _surveyFlowState.latestCompleted;
+    final latestCompleted = _quizState.latestCompleted;
     if (latestCompleted != null) {
       final result = await _repository.getAssessmentResult(latestCompleted.id);
       return Result.ok(result);
@@ -204,14 +216,14 @@ class QuizLandingViewModel extends ChangeNotifier {
         id: 'sync_quiz_${DateTime.now().millisecondsSinceEpoch}',
         key: 'sync_quiz_repository',
         type: SyncType.localToRemote,
-        payload: () => _repository.syncLocalToRemote(),
+        payload: () => _repository.sync(_authState.userId ?? ''),
       );
 
       _activeSyncJob?.removeListener(notifyListeners);
       _activeSyncJob = job;
       _activeSyncJob?.addListener(notifyListeners);
 
-      await _syncManager.addSyncJob(job, unique: true);
+      await _syncManager.addSyncJob(job, unique: true, override: true);
       return Result.ok(null);
     } catch (e) {
       return Result.error(Exception(e.toString()));

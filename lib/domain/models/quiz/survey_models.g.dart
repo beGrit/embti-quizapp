@@ -70,6 +70,7 @@ _SurveyFlow _$SurveyFlowFromJson(Map<String, dynamic> json) => _SurveyFlow(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
+  synchronized: json['synchronized'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$SurveyFlowToJson(_SurveyFlow instance) =>
@@ -84,6 +85,7 @@ Map<String, dynamic> _$SurveyFlowToJson(_SurveyFlow instance) =>
       'totalQuestions': instance.totalQuestions,
       'questionOrder': instance.questionOrder,
       'currentAnswers': instance.currentAnswers,
+      'synchronized': instance.synchronized,
     };
 
 const _$SurveyFlowStatusEnumMap = {

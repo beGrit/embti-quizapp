@@ -1,33 +1,22 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/model/social/social_meta_api_model.dart';
 import 'package:emombti/domain/models/social/social.dart';
+import 'package:emombti/domain/models/user/user.dart';
 
 import 'social_repository.dart';
 
 class SocialRepositoryFirestore implements SocialRepository {
   final FirestoreService _firestoreService;
-  final AuthRepository _authRepository;
 
-  SocialRepositoryFirestore({
-    required FirestoreService firestoreService,
-    required AuthRepository authRepository,
-  }) : _firestoreService = firestoreService,
-       _authRepository = authRepository;
+  SocialRepositoryFirestore({required FirestoreService firestoreService})
+    : _firestoreService = firestoreService;
 
   @override
   Future<SocialMeta> getSocialMeta(String relatedId) async {
     var apiModel = await _firestoreService.getSocialMetaByRelatedId(relatedId);
     apiModel ??= await _firestoreService.createSocialMeta(relatedId);
 
-    final userId = _authRepository.user?.id;
     Map<String, bool> status = {'isLiked': false, 'isFavorited': false};
-    if (userId != null && apiModel.id != null) {
-      status = await _firestoreService.getUserStatus(
-        socialMetaId: apiModel.id!,
-        userId: userId,
-      );
-    }
 
     return SocialMeta(
       id: apiModel.id ?? '',
@@ -69,18 +58,19 @@ class SocialRepositoryFirestore implements SocialRepository {
   }
 
   @override
-  Future<void> postComment(String relatedId, String content) async {
-    final user = _authRepository.user;
-    if (user == null || user.id == null) {
-      throw Exception('User must be logged in to post a comment');
-    }
+  Future<Comment> postComment(
+    User user,
+    String relatedId,
+    String content,
+  ) async {
+    if (user.id == null) throw Exception('User must be logged.');
 
     var apiModel = await _firestoreService.getSocialMetaByRelatedId(relatedId);
     apiModel ??= await _firestoreService.createSocialMeta(relatedId);
 
     if (apiModel.id == null) throw Exception('Failed to get social meta ID');
 
-    final comment = CommentApiModel(
+    final commentApiModel = CommentApiModel(
       userId: 'cloud_pb_users_${user.id!}',
       authorName: user.name ?? 'Anonymous',
       authorMbti: user.mbtiType ?? 'XXXX',
@@ -91,14 +81,15 @@ class SocialRepositoryFirestore implements SocialRepository {
 
     await _firestoreService.addComment(
       socialMetaId: apiModel.id!,
-      comment: comment,
+      comment: commentApiModel,
     );
+
+    return _mapComment(commentApiModel);
   }
 
   @override
-  Future<void> toggleLike(String relatedId, bool shouldLike) async {
-    final userId = _authRepository.user?.id;
-    if (userId == null) throw Exception('User must be logged in to like');
+  Future<void> toggleLike(User user, String relatedId, bool shouldLike) async {
+    if (user.id == null) throw Exception('User must be logged.');
 
     final apiModel = await _firestoreService.getSocialMetaByRelatedId(
       relatedId,
@@ -109,15 +100,18 @@ class SocialRepositoryFirestore implements SocialRepository {
 
     await _firestoreService.toggleLike(
       socialMetaId: apiModel.id!,
-      userId: userId,
+      userId: user.id ?? '',
       shouldLike: shouldLike,
     );
   }
 
   @override
-  Future<void> toggleFavorite(String relatedId, bool shouldFavorite) async {
-    final userId = _authRepository.user?.id;
-    if (userId == null) throw Exception('User must be logged in to favorite');
+  Future<void> toggleFavorite(
+    User user,
+    String relatedId,
+    bool shouldFavorite,
+  ) async {
+    if (user.id == null) throw Exception('User must be logged.');
 
     final apiModel = await _firestoreService.getSocialMetaByRelatedId(
       relatedId,
@@ -128,7 +122,7 @@ class SocialRepositoryFirestore implements SocialRepository {
 
     await _firestoreService.toggleFavorite(
       socialMetaId: apiModel.id!,
-      userId: userId,
+      userId: user.id ?? '',
       shouldFavorite: shouldFavorite,
     );
   }

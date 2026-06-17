@@ -11,6 +11,7 @@ abstract class LocalStorage {
   Future<List<BannerContent>> getBannerContents();
 
   // Quiz
+  Future<void> switchUser(String? userId);
   Future<List<Survey>> getQuizzes();
   Future<List<AssessmentResult>> getAssessmentResults();
   Future<Survey?> getSurvey(String id);

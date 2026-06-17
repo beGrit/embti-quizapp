@@ -1,12 +1,11 @@
 import 'package:emombti/domain/models/social/social.dart';
 import 'package:emombti/utils/number_formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../view_models/social_viewmodel.dart';
 
 class InteractionBarWidget extends StatelessWidget {
-  final InteractionViewModel viewModel;
+  final SocialViewModel viewModel;
 
   const InteractionBarWidget({super.key, required this.viewModel});
 
@@ -44,7 +43,7 @@ class InteractionBarWidget extends StatelessWidget {
                 icon: Icons.chat_bubble_outline,
                 count: meta.commentsCount,
                 suffix: ' Comments',
-                onTap: viewModel.onCommentRequest,
+                onTap: viewModel.onCommentInputRequested,
                 color: Theme.of(context).colorScheme.secondary,
               ),
               ActionButton(
@@ -105,123 +104,105 @@ class ActionButton extends StatelessWidget {
 }
 
 class CommentSectionWidget extends StatelessWidget {
-  final CommentSectionViewModel viewModel;
-  final StickyInputViewModel stickyInputViewModel;
+  final SocialViewModel viewModel;
 
-  const CommentSectionWidget({
-    super.key,
-    required this.viewModel,
-    required this.stickyInputViewModel,
-  });
+  const CommentSectionWidget({super.key, required this.viewModel});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: viewModel),
-        ChangeNotifierProvider.value(value: stickyInputViewModel),
-      ],
-      child: Consumer2<CommentSectionViewModel, StickyInputViewModel>(
-        builder: (context, vm, stickyVM, _) {
-          return ValueListenableBuilder<SocialMeta?>(
-            valueListenable: vm.socialModel,
-            builder: (context, meta, _) {
-              final comments = meta?.comments ?? [];
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, child) => ValueListenableBuilder<SocialMeta?>(
+        valueListenable: viewModel.socialModel,
+        builder: (context, meta, _) {
+          final comments = meta?.comments ?? [];
 
-              if (vm.isLoading && comments.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.all(32.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                );
-              }
+          if (viewModel.isLoading && comments.isEmpty) {
+            return const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            );
+          }
 
-              if (comments.isEmpty && !stickyVM.isSubmitting) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 64.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Icon(
-                          Icons.chat_bubble_outline,
-                          size: 64,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(height: 16),
-                        Text(
-                          'No comments yet.',
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                        Text(
-                          'Be the first to share your thoughts!',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.blueGrey,
-                          ),
-                        ),
-                      ],
+          if (comments.isEmpty && !viewModel.isCommentSubmitting) {
+            return SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 64.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      size: 64,
+                      color: Colors.grey,
                     ),
-                  ),
-                );
-              }
-
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    // Show submitting indicator at the top
-                    if (stickyVM.isSubmitting && index == 0) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Center(
-                          child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ),
-                      );
-                    }
-
-                    final commentIndex = stickyVM.isSubmitting
-                        ? index - 1
-                        : index;
-
-                    if (commentIndex == comments.length && !vm.hasMore) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(
-                          child: Text(
-                            'No more comments',
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (commentIndex == comments.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      );
-                    }
-
-                    final comment = comments[commentIndex];
-                    return CommentItem(
-                      comment: comment,
-                      onLike: () => vm.toggleLike(comment.id),
-                    );
-                  },
-                  childCount:
-                      comments.length +
-                      (vm.isFetchingMore || !vm.hasMore ? 1 : 0) +
-                      (stickyVM.isSubmitting ? 1 : 0),
+                    SizedBox(height: 16),
+                    Text(
+                      'No comments yet.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+                    Text(
+                      'Be the first to share your thoughts!',
+                      style: TextStyle(fontSize: 14, color: Colors.blueGrey),
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+            );
+          }
+
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                // Show submitting indicator at the top
+                if (viewModel.isCommentSubmitting && index == 0) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+                  );
+                }
+
+                final commentIndex = viewModel.isCommentSubmitting
+                    ? index - 1
+                    : index;
+
+                if (commentIndex == comments.length && !viewModel.hasMore) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Text(
+                        'No more comments',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ),
+                  );
+                }
+
+                if (commentIndex == comments.length) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  );
+                }
+
+                final comment = comments[commentIndex];
+                return CommentItem(comment: comment, onLike: null);
+              },
+              childCount:
+                  comments.length +
+                  (viewModel.isFetchingMore || !viewModel.hasMore ? 1 : 0) +
+                  (viewModel.isCommentSubmitting ? 1 : 0),
+            ),
           );
         },
       ),
@@ -347,7 +328,7 @@ class CommentItem extends StatelessWidget {
 }
 
 class StickyInputBarWidget extends StatefulWidget {
-  final StickyInputViewModel viewModel;
+  final SocialViewModel viewModel;
 
   const StickyInputBarWidget({super.key, required this.viewModel});
 
@@ -395,7 +376,7 @@ class _StickyInputBarWidgetState extends State<StickyInputBarWidget> {
                   child: TextField(
                     controller: _controller,
                     focusNode: widget.viewModel.focusNode,
-                    enabled: !widget.viewModel.isSubmitting,
+                    enabled: !widget.viewModel.isCommentSubmitting,
                     onSubmitted: (_) => _handleSubmit(),
                     textInputAction: TextInputAction.send,
                     decoration: InputDecoration(
@@ -415,10 +396,10 @@ class _StickyInputBarWidgetState extends State<StickyInputBarWidget> {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  onPressed: widget.viewModel.isSubmitting
+                  onPressed: widget.viewModel.isCommentSubmitting
                       ? null
                       : _handleSubmit,
-                  icon: widget.viewModel.isSubmitting
+                  icon: widget.viewModel.isCommentSubmitting
                       ? const SizedBox(
                           width: 20,
                           height: 20,

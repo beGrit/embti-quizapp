@@ -10,25 +10,12 @@ import 'auth_repository.dart';
 
 class AuthRepositoryDev extends AuthRepository {
   AuthRepositoryDev({required PocketBaseService pbService})
-    : _pbService = pbService {
-    _pbService.client.authStore.onChange.listen((event) {
-      notifyListeners();
-    });
-  }
+    : _pbService = pbService;
 
   final PocketBaseService _pbService;
 
-  User? _user;
-
   @override
-  User? get user => _user;
-
-  @override
-  Future<bool> get isAuthenticated =>
-      Future.value(_pbService.client.authStore.isValid);
-
-  @override
-  Future<Result<void>> login({
+  Future<Result<User>> login({
     required String email,
     required String password,
   }) async {
@@ -36,8 +23,12 @@ class AuthRepositoryDev extends AuthRepository {
       await _pbService.client
           .collection('users')
           .authWithPassword(email, password);
-      setUpUserFromRemote();
-      return const Result.ok(null);
+      final user = setUpUserFromRemote();
+      if (user != null) {
+        return Result.ok(user);
+      } else {
+        return Result.error(Exception('Failed to get user after login'));
+      }
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
@@ -46,12 +37,11 @@ class AuthRepositoryDev extends AuthRepository {
   @override
   Future<Result<void>> logout() async {
     _pbService.client.authStore.clear();
-    updateAuthenticatedUser(null);
     return const Result.ok(null);
   }
 
   @override
-  Future<Result<void>> loginWithGoogle() async {
+  Future<Result<User>> loginWithGoogle() async {
     try {
       await _pbService.client.collection('users').authWithOAuth2('google', (
         url,
@@ -64,21 +54,25 @@ class AuthRepositoryDev extends AuthRepository {
       });
 
       closeInAppWebView();
-      setUpUserFromRemote();
-      return const Result.ok(null);
+      final user = setUpUserFromRemote();
+      if (user != null) {
+        return Result.ok(user);
+      } else {
+        return Result.error(Exception('Failed to get user after OAuth login'));
+      }
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 
   @override
-  Future<Result<void>> loginWithWechat() async {
+  Future<Result<User>> loginWithWechat() async {
     return Result.error(
       Exception('Wechat login not implemented with PocketBase'),
     );
   }
 
-  void setUpUserFromRemote() {
+  User? setUpUserFromRemote() {
     final recordModel = _pbService.client.authStore.record;
     if (recordModel is RecordModel) {
       final apiModel = UserApiModel.fromJson(recordModel.toJson());
@@ -90,29 +84,33 @@ class AuthRepositoryDev extends AuthRepository {
         }),
         apiModel.avatar ?? '',
       );
-      updateAuthenticatedUser(
-        User(
-          id: apiModel.id,
-          email: apiModel.email,
-          name: apiModel.name,
-          avatar: apiModel.avatar != null
-              ? AppFile(uri: avatarUri, name: apiModel.avatar!)
-              : null,
-          mbtiType: apiModel.mbtiType,
-          introduce: apiModel.introduce,
-        ),
+      return User(
+        id: apiModel.id,
+        email: apiModel.email,
+        name: apiModel.name,
+        avatar: apiModel.avatar != null
+            ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+            : null,
+        mbtiType: apiModel.mbtiType,
+        introduce: apiModel.introduce,
       );
     }
+    return null;
   }
 
   @override
-  void updateAuthenticatedUser(User? newUser) {
-    _user = newUser;
-    notifyListeners();
-  }
-
-  @override
-  Future<Result<void>> loginWithAppleId() {
+  Future<Result<User>> loginWithAppleId() {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<User>> fetchAuthenticatedUser() async {
+    if (_pbService.client.authStore.isValid) {
+      final user = setUpUserFromRemote();
+      if (user != null) {
+        return Result.ok(user);
+      }
+    }
+    return Result.error(Exception('No authenticated user'));
   }
 }
