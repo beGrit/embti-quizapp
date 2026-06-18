@@ -1,4 +1,3 @@
-import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/content/content_repository.dart';
@@ -27,7 +26,6 @@ class MainAppChangeNotifers extends StatelessWidget {
   const MainAppChangeNotifers({
     super.key,
     required this.child,
-    required this.authState,
     required this.storageManager,
     required this.repositoryManager,
     required this.appStateManager,
@@ -37,7 +35,6 @@ class MainAppChangeNotifers extends StatelessWidget {
 
   final Widget child;
 
-  final AuthState authState;
   final StorageManager storageManager;
   final RepositoryManager repositoryManager;
   final AppStateManager appStateManager;
@@ -47,7 +44,7 @@ class MainAppChangeNotifers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: authState,
+      value: appStateManager.authState,
       child: ChangeNotifierProvider.value(
         value: storageManager,
         child: Consumer<StorageManager>(
@@ -116,6 +113,12 @@ class MainAppChangeNotifers extends StatelessWidget {
                       builder: (context, value, _) {
                         return MultiProvider(
                           providers: [
+                            ChangeNotifierProvider.value(
+                              value: appStateManager.appConfig,
+                            ),
+                            ChangeNotifierProvider.value(
+                              value: appStateManager.themeState,
+                            ),
                             ChangeNotifierProvider.value(
                               value: appStateManager.appNavBarState,
                             ),

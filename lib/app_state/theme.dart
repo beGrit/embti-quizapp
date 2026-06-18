@@ -1,13 +1,16 @@
+import 'package:emombti/app_state/app_config.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 TextTheme createTextTheme(
-  BuildContext context,
   String bodyFontString,
   String displayFontString,
+  BuildContext? context,
 ) {
-  TextTheme baseTextTheme = Theme.of(context).textTheme;
+  TextTheme baseTextTheme = context == null
+      ? Typography.material2021().black
+      : Theme.of(context).textTheme;
   TextTheme bodyTextTheme = GoogleFonts.getTextTheme(
     bodyFontString,
     baseTextTheme,
@@ -28,43 +31,31 @@ TextTheme createTextTheme(
 }
 
 class ThemeState extends ChangeNotifier {
-  final MaterialTheme materialTheme;
+  late final Map<String, MaterialTheme> materialThemes = {};
+  late final MaterialTheme _defaultMaterialTheme;
+  Brightness _brightness;
+  Brightness get brightness => _brightness;
 
-  ThemeData? _customTheme;
-  Brightness _currentPlatformBrightness;
-
-  ThemeState({
-    required this.materialTheme,
-    required Brightness currentPlatformBrightness,
-  }) : _currentPlatformBrightness = currentPlatformBrightness;
-
-  // Syncs the system brightness with the controller
-  void updatePlatformBrightness(Brightness brightness) {
-    if (_currentPlatformBrightness != brightness) {
-      _currentPlatformBrightness = brightness;
-      if (_customTheme == null) notifyListeners();
-    }
+  ThemeState({required Brightness brightness}) : _brightness = brightness {
+    _defaultMaterialTheme = MaterialTheme(
+      createTextTheme("Noto Sans", "Noto Sans", null),
+    );
+    _currentMaterialTheme = _defaultMaterialTheme;
   }
 
-  // 2. Dynamically resolve the theme data from the materialTheme property
-  ThemeData get currentTheme {
-    if (_customTheme != null) {
-      return _customTheme!;
-    }
-    return _currentPlatformBrightness == Brightness.dark
-        ? materialTheme.dark()
-        : materialTheme.light();
-  }
+  late MaterialTheme _currentMaterialTheme;
+  MaterialTheme get currentMaterialTheme => _currentMaterialTheme;
 
-  // Global override trigger function (e.g., when entering a tab)
-  void overrideGlobalTheme(ThemeData newTheme) {
-    _customTheme = newTheme;
+  void load(AppConfig appconfig) {
+    materialThemes['default'] = MaterialTheme(
+      createTextTheme("Noto Sans", "Noto Sans", null),
+    );
+    _currentMaterialTheme = materialThemes['default'] ?? _defaultMaterialTheme;
     notifyListeners();
   }
 
-  // Reset back to system light/dark theme
-  void resetToSystemTheme() {
-    _customTheme = null;
+  void switchTheme(String themeName) {
+    _currentMaterialTheme = materialThemes[themeName] ?? _defaultMaterialTheme;
     notifyListeners();
   }
 }

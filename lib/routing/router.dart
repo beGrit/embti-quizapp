@@ -156,31 +156,37 @@ GoRouter router(AuthState authState) => GoRouter(
       },
     ),
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-        return AppLayout(
-          navigationShell: navigationShell,
-          routeBottom: [
-            NavigationConfig(
-              icon: Icons.hub_outlined,
-              selectedIcon: Icons.hub,
-              label: NavigationConfigLabel.quiz,
-            ),
-            NavigationConfig(
-              icon: Icons.people_outline,
-              selectedIcon: Icons.people,
-              label: NavigationConfigLabel.explore,
-            ),
-            NavigationConfig(
-              icon: Icons.chat_bubble_outline,
-              selectedIcon: Icons.chat_bubble,
-              label: NavigationConfigLabel.mess,
-            ),
-            NavigationConfig(
-              icon: Icons.settings,
-              selectedIcon: Icons.storage,
-              label: NavigationConfigLabel.me,
-            ),
-          ],
+      // 1. Change from 'builder' to 'pageBuilder'
+      pageBuilder: (context, state, navigationShell) {
+        return NoTransitionPage(
+          // 2. Add a dynamic key tied to your user session.
+          // When the user logs out, this key changes, destroying the entire layout state.
+          key: ValueKey(authState.userId ?? 'unauthenticated'),
+          child: AppLayout(
+            navigationShell: navigationShell,
+            routeBottom: [
+              NavigationConfig(
+                icon: Icons.hub_outlined,
+                selectedIcon: Icons.hub,
+                label: NavigationConfigLabel.quiz,
+              ),
+              NavigationConfig(
+                icon: Icons.people_outline,
+                selectedIcon: Icons.people,
+                label: NavigationConfigLabel.explore,
+              ),
+              NavigationConfig(
+                icon: Icons.chat_bubble_outline,
+                selectedIcon: Icons.chat_bubble,
+                label: NavigationConfigLabel.mess,
+              ),
+              NavigationConfig(
+                icon: Icons.settings,
+                selectedIcon: Icons.storage,
+                label: NavigationConfigLabel.me,
+              ),
+            ],
+          ),
         );
       },
       branches: [

@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/app_config.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/core/ui/widgets/policy.dart';
@@ -13,8 +14,8 @@ class SettingsScreen extends StatelessWidget {
     return ChangeNotifierProvider<SettingsViewModel>(
       create: (context) => SettingsViewModel(
         authRepository: context.read(),
-        themeController: context.read(),
         authState: context.read(),
+        appConfig: context.read(),
       ),
       child: const _SettingsScreenContent(),
     );
@@ -37,33 +38,41 @@ class _SettingsScreenContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         children: [
           _buildSectionHeader(context, 'Preferences'),
-          Container(
-            decoration: AppContainerStyles.standard(context).decoration,
-            child: Column(
-              children: [
-                ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.notifications_outlined),
-                  title: const Text('Notification'),
-                  trailing: Switch(
-                    value: viewModel.isNotificationsEnabled,
-                    onChanged: viewModel.toggleNotifications,
-                  ),
-                ),
-                _buildDivider(context),
-                ListTile(
-                  dense: true,
-                  leading: const Icon(Icons.palette_outlined),
-                  title: const Text('Theme'),
-                  trailing: Text(
-                    _getThemeModeLabel(viewModel.currentThemeMode),
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+          Consumer<AppConfig>(
+            builder: (context, appConfig, child) => Container(
+              decoration: AppContainerStyles.standard(context).decoration,
+              child: Column(
+                children: [
+                  ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.notifications_outlined),
+                    title: const Text('Notification'),
+                    trailing: Switch(
+                      value: appConfig.enableNotification,
+                      onChanged: viewModel.toggleNotifications,
                     ),
                   ),
-                  onTap: () => _showThemeSelectionDialog(context, viewModel),
-                ),
-              ],
+                  _buildDivider(context),
+                  ListTile(
+                    dense: true,
+                    leading: const Icon(Icons.palette_outlined),
+                    title: const Text('Theme'),
+                    trailing: Text(
+                      _getThemeModeLabel(
+                        ThemeModeOption.fromString(appConfig.themeModeVal),
+                      ),
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () => _showThemeSelectionDialog(
+                      context,
+                      viewModel,
+                      ThemeModeOption.fromString(appConfig.themeModeVal),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -237,6 +246,7 @@ class _SettingsScreenContent extends StatelessWidget {
   void _showThemeSelectionDialog(
     BuildContext context,
     SettingsViewModel viewModel,
+    ThemeModeOption currentSelected,
   ) {
     showDialog(
       context: context,
@@ -249,14 +259,22 @@ class _SettingsScreenContent extends StatelessWidget {
               viewModel,
               ThemeModeOption.system,
               'System',
+              currentSelected,
             ),
             _buildThemeOption(
               context,
               viewModel,
               ThemeModeOption.light,
               'Light',
+              currentSelected,
             ),
-            _buildThemeOption(context, viewModel, ThemeModeOption.dark, 'Dark'),
+            _buildThemeOption(
+              context,
+              viewModel,
+              ThemeModeOption.dark,
+              'Dark',
+              currentSelected,
+            ),
           ],
         );
       },
@@ -268,6 +286,7 @@ class _SettingsScreenContent extends StatelessWidget {
     SettingsViewModel viewModel,
     ThemeModeOption option,
     String label,
+    ThemeModeOption currentSelected,
   ) {
     return SimpleDialogOption(
       onPressed: () {
@@ -278,7 +297,7 @@ class _SettingsScreenContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
-          if (viewModel.currentThemeMode == option)
+          if (currentSelected == option)
             Icon(
               Icons.check,
               color: Theme.of(context).colorScheme.primary,

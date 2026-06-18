@@ -1,55 +1,53 @@
-import 'package:emombti/data/repositories/auth/auth_repository.dart';
-import 'package:emombti/app_state/theme.dart';
+import 'package:emombti/app_state/app_config.dart';
 import 'package:emombti/app_state/auth.dart';
+import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
-enum ThemeModeOption { system, light, dark }
+enum ThemeModeOption {
+  system,
+  light,
+  dark;
+
+  static ThemeModeOption fromString(
+    String? value, {
+    ThemeModeOption defaultValue = ThemeModeOption.system,
+  }) {
+    if (value == null) return defaultValue;
+
+    return ThemeModeOption.values.firstWhere(
+      (e) => e.name.toLowerCase() == value.toLowerCase(),
+      orElse: () => defaultValue,
+    );
+  }
+
+  @override
+  String toString() => name;
+}
 
 class SettingsViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
-  final ThemeState _themeController;
   final AuthState _authState;
-
-  bool _isNotificationsEnabled = true;
-  bool get isNotificationsEnabled => _isNotificationsEnabled;
-
-  ThemeModeOption _currentThemeMode = ThemeModeOption.system;
-  ThemeModeOption get currentThemeMode => _currentThemeMode;
-
+  final AppConfig _appConfig;
   final String version = 'v0.1.0';
 
   SettingsViewModel({
     required AuthRepository authRepository,
-    required ThemeState themeController,
     required AuthState authState,
-  }) : _authRepository = authRepository,
-       _themeController = themeController,
+    required AppConfig appConfig,
+  }) : _appConfig = appConfig,
+       _authRepository = authRepository,
        _authState = authState;
 
   void toggleNotifications(bool value) {
-    _isNotificationsEnabled = value;
-    // Here you would typically call a service to enable/disable notifications
+    _appConfig.enableNotification = value;
+    _appConfig.save();
     notifyListeners();
   }
 
   void setThemeMode(ThemeModeOption option) {
-    _currentThemeMode = option;
-    switch (option) {
-      case ThemeModeOption.system:
-        _themeController.resetToSystemTheme();
-        break;
-      case ThemeModeOption.light:
-        _themeController.overrideGlobalTheme(
-          _themeController.materialTheme.light(),
-        );
-        break;
-      case ThemeModeOption.dark:
-        _themeController.overrideGlobalTheme(
-          _themeController.materialTheme.dark(),
-        );
-        break;
-    }
+    _appConfig.themeModeVal = option.toString();
+    _appConfig.save();
     notifyListeners();
   }
 

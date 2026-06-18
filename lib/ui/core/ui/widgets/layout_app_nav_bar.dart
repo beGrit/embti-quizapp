@@ -1,3 +1,4 @@
+import 'package:emombti/app_state/app_config.dart';
 import 'package:emombti/app_state/app_nav_bar.dart';
 import 'package:emombti/app_state/chat.dart';
 import 'package:emombti/app_state/theme.dart';
@@ -55,8 +56,10 @@ class AppLayoutNavigationBarState extends State<AppLayoutNavigationBar> {
                     .label
                     .label,
               )
-              ? themeState.materialTheme.dark()
-              : themeState.currentTheme,
+              ? themeState.currentMaterialTheme.dark()
+              : (context.read<AppConfig>().themeMode == ThemeMode.dark
+                    ? themeState.currentMaterialTheme.dark()
+                    : themeState.currentMaterialTheme.light()),
           child: NavigationBar(
             height: 60,
             selectedIndex: widget.navigationShell.currentIndex,

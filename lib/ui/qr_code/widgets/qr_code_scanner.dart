@@ -37,7 +37,7 @@ class _QRCodeScannerState extends State<QRCodeScanner> {
   Widget build(BuildContext context) {
     ThemeState themeController = context.read<ThemeState>();
     return Theme(
-      data: themeController.materialTheme.dark(),
+      data: themeController.currentMaterialTheme.dark(),
       child: Scaffold(
         appBar: StandardAppBar(
           title: 'Scanner',
