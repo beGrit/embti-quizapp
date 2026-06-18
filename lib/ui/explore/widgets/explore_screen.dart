@@ -1,5 +1,7 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
+import 'package:emombti/ui/chat/state/robot.dart';
+import 'package:emombti/ui/chat/widgets/robot.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_post_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
@@ -75,6 +77,9 @@ class _ExploreScreenState extends State<ExploreScreen>
     return MultiProvider(
       // mount the tab view's state(viewmodel) at the explore screen.
       providers: [
+        ChangeNotifierProvider<ChatBotViewModel>(
+          create: (context) => ChatBotViewModel(),
+        ),
         ChangeNotifierProvider<FeedPostViewModel>(
           create: (context) => FeedPostViewModel(
             authRepository: context.read<AuthRepository>(),
@@ -165,9 +170,11 @@ class _ExploreTabBody extends StatelessWidget {
 
       case ExploreTabType.videos:
         return const FeedReel();
-
-      case ExploreTabType.friends:
       case ExploreTabType.chatAiMbti:
+        return Consumer<ChatBotViewModel>(
+          builder: (context, __, child) => ChatBot(viewModel: __),
+        );
+      case ExploreTabType.friends:
       case ExploreTabType.placeholder:
         return _buildPlaceholder(context);
     }

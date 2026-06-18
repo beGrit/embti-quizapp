@@ -36,6 +36,12 @@ class ExploreViewModel extends ChangeNotifier {
     : _appNavBarState = appNavBarState,
       tabs = const [
         ExploreTab(
+          id: ExploreTabIds.chatAiMbti,
+          label: 'Chat with AI(MBTI)',
+          type: ExploreTabType.chatAiMbti,
+          themeMode: ThemeMode.light,
+        ),
+        ExploreTab(
           id: ExploreTabIds.shares,
           label: 'Shares',
           type: ExploreTabType.shares,
@@ -51,12 +57,6 @@ class ExploreViewModel extends ChangeNotifier {
           id: ExploreTabIds.friends,
           label: 'Friends',
           type: ExploreTabType.friends,
-          themeMode: ThemeMode.light,
-        ),
-        ExploreTab(
-          id: ExploreTabIds.chatAiMbti,
-          label: 'Chat with AI(MBTI)',
-          type: ExploreTabType.chatAiMbti,
           themeMode: ThemeMode.light,
         ),
       ];

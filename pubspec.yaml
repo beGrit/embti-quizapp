@@ -53,6 +53,7 @@ dependencies:
   sign_in_with_apple: ^8.1.0
 
   flutter_native_splash: ^2.4.7
+  lottie: ^3.3.3
 
 dev_dependencies:
   flutter_test:
