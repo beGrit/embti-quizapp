@@ -47,7 +47,7 @@ class _FeedReelState extends State<FeedReel> {
             childrenDelegate: SliverChildBuilderDelegate(
               (context, index) {
                 final item = model.items[index];
-                return FeedReelVideoPlayer(
+                return FeedReelChewie(
                   feedReel: item,
                   socialViewModel: SocialViewModel(
                     repository: context.read(),

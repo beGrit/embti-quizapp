@@ -1,3 +1,4 @@
+import 'package:chewie/chewie.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
 import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
@@ -483,6 +484,71 @@ class _FeedReelCommentsState extends State<_FeedReelComments> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class FeedReelChewie extends StatefulWidget {
+  const FeedReelChewie({
+    super.key,
+    required this.feedReel,
+    required this.socialViewModel,
+  });
+
+  final Reel feedReel;
+
+  final SocialViewModel socialViewModel;
+
+  @override
+  State<FeedReelChewie> createState() => _FeedReelChewieState();
+}
+
+class _FeedReelChewieState extends State<FeedReelChewie> {
+  late final VideoPlayerController _vpController;
+  ChewieController? _chController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeVideo();
+  }
+
+  Future<void> _initializeVideo() async {
+    _vpController = VideoPlayerController.networkUrl(
+      widget.feedReel.videoUrl.uri,
+    );
+    await _vpController.initialize();
+    setState(() {
+      _chController = ChewieController(
+        customControls: const MaterialControls(),
+        videoPlayerController: _vpController,
+        autoPlay: true,
+        looping: true,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _vpController.dispose();
+    _chController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent, // Ensures it stays transparent
+        statusBarIconBrightness: Brightness.light, // White icons for Android
+        statusBarBrightness: Brightness.dark, // White icons for iOS
+      ),
+      child: ColoredBox(
+        color: Colors.black,
+        child: _chController == null
+            ? const SizedBox.shrink()
+            : Chewie(controller: _chController!),
       ),
     );
   }

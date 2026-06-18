@@ -1,6 +1,7 @@
 import 'package:emombti/app_state/app_nav_bar.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Stable route-like id for an Explore top tab (used for body selection and analytics).
 abstract final class ExploreTabIds {
@@ -20,13 +21,13 @@ class ExploreTab {
     required this.id,
     required this.label,
     required this.type,
-    this.themeDataName,
+    required this.themeMode,
   });
 
   final String id;
   final String label;
   final ExploreTabType type;
-  final String? themeDataName;
+  final ThemeMode themeMode;
 }
 
 /// UI state for the Explore shell (tab selection).
@@ -38,22 +39,25 @@ class ExploreViewModel extends ChangeNotifier {
           id: ExploreTabIds.shares,
           label: 'Shares',
           type: ExploreTabType.shares,
+          themeMode: ThemeMode.light,
         ),
         ExploreTab(
           id: ExploreTabIds.videos,
           label: 'Videos',
           type: ExploreTabType.videos,
-          themeDataName: 'dark',
+          themeMode: ThemeMode.dark,
         ),
         ExploreTab(
           id: ExploreTabIds.friends,
           label: 'Friends',
           type: ExploreTabType.friends,
+          themeMode: ThemeMode.light,
         ),
         ExploreTab(
           id: ExploreTabIds.chatAiMbti,
           label: 'Chat with AI(MBTI)',
           type: ExploreTabType.chatAiMbti,
+          themeMode: ThemeMode.light,
         ),
       ];
 
@@ -71,11 +75,24 @@ class ExploreViewModel extends ChangeNotifier {
   }
 
   void onTabAnimation(int targetIndex) {
-    if (tabs[targetIndex].themeDataName != null &&
-        tabs[targetIndex].themeDataName == 'dark') {
+    if (tabs[targetIndex].themeMode == ThemeMode.dark) {
       _appNavBarState.setDark(NavigationConfigLabel.explore.label, true);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+      );
     } else {
       _appNavBarState.setDark(NavigationConfigLabel.explore.label, false);
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
+      );
     }
   }
 }

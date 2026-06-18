@@ -64,7 +64,6 @@ class _ExploreScreenState extends State<ExploreScreen>
   @override
   void didUpdateWidget(covariant ExploreScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    debugPrint('didUpdateWidget: _ExploreScreenState.');
   }
 
   @override
@@ -133,7 +132,6 @@ class _ExploreScreenState extends State<ExploreScreen>
                                   text: tab.label,
                                 ),
                             ],
-                            onFocusChange: (value, index) => {},
                           ),
                         ),
                         const SizedBox(
