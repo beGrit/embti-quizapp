@@ -20,6 +20,7 @@ class QuizLandingScreen extends StatefulWidget {
 class _QuizLandingScreenState extends State<QuizLandingScreen> {
   late final QuizLandingViewModel viewModel;
   late final PageController _pageController;
+  SyncStatus? _lastSyncStatus;
 
   @override
   void initState() {
@@ -32,11 +33,47 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
       syncManager: context.read(),
     );
     viewModel.loadAssessmentResult.execute();
+    _lastSyncStatus = viewModel.quizSyncStatus;
+    viewModel.addListener(_onSyncStatusChanged);
     _pageController = PageController();
+  }
+
+  void _onSyncStatusChanged() {
+    final currentStatus = viewModel.quizSyncStatus;
+    if (_lastSyncStatus == SyncStatus.running &&
+        (currentStatus == SyncStatus.success ||
+            currentStatus == SyncStatus.failure)) {
+      _showSyncCompleteDialog(currentStatus);
+    }
+    _lastSyncStatus = currentStatus;
+  }
+
+  void _showSyncCompleteDialog(SyncStatus status) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          status == SyncStatus.success ? 'Sync Successful' : 'Sync Failed',
+        ),
+        content: Text(
+          status == SyncStatus.success
+              ? 'Your quiz data has been successfully synchronized.'
+              : 'There was an error syncing your data: ${viewModel.quizSyncError ?? "Unknown error"}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
+    viewModel.removeListener(_onSyncStatusChanged);
     viewModel.dispose();
     _pageController.dispose();
     super.dispose();
@@ -60,7 +97,8 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
           ListenableBuilder(
             listenable: viewModel,
             builder: (context, child) {
-              if (viewModel.quizSyncStatus == SyncStatus.running) {
+              final status = viewModel.quizSyncStatus;
+              if (status == SyncStatus.running) {
                 return const Padding(
                   padding: EdgeInsets.all(12.0),
                   child: SizedBox(
@@ -70,9 +108,33 @@ class _QuizLandingScreenState extends State<QuizLandingScreen> {
                   ),
                 );
               }
-              return IconButton(
-                icon: const Icon(Icons.sync_rounded),
-                onPressed: () => viewModel.sync.execute(),
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0, top: 8.0),
+                child: Badge(
+                  alignment: Alignment.topRight,
+                  isLabelVisible:
+                      status == SyncStatus.success ||
+                      status == SyncStatus.failure,
+                  backgroundColor: status == SyncStatus.failure
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.tertiary,
+                  label: Padding(
+                    padding: const EdgeInsets.all(1.0),
+                    child: Icon(
+                      status == SyncStatus.success
+                          ? Icons.check
+                          : Icons.priority_high,
+                      size: 6,
+                      color: status == SyncStatus.failure
+                          ? theme.colorScheme.onError
+                          : theme.colorScheme.onTertiary,
+                    ),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.sync_rounded),
+                    onPressed: () => viewModel.sync.execute(),
+                  ),
+                ),
               );
             },
           ),

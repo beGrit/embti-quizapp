@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class SurveyFlowListView extends StatefulWidget {
   const SurveyFlowListView({super.key, required this.viewModel});
@@ -44,7 +45,6 @@ class _SurveyFlowListViewState extends State<SurveyFlowListView> {
     await context.push(
       Uri(path: Routes.surveyFlow, queryParameters: queryParameters).toString(),
     );
-    if (mounted) widget.viewModel.load.execute();
   }
 
   @override
@@ -291,7 +291,7 @@ class _SurveyFlowTile extends StatelessWidget {
     final pct = flow.completionPercentage;
     final started = flow.startTime;
     final subtitle = started != null
-        ? '$pct% complete · Started ${_formatDate(started)}'
+        ? '$pct% complete · ${timeago.format(started)}'
         : '$pct% complete';
 
     final content = Material(
@@ -383,10 +383,6 @@ class _SurveyFlowTile extends StatelessWidget {
               child: content,
             ),
     );
-  }
-
-  static String _formatDate(DateTime d) {
-    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
   }
 
   IconData _getStatusIconData(SurveyFlowStatus status) {

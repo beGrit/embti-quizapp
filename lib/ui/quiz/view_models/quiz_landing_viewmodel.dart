@@ -60,8 +60,8 @@ class QuizLandingViewModel extends ChangeNotifier {
   late final Command0<void> sync;
 
   SyncStatus get quizSyncStatus => _activeSyncJob?.status ?? SyncStatus.none;
-
   String? get quizSyncError => _activeSyncJob?.error;
+
   List<Survey> _surveys = [];
   List<Survey> get surveys => _surveys;
 
@@ -122,7 +122,6 @@ class QuizLandingViewModel extends ChangeNotifier {
     }
     _selectedFlowIds.clear();
     _selectionMode = false;
-    await _refreshSurveyFlows();
     notifyListeners();
   }
 
@@ -143,7 +142,8 @@ class QuizLandingViewModel extends ChangeNotifier {
       final surveys = await _repository.getAvailableSurveys();
       _surveys = surveys;
 
-      await _refreshSurveyFlows();
+      final flows = await _repository.getFlows();
+      _quizState.setSurveyFlows(flows);
 
       _selectedFlowIds.removeWhere(
         (id) => !_quizState.surveyFlows.any((f) => f.id == id),
@@ -158,15 +158,6 @@ class QuizLandingViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _refreshSurveyFlows() async {
-    try {
-      final flows = await _repository.getFlows();
-      _quizState.setSurveyFlows(flows);
-    } catch (e) {
-      debugPrint('Error fetching survey flows: $e');
-    }
-  }
-
   Future<Result<Map<String, String>>> _startAssessmentAction() async {
     // Ensure data is loaded before starting
     if (surveys.isEmpty) {
@@ -177,7 +168,7 @@ class QuizLandingViewModel extends ChangeNotifier {
     if (surveys.isNotEmpty) {
       SurveyFlow newSurveyFlow = _genNewSurveyFlow(surveys[0]);
       await _repository.saveFlow(newSurveyFlow);
-      await _refreshSurveyFlows();
+      _quizState.addSurveyFlow(newSurveyFlow);
       return Result.ok({'flowId': newSurveyFlow.id, 'surveyId': surveys[0].id});
     }
 

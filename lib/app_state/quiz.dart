@@ -27,6 +27,20 @@ class QuizState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addSurveyFlow(SurveyFlow flow) {
+    _surveyFlows.insert(0, flow);
+    _setUpLatest();
+    notifyListeners();
+  }
+
+  void updateSurveyFlow(SurveyFlow flow) {
+    final index = _surveyFlows.indexWhere((f) => f.id == flow.id);
+    if (index != -1) {
+      _surveyFlows[index] = flow;
+      notifyListeners();
+    }
+  }
+
   void removeSurveyFlow(SurveyFlow flow) {
     _surveyFlows.removeWhere((__) => __.id == flow.id);
     _setUpLatest();

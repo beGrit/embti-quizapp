@@ -11,7 +11,7 @@ enum SurveyFlowPageMode { unknown, read, edit }
 class SurveyFlowViewModel extends ChangeNotifier {
   SurveyFlowViewModel({
     required this.repository,
-    required this.surveyFlowState,
+    required this.quizState,
     required this.authState,
     required this.flowId,
     required this.surveyId,
@@ -21,7 +21,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
   }
 
   final QuizRepository repository;
-  final QuizState surveyFlowState;
+  final QuizState quizState;
   final AuthState authState;
   final String flowId;
   final String surveyId;
@@ -39,7 +39,17 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   Future<Result<void>> _load() async {
     try {
-      final savedFlow = await repository.getFlowById(flowId);
+      // Try loading from QuizState first
+      var savedFlow = quizState.getSurveyFlowById(flowId);
+
+      // If not in state, load from repository and synchronize with QuizState
+      if (savedFlow == null) {
+        savedFlow = await repository.getFlowById(flowId);
+        if (savedFlow != null) {
+          quizState.addSurveyFlow(savedFlow);
+        }
+      }
+
       final survey = await repository.getSurveyById(surveyId);
       if (savedFlow != null && survey != null) {
         _flow = savedFlow;
@@ -74,7 +84,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
         synchronized: false,
       );
       await repository.saveFlow(_flow);
-      surveyFlowState.updateLatest(_flow);
+      quizState.updateSurveyFlow(_flow);
       notifyListeners();
       _calculateResult();
       return Result.ok(null);
@@ -158,8 +168,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
     _flow = _flow.copyWith(currentAnswers: newAnswers);
     notifyListeners();
 
-    // await quizRepository.saveFlow(_flow);
-    surveyFlowState.updateLatest(_flow);
+    quizState.updateSurveyFlow(_flow);
 
     if (score != null) {
       final currentIndex = pageController.page?.round() ?? 0;
@@ -170,6 +179,10 @@ class SurveyFlowViewModel extends ChangeNotifier {
         );
       }
     }
+  }
+
+  void leavePage() async {
+    await repository.saveFlow(_flow);
   }
 
   void jumpToQuestion(int index) {
@@ -185,7 +198,7 @@ class SurveyFlowViewModel extends ChangeNotifier {
     }
     _flow = _flow.copyWith(currentAnswers: newAnswers);
     notifyListeners();
-    surveyFlowState.updateLatest(_flow);
+    quizState.updateSurveyFlow(_flow);
 
     if (pageController.hasClients) {
       pageController.jumpToPage(_flow.totalQuestions - 1);

@@ -107,7 +107,7 @@ GoRouter router(AuthState authState) => GoRouter(
         return SurveyFlowScreen(
           viewModel: SurveyFlowViewModel(
             repository: context.read(),
-            surveyFlowState: context.read(),
+            quizState: context.read(),
             authState: context.read(),
             flowId: flowId,
             surveyId: surveyId,
