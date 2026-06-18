@@ -43,6 +43,7 @@ class MainApp extends StatefulWidget {
       themeState: themeState,
       storageManager: storageManager,
       repositoryManager: repositoryManager,
+      syncManager: syncManager,
     );
     runApp(
       MainAppChangeNotifers(

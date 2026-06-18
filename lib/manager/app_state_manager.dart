@@ -7,6 +7,7 @@ import 'package:emombti/app_state/theme.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/manager/repository_manager.dart';
 import 'package:emombti/manager/storage_manager.dart';
+import 'package:emombti/manager/sync_manager.dart';
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,9 @@ class AppStateManager extends ChangeNotifier {
   late final ChatState chatState;
   late final ThemeState themeState;
 
+  late final SyncManager syncManager;
+  late final RepositoryManager repositoryManager;
+
   AppStateManager();
 
   Future<void> buildAppState({
@@ -26,10 +30,15 @@ class AppStateManager extends ChangeNotifier {
     required ThemeState themeState,
     required StorageManager storageManager,
     required RepositoryManager repositoryManager,
+    required SyncManager syncManager,
   }) async {
     this.appConfig = appConfig;
     this.authState = authState;
     this.themeState = themeState;
+    this.syncManager = syncManager;
+    this.repositoryManager = repositoryManager;
+
+    this.authState.addListener(_onAuthChanged);
 
     appNavBarState = AppNavBarState();
 
@@ -43,5 +52,26 @@ class AppStateManager extends ChangeNotifier {
     surveyFlowState = QuizState(repository: repositoryManager.quizRepository);
     chatState = ChatState();
     notifyListeners();
+  }
+
+  void _onAuthChanged() {
+    if (appConfig.firstBoot == true && authState.isAuthenticated) {
+      final job = SyncJob(
+        id: 'sync_quiz_${DateTime.now().millisecondsSinceEpoch}',
+        key: 'sync_quiz_repository',
+        type: SyncType.localToRemote,
+        payload: () =>
+            repositoryManager.quizRepository.sync(authState.userId ?? ''),
+      );
+      syncManager.addSyncJob(job, unique: true, override: true);
+      appConfig.firstBoot = false;
+      appConfig.save();
+    }
+  }
+
+  @override
+  void dispose() {
+    authState.removeListener(_onAuthChanged);
+    super.dispose();
   }
 }

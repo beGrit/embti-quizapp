@@ -161,7 +161,7 @@ GoRouter router(AuthState authState) => GoRouter(
         return NoTransitionPage(
           // 2. Add a dynamic key tied to your user session.
           // When the user logs out, this key changes, destroying the entire layout state.
-          key: ValueKey(authState.userId ?? 'unauthenticated'),
+          // key: ValueKey(authState.userId ?? 'unauthenticated'),
           child: AppLayout(
             navigationShell: navigationShell,
             routeBottom: [

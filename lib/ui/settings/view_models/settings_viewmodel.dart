@@ -54,6 +54,8 @@ class SettingsViewModel extends ChangeNotifier {
   Future<void> logout() async {
     final result = await _authRepository.logout();
     if (result is Ok) {
+      _appConfig.firstBoot = true;
+      await _appConfig.save();
       _authState.updateAuthenticatedUser(null);
     }
   }
