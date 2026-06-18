@@ -75,12 +75,28 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
                     );
                   },
                 ),
+                ListenableBuilder(
+                  listenable: widget.viewModel,
+                  builder: (context, child) {
+                    final progress = (widget.viewModel.flow.totalQuestions > 0)
+                        ? (widget.viewModel.currentPageIndex + 1) /
+                              widget.viewModel.flow.totalQuestions
+                        : 0.0;
+                    return LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 2,
+                      color: theme.colorScheme.tertiary,
+                      backgroundColor: Colors.transparent,
+                    );
+                  },
+                ),
                 Expanded(
                   child: ListenableBuilder(
                     listenable: widget.viewModel,
                     builder: (context, child) {
                       return PageView(
                         controller: widget.viewModel.pageController,
+                        onPageChanged: widget.viewModel.onPageChanged,
                         // physics: const NeverScrollableScrollPhysics(),
                         children: List.generate(
                           widget.viewModel.flow.totalQuestions,
@@ -129,7 +145,7 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            "${widget.viewModel.flow.currentAnswers.length} / ${widget.viewModel.flow.totalQuestions}",
+            "(${widget.viewModel.currentPageIndex + 1} / ${widget.viewModel.flow.totalQuestions})",
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onSecondaryContainer,
@@ -188,22 +204,53 @@ class _SurveyFlowScreenState extends State<SurveyFlowScreen> {
         maxChildSize: 0.9,
         minChildSize: 0.3,
         expand: false,
-        builder: (_, scrollController) =>
-            _QuestionGridPicker(viewModel: widget.viewModel),
+        builder: (_, scrollController) => _QuestionGridPicker(
+          viewModel: widget.viewModel,
+          scrollController: scrollController,
+        ),
       ),
     );
   }
 }
 
-class _QuestionGridPicker extends StatelessWidget {
+class _QuestionGridPicker extends StatefulWidget {
   final SurveyFlowViewModel viewModel;
-  const _QuestionGridPicker({required this.viewModel});
+  final ScrollController scrollController;
+  const _QuestionGridPicker({
+    required this.viewModel,
+    required this.scrollController,
+  });
+
+  @override
+  State<_QuestionGridPicker> createState() => _QuestionGridPickerState();
+}
+
+class _QuestionGridPickerState extends State<_QuestionGridPicker> {
+  @override
+  void initState() {
+    super.initState();
+    // Automatically scroll to the row containing the currently selected question
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.scrollController.hasClients) {
+        final rowIndex = widget.viewModel.currentPageIndex ~/ 5;
+        if (rowIndex > 0) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final gridWidth = screenWidth - 48; // Total width minus 24*2 padding
+          final itemWidth =
+              (gridWidth - (12 * 4)) / 5; // (Width - total spacing) / count
+          final rowHeight = itemWidth + 12; // Item height + vertical spacing
+
+          widget.scrollController.jumpTo(rowIndex * rowHeight);
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,30 +259,40 @@ class _QuestionGridPicker extends StatelessWidget {
           const SizedBox(height: 20),
           Flexible(
             child: GridView.builder(
-              shrinkWrap: true,
-              itemCount: viewModel.flow.totalQuestions,
+              key: const PageStorageKey<String>('question_grid_scroll_key'),
+              controller: widget.scrollController,
+              itemCount: widget.viewModel.flow.totalQuestions,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 5,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
               ),
               itemBuilder: (context, index) {
-                final qId = viewModel.getQuestionId(index);
-                final score = viewModel.flow.currentAnswers[qId];
+                final qId = widget.viewModel.getQuestionId(index);
+                final score = widget.viewModel.flow.currentAnswers[qId];
                 final isAnswered = score != null;
+                final isCurrent = index == widget.viewModel.currentPageIndex;
 
                 return InkWell(
                   onTap: () {
-                    viewModel.jumpToQuestion(index);
+                    widget.viewModel.jumpToQuestion(index);
                     Navigator.pop(context);
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isAnswered
+                      color: isCurrent
                           ? theme.colorScheme.primary
+                          : isAnswered
+                          ? theme.colorScheme.secondary
                           : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
+                      border: isCurrent
+                          ? Border.all(
+                              color: theme.colorScheme.outline,
+                              width: 3,
+                            )
+                          : null,
                     ),
                     child: Center(
                       child: Text(

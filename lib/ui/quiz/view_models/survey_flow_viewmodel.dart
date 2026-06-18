@@ -32,6 +32,9 @@ class SurveyFlowViewModel extends ChangeNotifier {
 
   SurveyFlow get flow => _flow;
 
+  int _currentPageIndex = 0;
+  int get currentPageIndex => _currentPageIndex;
+
   late final Command0<void> load;
   late final Command0<void> submit;
 
@@ -59,9 +62,14 @@ class SurveyFlowViewModel extends ChangeNotifier {
             : SurveyFlowPageMode.edit;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (pageController.hasClients) {
-            final lastIndex = _flow.currentAnswers.length;
-            if (lastIndex > 0 && lastIndex < _flow.totalQuestions) {
-              pageController.jumpToPage(lastIndex);
+            final lastIdx = lastAnsweredIndex;
+            if (lastIdx != -1) {
+              final resumePage = (lastIdx + 1).clamp(
+                0,
+                _flow.totalQuestions - 1,
+              );
+              pageController.jumpToPage(resumePage);
+              _currentPageIndex = resumePage;
             }
           }
         });
@@ -181,8 +189,27 @@ class SurveyFlowViewModel extends ChangeNotifier {
     }
   }
 
+  void onPageChanged(int index) {
+    if (_currentPageIndex == index) return;
+    _currentPageIndex = index;
+    notifyListeners();
+  }
+
   void leavePage() async {
     await repository.saveFlow(_flow);
+  }
+
+  int get lastAnsweredIndex {
+    for (int i = _flow.questionOrder.length - 1; i >= 0; i--) {
+      if (_flow.currentAnswers.containsKey(_flow.questionOrder[i])) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  void jumpToLastAnswered() {
+    jumpToQuestion((lastAnsweredIndex + 1).clamp(0, _flow.totalQuestions - 1));
   }
 
   void jumpToQuestion(int index) {
