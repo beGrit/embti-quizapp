@@ -1,5 +1,6 @@
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/domain/use_cases/user/user_avatar_update_use_case.dart';
 import 'package:emombti/utils/result.dart';
@@ -11,11 +12,13 @@ class MeViewModel extends ChangeNotifier {
     this._authRepository,
     this._authState,
     this._userAvatarUpdateUseCase,
+    this._userRepository,
   ) {
     _authState.addListener(_onAuthStateChanged);
   }
 
   final AuthRepository _authRepository;
+  final UserRepository _userRepository;
   final AuthState _authState;
   final UserAvatarUpdateUseCase _userAvatarUpdateUseCase;
 

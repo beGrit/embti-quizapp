@@ -41,8 +41,12 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MeViewModel>(
-          create: (context) =>
-              MeViewModel(context.read(), context.read(), context.read()),
+          create: (context) => MeViewModel(
+            context.read(),
+            context.read(),
+            context.read(),
+            context.read(),
+          ),
         ),
       ],
       builder: (context, _) {
@@ -93,16 +97,22 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                         return Stack(
                           fit: StackFit.expand,
                           children: [
-                            CachedNetworkImage(
-                              imageUrl:
-                                  'https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg',
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
+                            user?.backgroundImg != null
+                                ? CachedNetworkImage(
+                                    imageUrl:
+                                        'https://cdn.pixabay.com/photo/2021/08/25/20/42/field-6574455_1280.jpg',
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Icon(Icons.error),
+                                  )
+                                : Container(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainer,
+                                  ),
                             Container(
                               color: Colors.black.withValues(alpha: 0.3),
                             ),

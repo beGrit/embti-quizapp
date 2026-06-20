@@ -15,6 +15,9 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
   avatar: json['avatar'] == null
       ? null
       : AppFile.fromJson(json['avatar'] as Map<String, dynamic>),
+  backgroundImg: json['backgroundImg'] == null
+      ? null
+      : AppFile.fromJson(json['backgroundImg'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
@@ -24,4 +27,5 @@ Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'mbtiType': instance.mbtiType,
   'introduce': instance.introduce,
   'avatar': instance.avatar,
+  'backgroundImg': instance.backgroundImg,
 };

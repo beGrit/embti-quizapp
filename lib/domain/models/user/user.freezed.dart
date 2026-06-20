@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$User {
 
- String? get id; String? get email; String? get name; String? get mbtiType; String? get introduce; AppFile? get avatar;
+ String? get id; String? get email; String? get name; String? get mbtiType; String? get introduce; AppFile? get avatar; AppFile? get backgroundImg;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.backgroundImg, backgroundImg) || other.backgroundImg == backgroundImg));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,name,mbtiType,introduce,avatar);
+int get hashCode => Object.hash(runtimeType,id,email,name,mbtiType,introduce,avatar,backgroundImg);
 
 @override
 String toString() {
-  return 'User(id: $id, email: $email, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar)';
+  return 'User(id: $id, email: $email, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar, backgroundImg: $backgroundImg)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String? id, String? email, String? name, String? mbtiType, String? introduce, AppFile? avatar
+ String? id, String? email, String? name, String? mbtiType, String? introduce, AppFile? avatar, AppFile? backgroundImg
 });
 
 
-$AppFileCopyWith<$Res>? get avatar;
+$AppFileCopyWith<$Res>? get avatar;$AppFileCopyWith<$Res>? get backgroundImg;
 
 }
 /// @nodoc
@@ -65,7 +65,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? email = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,Object? backgroundImg = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -73,6 +73,7 @@ as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to
 as String?,mbtiType: freezed == mbtiType ? _self.mbtiType : mbtiType // ignore: cast_nullable_to_non_nullable
 as String?,introduce: freezed == introduce ? _self.introduce : introduce // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
+as AppFile?,backgroundImg: freezed == backgroundImg ? _self.backgroundImg : backgroundImg // ignore: cast_nullable_to_non_nullable
 as AppFile?,
   ));
 }
@@ -87,6 +88,18 @@ $AppFileCopyWith<$Res>? get avatar {
 
   return $AppFileCopyWith<$Res>(_self.avatar!, (value) {
     return _then(_self.copyWith(avatar: value));
+  });
+}/// Create a copy of User
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppFileCopyWith<$Res>? get backgroundImg {
+    if (_self.backgroundImg == null) {
+    return null;
+  }
+
+  return $AppFileCopyWith<$Res>(_self.backgroundImg!, (value) {
+    return _then(_self.copyWith(backgroundImg: value));
   });
 }
 }
@@ -170,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar,  AppFile? backgroundImg)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar);case _:
+return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.backgroundImg);case _:
   return orElse();
 
 }
@@ -191,10 +204,10 @@ return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar,  AppFile? backgroundImg)  $default,) {final _that = this;
 switch (_that) {
 case _User():
-return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar);case _:
+return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.backgroundImg);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +224,10 @@ return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String? email,  String? name,  String? mbtiType,  String? introduce,  AppFile? avatar,  AppFile? backgroundImg)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar);case _:
+return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_that.avatar,_that.backgroundImg);case _:
   return null;
 
 }
@@ -226,7 +239,7 @@ return $default(_that.id,_that.email,_that.name,_that.mbtiType,_that.introduce,_
 @JsonSerializable()
 
 class _User implements User {
-  const _User({this.id, this.email, this.name, this.mbtiType, this.introduce, this.avatar});
+  const _User({this.id, this.email, this.name, this.mbtiType, this.introduce, this.avatar, this.backgroundImg});
   factory _User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
 @override final  String? id;
@@ -235,6 +248,7 @@ class _User implements User {
 @override final  String? mbtiType;
 @override final  String? introduce;
 @override final  AppFile? avatar;
+@override final  AppFile? backgroundImg;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
@@ -249,16 +263,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.name, name) || other.name == name)&&(identical(other.mbtiType, mbtiType) || other.mbtiType == mbtiType)&&(identical(other.introduce, introduce) || other.introduce == introduce)&&(identical(other.avatar, avatar) || other.avatar == avatar)&&(identical(other.backgroundImg, backgroundImg) || other.backgroundImg == backgroundImg));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,name,mbtiType,introduce,avatar);
+int get hashCode => Object.hash(runtimeType,id,email,name,mbtiType,introduce,avatar,backgroundImg);
 
 @override
 String toString() {
-  return 'User(id: $id, email: $email, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar)';
+  return 'User(id: $id, email: $email, name: $name, mbtiType: $mbtiType, introduce: $introduce, avatar: $avatar, backgroundImg: $backgroundImg)';
 }
 
 
@@ -269,11 +283,11 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String? email, String? name, String? mbtiType, String? introduce, AppFile? avatar
+ String? id, String? email, String? name, String? mbtiType, String? introduce, AppFile? avatar, AppFile? backgroundImg
 });
 
 
-@override $AppFileCopyWith<$Res>? get avatar;
+@override $AppFileCopyWith<$Res>? get avatar;@override $AppFileCopyWith<$Res>? get backgroundImg;
 
 }
 /// @nodoc
@@ -286,7 +300,7 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? email = freezed,Object? name = freezed,Object? mbtiType = freezed,Object? introduce = freezed,Object? avatar = freezed,Object? backgroundImg = freezed,}) {
   return _then(_User(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -294,6 +308,7 @@ as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to
 as String?,mbtiType: freezed == mbtiType ? _self.mbtiType : mbtiType // ignore: cast_nullable_to_non_nullable
 as String?,introduce: freezed == introduce ? _self.introduce : introduce // ignore: cast_nullable_to_non_nullable
 as String?,avatar: freezed == avatar ? _self.avatar : avatar // ignore: cast_nullable_to_non_nullable
+as AppFile?,backgroundImg: freezed == backgroundImg ? _self.backgroundImg : backgroundImg // ignore: cast_nullable_to_non_nullable
 as AppFile?,
   ));
 }
@@ -309,6 +324,18 @@ $AppFileCopyWith<$Res>? get avatar {
 
   return $AppFileCopyWith<$Res>(_self.avatar!, (value) {
     return _then(_self.copyWith(avatar: value));
+  });
+}/// Create a copy of User
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppFileCopyWith<$Res>? get backgroundImg {
+    if (_self.backgroundImg == null) {
+    return null;
+  }
+
+  return $AppFileCopyWith<$Res>(_self.backgroundImg!, (value) {
+    return _then(_self.copyWith(backgroundImg: value));
   });
 }
 }
