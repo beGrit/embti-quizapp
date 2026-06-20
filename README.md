@@ -1,42 +1,10 @@
-# Project Resume Summary: emombti
+<p align="center">
+  <img width="200" height="auto" src="https://embti-storage-dev.grit-soft.com/meta/logo_v4.png">
+  <br/>Mobile first "MBTI Quiz Application", Offline-First, integrated with Firebase</b>
+</p>
 
-## 1. Project Introduction
-**emombti** is a comprehensive Flutter-based mobile application designed for personality analysis and social interaction centered around the Myers-Briggs Type Indicator (MBTI). The platform provides users with in-depth personality insights, interactive assessment tools, real-time communication, and a community-driven content feed. It aims to deliver a modern, cross-platform experience with high performance and real-time capabilities.
+## Screenshots
 
-## 2. Core Modules & Functionality
-### Personality Assessment (Quiz)
-*   **Dynamic Surveys:** Interactive MBTI assessments with progress tracking.
-*   **Session Management:** Persistent survey flows allowing users to resume where they left off.
-*   **Insightful Results:** Detailed analysis and historical tracking of assessment results.
+## License
 
-### Real-time Communication (Chat)
-*   **Room-based Messaging:** Private and group chat rooms.
-*   **Real-time Synchronization:** Powered by PocketBase real-time subscriptions for instant message delivery.
-*   **Smart Notifications:** Sophisticated unread message tracking with global status badges and active-room suppression.
-
-### Content & Social (Feed & Explore)
-*   **Rich Media Feed:** Social feed supporting photos, interactive posts, and infinite scrolling.
-*   **Knowledge Center:** Curated articles and video content regarding personality psychology.
-*   **Interactive Editor:** Integration with AppFlowy Editor for rich content creation.
-
-### Personalization & Utilities
-*   **User Management:** Secure authentication and profile management with avatar customization.
-*   **Hardware Integration:** Integrated QR/Barcode scanning and device sensor utilization.
-*   **Multimedia:** Advanced video playback and voice-to-text input support.
-*   **Dynamic UI:** Comprehensive theme system with dark/light mode and platform-specific navigation optimizations.
-
-## 3. Technology Stack
-*   **Framework:** Flutter (Dart)
-*   **Architecture:** Clean Architecture with Repository Pattern, Command Pattern, and MVVM (ViewModel).
-*   **State Management:** Provider (MultiProvider, Consumer, Selector) for efficient reactive updates.
-*   **Networking:** HTTP & PocketBase (Client SDK) with real-time WebSocket support.
-*   **Persistence:** Sqflite (SQLite) for complex local data and Shared Preferences for lightweight settings.
-*   **Navigation:** GoRouter for declarative, deep-linkable routing.
-*   **Data Modeling:** Freezed and JSON Serializable for type-safe, immutable data structures.
-*   **UI/UX:** Material 3, Google Fonts, Flutter SVG, Carousel Slider, and Cached Network Image.
-
-## 4. Key Technical Achievements
-*   **State Synchronization:** Implemented a global app state management system that synchronizes real-time chat status and survey progress across decoupled UI components.
-*   **Performance Optimization:** Developed an efficient unread message tracking system using `Consumer` and `ListenableBuilder` to minimize widget rebuilds and maximize UI responsiveness.
-*   **Cross-Platform UI:** Designed a responsive layout that adapts between mobile (Bottom Navigation) and desktop/tablet (Navigation Rail) environments.
-*   **Hardware Abstraction:** Seamlessly integrated complex hardware features like Camera (scanning) and Microphone (STT) into the Flutter environment.
+All code contributed by [Pocky Lin](https://github.com/beGrit) is licensed under the [AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html). All code contributed by anyone else is licensed under the Apache License 2.0. This is done so that eMBTI can avoid needing a CLA, and it can be distributed it on the Apple App Store which doesn't allow AGPL.
