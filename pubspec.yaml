@@ -79,19 +79,19 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo_v2.png"
+  image_path: "assets/images/logo_v4.png"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/images/logo_v2.png"
+    image_path: "assets/images/logo_v4.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
 
 flutter_native_splash:
-  color: "#42a5f5"
-  image: assets/images/logo_v2.png
-  fullscreen: true
+  color: "#FEF8E9"
+  image: assets/images/logo_v4.png
+  # fullscreen: true
   android_12:
-    color: "#42a5f5"
-    image: assets/images/logo_v2.png
+    color: "#FEF8E9"
+    image: assets/images/logo_v4.png
     icon_background_color: "#111111"

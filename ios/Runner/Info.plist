@@ -100,7 +100,7 @@
 		<key>GIDClientID</key>
 		<string>812205537802-o0c7htm38oro3fi5v7hebb2bem5vsbil.apps.googleusercontent.com</string>
 		<key>UIStatusBarHidden</key>
-		<true/>
+		<false/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>ITSAppUsesNonExemptEncryption</key>
