@@ -30,7 +30,7 @@ class _LoginLogoState extends State<LoginLogo> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
-        child: Image.asset('assets/images/logo_v2.png', fit: BoxFit.cover),
+        child: Image.asset('assets/images/logo_v4.png', fit: BoxFit.cover),
       ),
     );
   }

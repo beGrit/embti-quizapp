@@ -1,7 +1,12 @@
+import 'package:emombti/domain/constants/status.dart';
+import 'package:emombti/domain/models/chat/chat.dart';
+import 'package:emombti/routing/routes.dart';
+import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
-import '../state/robot.dart';
+import '../view_models/robot_viewmodel.dart';
 
 class ChatBot extends StatefulWidget {
   final ChatBotViewModel viewModel;
@@ -22,8 +27,8 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
 
     _lottieController.addStatusListener((status) {
       if (status == AnimationStatus.completed &&
-          widget.viewModel.currentState == BotState.clicked) {
-        widget.viewModel.switchToState(BotState.idle);
+          widget.viewModel.currentState == BotStatus.clicked) {
+        widget.viewModel.switchToState(BotStatus.idle);
       }
     });
 
@@ -43,24 +48,33 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
     if (widget.viewModel != oldWidget.viewModel) {
       oldWidget.viewModel.removeListener(_handleStateChange);
       widget.viewModel.addListener(_handleStateChange);
+      widget.viewModel.chatWithAiCommand.addListener(_handleChatWithAi);
     }
   }
 
   void _handleStateChange() {
     if (!mounted) return;
     switch (widget.viewModel.currentState) {
-      case BotState.idle:
-        _lottieController.repeat(min: 0.1, max: 0.2);
+      case BotStatus.idle:
+        _lottieController.repeat();
         break;
-      case BotState.thinking:
+      case BotStatus.thinking:
         _lottieController.repeat(min: 0.3, max: 0.6);
         break;
-      case BotState.speaking:
+      case BotStatus.speaking:
         _lottieController.repeat(min: 0.6, max: 0.8);
         break;
-      case BotState.clicked:
+      case BotStatus.clicked:
         _lottieController.forward(from: 0.8);
         break;
+    }
+  }
+
+  void _handleChatWithAi() async {
+    if (widget.viewModel.chatWithAiCommand.completed &&
+        widget.viewModel.chatWithAiCommand.result is Ok) {
+      Room room = (widget.viewModel.chatWithAiCommand.result as Ok).value;
+      await context.push('${Routes.chatRooms}/${room.id}', extra: room);
     }
   }
 
@@ -79,7 +93,8 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
               mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
-                  onTap: () => widget.viewModel.switchToState(BotState.clicked),
+                  onTap: () =>
+                      widget.viewModel.switchToState(BotStatus.clicked),
                   child: SizedBox(
                     width: 300,
                     height: 300,
@@ -97,11 +112,11 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  widget.viewModel.currentState == BotState.thinking
+                  widget.viewModel.currentState == BotStatus.thinking
                       ? 'Thinking...'
-                      : widget.viewModel.currentState == BotState.speaking
+                      : widget.viewModel.currentState == BotStatus.speaking
                       ? 'Speaking...'
-                      : widget.viewModel.currentState == BotState.clicked
+                      : widget.viewModel.currentState == BotStatus.clicked
                       ? 'Ouch!'
                       : 'Active',
                   style: TextStyle(
@@ -138,7 +153,7 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
                             letterSpacing: -0.2,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: widget.viewModel.chatWithAiCommand.execute,
                         child: const Text('Chat with AI Expert'),
                       ),
                     ],

@@ -87,6 +87,56 @@ class UserRepositoryDev implements UserRepository {
   }
 
   @override
+  Future<Result<List<User>>> searchUsers(
+    String keyword, {
+    String? excludeUserId,
+  }) async {
+    try {
+      final trimmed = keyword.trim();
+      if (trimmed.isEmpty) {
+        return const Result.ok([]);
+      }
+
+      final records = await _pbService.client
+          .collection('users')
+          .getFullList(filter: 'name ~ "$trimmed" || email ~ "$trimmed"');
+
+      final users = records
+          .where((record) => excludeUserId == null || record.id != excludeUserId)
+          .map((record) {
+            final apiModel = UserApiModel.fromJson(record.toJson());
+            final avatarUri = _pbService.client.files.getURL(
+              RecordModel({
+                'id': apiModel.id,
+                'collectionId': apiModel.collectionId,
+                'collectionName': apiModel.collectionName,
+              }),
+              apiModel.avatar ?? '',
+            );
+
+            return User(
+              id: apiModel.id,
+              email: apiModel.email,
+              name: apiModel.name,
+              mbtiType: apiModel.mbtiType,
+              introduce: apiModel.introduce,
+              avatar: apiModel.avatar != null
+                  ? AppFile(uri: avatarUri, name: apiModel.avatar!)
+                  : null,
+            );
+          })
+          .toList();
+
+      return Result.ok(users);
+    } catch (e) {
+      if (e is ClientException && e.statusCode == 404) {
+        return const Result.ok([]);
+      }
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> createUserUsingEmailPassword({
     required String email,
     required String password,

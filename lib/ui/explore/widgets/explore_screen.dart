@@ -1,6 +1,7 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
+import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
-import 'package:emombti/ui/chat/state/robot.dart';
+import 'package:emombti/ui/chat/view_models/robot_viewmodel.dart';
 import 'package:emombti/ui/chat/widgets/robot.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/feed/view_models/feed_post_viewmodel.dart';
@@ -78,7 +79,10 @@ class _ExploreScreenState extends State<ExploreScreen>
       // mount the tab view's state(viewmodel) at the explore screen.
       providers: [
         ChangeNotifierProvider<ChatBotViewModel>(
-          create: (context) => ChatBotViewModel(),
+          create: (context) => ChatBotViewModel(
+            chatRepository: context.read<ChatRepository>(),
+            authState: context.read(),
+          ),
         ),
         ChangeNotifierProvider<FeedPostViewModel>(
           create: (context) => FeedPostViewModel(

@@ -59,11 +59,38 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Consumer2<RoomDetailViewModel, ChatState>(
       builder: (context, viewModel, chatState, _) => Scaffold(
         appBar: StandardAppBar(title: viewModel.room.name ?? 'Chat'),
         body: Column(
           children: [
+            if (!viewModel.isConnected)
+              Container(
+                color: theme.colorScheme.errorContainer,
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.cloud_off,
+                      size: 16,
+                      color: theme.colorScheme.onErrorContainer,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Connecting to server...',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             Expanded(child: _buildMessageList(viewModel, chatState)),
             _buildInputArea(viewModel),
           ],
@@ -109,6 +136,8 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
 
   Widget _buildInputArea(RoomDetailViewModel viewModel) {
     final theme = Theme.of(context);
+    final isConnected = viewModel.isConnected;
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(color: theme.cardColor),
@@ -119,7 +148,9 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
+                  color: isConnected
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
@@ -127,21 +158,22 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                     Expanded(
                       child: TextField(
                         controller: _controller,
-                        decoration: const InputDecoration(
-                          hintText: 'Message',
+                        enabled: isConnected,
+                        decoration: InputDecoration(
+                          hintText: isConnected ? 'Message' : 'Offline - Write disabled',
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                         ),
-                        onSubmitted: (_) => _handleSend(),
+                        onSubmitted: isConnected ? (_) => _handleSend() : null,
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.camera_alt_outlined, size: 20),
-                      onPressed: () {},
+                      onPressed: isConnected ? () {} : null,
                     ),
                     IconButton(
                       icon: const Icon(Icons.image_outlined, size: 20),
-                      onPressed: () {},
+                      onPressed: isConnected ? () {} : null,
                     ),
                     IconButton(
                       icon: Icon(
@@ -150,7 +182,7 @@ class _RoomDetailContentState extends State<_RoomDetailContent> {
                       color: _controller.text.isEmpty
                           ? theme.colorScheme.onSurfaceVariant
                           : theme.colorScheme.primary,
-                      onPressed: () => _handleSend(),
+                      onPressed: isConnected ? () => _handleSend() : null,
                     ),
                   ],
                 ),

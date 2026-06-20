@@ -86,3 +86,12 @@ sealed class Message with _$Message {
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
 }
+
+@freezed
+sealed class Robot with _$Robot {
+  const Robot._();
+
+  const factory Robot({String? id, String? key}) = _Robot;
+
+  factory Robot.fromJson(Map<String, dynamic> json) => _$RobotFromJson(json);
+}

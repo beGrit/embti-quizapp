@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/chat.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
@@ -15,13 +17,23 @@ class RoomDetailViewModel extends ChangeNotifier {
   }) : _authState = authState,
        _chatRepository = chatRepository,
        _chatState = chatState {
-        loadMessagesCommand = Command0(_loadMessages);
-    }
+    loadMessagesCommand = Command0(_loadMessages);
+    _connectionStatus = _chatRepository.currentConnectionStatus;
+    _statusSubscription = _chatRepository.connectionStatusStream.listen((status) {
+      _connectionStatus = status;
+      notifyListeners();
+    });
+  }
 
   final Room room;
   final AuthState _authState;
   final ChatRepository _chatRepository;
   final ChatState _chatState;
+
+  StreamSubscription<ChatSystemStatus>? _statusSubscription;
+  late ChatSystemStatus _connectionStatus;
+  ChatSystemStatus get connectionStatus => _connectionStatus;
+  bool get isConnected => _connectionStatus.isConnected;
 
   late final Command0<void> loadMessagesCommand;
 
@@ -65,5 +77,11 @@ class RoomDetailViewModel extends ChangeNotifier {
       // But we can also manually add it to the active room messages for immediate feedback.
       _chatState.addMessageToActiveRoom(result.value);
     }
+  }
+
+  @override
+  void dispose() {
+    _statusSubscription?.cancel();
+    super.dispose();
   }
 }

@@ -39,4 +39,54 @@ abstract class ChatRepository {
 
   /// Subscribes to real-time message updates for user.
   Stream<Message> subscribeToMessagesInUserScope(String userId);
+
+  /// Creates or returns an existing direct chat with another user.
+  Future<Result<Room>> createDirectChat({
+    required String currentUserId,
+    required String otherUserId,
+    String? otherUserName,
+  });
+
+  /// Deletes a room for a user.
+  Future<Result<void>> deleteRoom({
+    required String userId,
+    required String roomId,
+  });
+
+  Future<Result<List<Robot>>> getRobots({required String userId});
+
+  Future<Result<Robot>> addRobot({
+    required String userId,
+    required String robotTemplate,
+  });
+
+  Future<Result<Room>> addRobotChatRoom({
+    required String userId,
+    required String robotId,
+  });
+
+  /// Stream of connection status changes (both network and Firestore).
+  Stream<ChatSystemStatus> get connectionStatusStream;
+
+  /// Retrieves the current connection status.
+  ChatSystemStatus get currentConnectionStatus;
+
+  /// Cleans up repository subscriptions.
+  void dispose();
+}
+
+class ChatSystemStatus {
+  const ChatSystemStatus({
+    required this.isNetworkConnected,
+    required this.isFirestoreConnected,
+  });
+
+  final bool isNetworkConnected;
+  final bool isFirestoreConnected;
+
+  bool get isConnected => isNetworkConnected && isFirestoreConnected;
+
+  @override
+  String toString() =>
+      'ChatSystemStatus(network: $isNetworkConnected, firestore: $isFirestoreConnected)';
 }

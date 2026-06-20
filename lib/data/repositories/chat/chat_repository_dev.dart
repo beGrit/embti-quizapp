@@ -191,4 +191,62 @@ class ChatRepositoryDev implements ChatRepository {
 
     return controller.stream;
   }
+
+  @override
+  Future<Result<Room>> createDirectChat({
+    required String currentUserId,
+    required String otherUserId,
+    String? otherUserName,
+  }) {
+    return Future.value(Result.error(Exception('Use ChatRepositoryDevV2')));
+  }
+
+  @override
+  Future<Result<void>> deleteRoom({
+    required String userId,
+    required String roomId,
+  }) {
+    return Future.value(Result.error(Exception('Use ChatRepositoryDevV2')));
+  }
+
+  @override
+  Stream<ChatSystemStatus> get connectionStatusStream => Stream.value(
+    const ChatSystemStatus(
+      isNetworkConnected: true,
+      isFirestoreConnected: true,
+    ),
+  );
+
+  @override
+  ChatSystemStatus get currentConnectionStatus => const ChatSystemStatus(
+    isNetworkConnected: true,
+    isFirestoreConnected: true,
+  );
+
+  @override
+  void dispose() {}
+
+  @override
+  Future<Result<Robot>> addRobot({
+    required String userId,
+    required String robotTemplate,
+  }) {
+    // TODO: implement addRobot
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<Room>> addRobotChatRoom({
+    required String userId,
+    required String robotId,
+  }) {
+    // TODO: implement addRobotChatRoom
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Result<List<Robot>>> getRobots({required String userId}) {
+    // TODO: implement getRobots
+    throw UnimplementedError();
+  }
 }

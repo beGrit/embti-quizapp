@@ -98,3 +98,11 @@ Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
   'created': instance.created.toIso8601String(),
   'updated': instance.updated.toIso8601String(),
 };
+
+_Robot _$RobotFromJson(Map<String, dynamic> json) =>
+    _Robot(id: json['id'] as String?, key: json['key'] as String?);
+
+Map<String, dynamic> _$RobotToJson(_Robot instance) => <String, dynamic>{
+  'id': instance.id,
+  'key': instance.key,
+};

@@ -9,6 +9,12 @@ abstract class UserRepository {
   /// Fetches a user by their email address. Returns null if no user is found.
   Future<Result<User?>> getUserByEmail(String email);
 
+  /// Searches users by name or email keyword.
+  Future<Result<List<User>>> searchUsers(
+    String keyword, {
+    String? excludeUserId,
+  });
+
   /// Saves or updates core user information.
   Future<Result<void>> saveUser(User user);
 

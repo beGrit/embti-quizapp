@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../view_models/rooms_viewmodel.dart';
+import 'rooms_add_room.dart';
 
 class RoomsScreen extends StatelessWidget {
   const RoomsScreen({super.key});
@@ -17,6 +18,7 @@ class RoomsScreen extends StatelessWidget {
       create: (context) => RoomsViewModel(
         authState: context.read(),
         chatRepository: context.read(),
+        userRepository: context.read(),
         chatState: context.read(),
       )..loadRoomsCommand.execute(),
       builder: (context, _) {
@@ -24,7 +26,11 @@ class RoomsScreen extends StatelessWidget {
           appBar: StandardAppBar(
             title: 'Messages',
             actions: [
-              IconButton(icon: const Icon(Icons.search), onPressed: () {}),
+              IconButton(
+                icon: const Icon(Icons.add_comment_outlined),
+                tooltip: 'Add Chat Room',
+                onPressed: () => AddChatRoomDialog.show(context, context.read<RoomsViewModel>()),
+              ),
             ],
           ),
           body: Consumer2<RoomsViewModel, ChatState>(
@@ -84,55 +90,71 @@ class _RoomListTile extends StatelessWidget {
     final chatState = context.watch<ChatState>();
     final unreadCount = chatState.getUnreadCount(room.id);
 
-    return Column(
-      children: [
-        ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 4,
-          ),
-          leading: CircleAvatar(
-            radius: 28,
-            backgroundColor: theme.colorScheme.primaryContainer,
-            child: Icon(
-              Icons.group,
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
-          ),
-          title: Text(
-            room.name ?? 'Chat Room',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: const Text(
-            'Start a conversation...',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${room.updated.hour}:${room.updated.minute.toString().padLeft(2, '0')}',
-                style: theme.textTheme.bodySmall,
-              ),
-              if (unreadCount > 0) ...[
-                const SizedBox(height: 4),
-                Badge(
-                  label: Text(unreadCount.toString()),
-                  backgroundColor: theme.colorScheme.primary,
-                ),
-              ],
-            ],
-          ),
-          onTap: () async {
-            final chatState = context.read<ChatState>();
-            await context.push('${Routes.chatRooms}/${room.id}', extra: room);
-            chatState.setActiveRoom(null);
-          },
+    return Dismissible(
+      key: ValueKey(room.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: theme.colorScheme.error,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 24),
+        child: Icon(
+          Icons.delete_outline,
+          color: theme.colorScheme.onError,
         ),
-        const Divider(height: 1, indent: 80),
-      ],
+      ),
+      onDismissed: (_) {
+        context.read<RoomsViewModel>().deleteRoomCommand.execute(room.id);
+      },
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
+            leading: CircleAvatar(
+              radius: 28,
+              backgroundColor: theme.colorScheme.primaryContainer,
+              child: Icon(
+                Icons.group,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+            title: Text(
+              room.name ?? 'Chat Room',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: const Text(
+              'Start a conversation...',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${room.updated.hour}:${room.updated.minute.toString().padLeft(2, '0')}',
+                  style: theme.textTheme.bodySmall,
+                ),
+                if (unreadCount > 0) ...[
+                  const SizedBox(height: 4),
+                  Badge(
+                    label: Text(unreadCount.toString()),
+                    backgroundColor: theme.colorScheme.primary,
+                  ),
+                ],
+              ],
+            ),
+            onTap: () async {
+              final chatState = context.read<ChatState>();
+              await context.push('${Routes.chatRooms}/${room.id}', extra: room);
+              chatState.setActiveRoom(null);
+            },
+          ),
+          const Divider(height: 1, indent: 80),
+        ],
+      ),
     );
   }
 }

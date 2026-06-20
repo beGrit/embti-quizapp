@@ -19,14 +19,19 @@ class ChatState extends ChangeNotifier {
   List<Message> _activeRoomMessages = [];
   List<Message> get activeRoomMessages => _activeRoomMessages;
 
-  /// Sets the list of chat rooms.
   void setRooms(List<Room> rooms) {
-    _rooms = rooms;
+    _rooms = [...rooms];
     notifyListeners();
   }
 
   void addRoom(Room room) {
-    _rooms.add(room);
+    _rooms = [..._rooms, room];
+    notifyListeners();
+  }
+
+  void removeRoom(String roomId) {
+    _rooms.removeWhere((r) => r.id == roomId);
+    _unreadCounts.remove(roomId);
     notifyListeners();
   }
 

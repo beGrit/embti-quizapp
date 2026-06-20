@@ -51,6 +51,38 @@ class UserRepositoryDev implements UserRepository {
   }
 
   @override
+  Future<Result<List<User>>> searchUsers(
+    String keyword, {
+    String? excludeUserId,
+  }) async {
+    try {
+      final apiModels = await _apiStorage.searchUsers(
+        keyword,
+        excludeUserId: excludeUserId,
+      );
+
+      final users = apiModels
+          .map(
+            (apiModel) => User(
+              id: apiModel.id,
+              email: apiModel.email,
+              name: apiModel.name,
+              mbtiType: apiModel.mbtiType,
+              introduce: apiModel.introduce,
+              avatar: apiModel.avatar != null
+                  ? AppFile(uri: Uri.parse(apiModel.avatar ?? ''), name: '')
+                  : null,
+            ),
+          )
+          .toList();
+
+      return Result.ok(users);
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
+  }
+
+  @override
   Future<Result<void>> saveUser(User user) async {
     try {
       UserFirestoreApiModel apiModel = UserFirestoreApiModel(
