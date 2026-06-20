@@ -1,98 +1,90 @@
 // lib/ui/core/ui/widgets/policy.dart
 
+import 'package:emombti/data/repositories/content/content_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_html/flutter_html.dart'; // Import the html renderer
 
-import '../../../../data/services/common/policy_service.dart';
-
-class PolicyWebView extends StatefulWidget {
+class PolicyNativeView extends StatefulWidget {
   final String policyType;
   final VoidCallback? onLoaded;
+  final ContentRepository contentRepository;
 
-  const PolicyWebView({super.key, required this.policyType, this.onLoaded});
+  const PolicyNativeView({
+    super.key,
+    required this.policyType,
+    required this.contentRepository,
+    this.onLoaded,
+  });
 
   @override
-  State<PolicyWebView> createState() => _PolicyWebViewState();
+  State<PolicyNativeView> createState() => _PolicyNativeViewState();
 }
 
-class _PolicyWebViewState extends State<PolicyWebView> {
-  late final WebViewController _controller;
-  bool _isLoading = true;
+class _PolicyNativeViewState extends State<PolicyNativeView> {
+  late Future<String> _htmlFuture;
 
   @override
   void initState() {
     super.initState();
-    _initializeController();
-  }
-
-  void _initializeController() {
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.transparent)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageFinished: (url) {
-            if (mounted) {
-              setState(() => _isLoading = false);
-              widget.onLoaded?.call();
-            }
-          },
-        ),
-      );
-
-    // 在初始化后触发加载
-    _loadPolicyContent();
-  }
-
-  Future<void> _loadPolicyContent() async {
-    // 1. 从 Provider 获取 Service
-    final policyService = context.read<PolicyService>();
-
-    // 2. 获取 HTML 源码
-    final rawHtml = await policyService.getPolicyHtml(widget.policyType);
-
-    // 3. 构造完整的 HTML 文档（注入适配移动端的 CSS）
-    final String styledHtml =
-        '''
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-          <style>
-            :root { color-scheme: light dark; }
-            body { 
-              font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-              padding: 16px;
-              line-height: 1.6;
-              font-size: 15px;
-              word-wrap: break-word;
-            }
-            h1, h2, h3 { color: #000; margin-top: 24px; }
-            p { margin-bottom: 12px; }
-            /* 适配深色模式（可选） */
-            @media (prefers-color-scheme: dark) {
-              body { color: #E0E0E0; }
-              h1, h2, h3 { color: #FFFFFF; }
-            }
-          </style>
-        </head>
-        <body>$rawHtml</body>
-      </html>
-    ''';
-
-    await _controller.loadHtmlString(styledHtml);
+    _htmlFuture = widget.contentRepository
+        .getPolicyHtml(widget.policyType)
+        .then((html) {
+          widget.onLoaded?.call();
+          return html;
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        WebViewWidget(controller: _controller),
-        if (_isLoading)
-          const Center(child: CircularProgressIndicator.adaptive()),
-      ],
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return FutureBuilder<String>(
+      future: _htmlFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error loading policy: ${snapshot.error}'));
+        }
+
+        final rawHtml = snapshot.data ?? '';
+
+        // Wrap with SingleChildScrollView so the native text can scroll
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          child: Html(
+            data: rawHtml,
+            // Replaces your old CSS styling with type-safe Flutter Styles
+            style: {
+              "body": Style(
+                fontFamily:
+                    '-apple-system, BlinkMacSystemFont, Roboto, sans-serif',
+                fontSize: FontSize(15.0),
+                lineHeight: const LineHeight(1.6),
+                color: isDarkMode ? Colors.grey[300] : Colors.black87,
+                margin:
+                    Margins.zero, // Padding handled by SingleChildScrollView
+              ),
+              "h1": Style(
+                fontSize: FontSize(22.0),
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
+                margin: Margins.only(top: 24, bottom: 12),
+              ),
+              "h2": Style(
+                fontSize: FontSize(18.0),
+                fontWeight: FontWeight.bold,
+                color: isDarkMode ? Colors.white : Colors.black,
+                margin: Margins.only(top: 20, bottom: 10),
+              ),
+              "p": Style(margin: Margins.only(bottom: 12)),
+            },
+          ),
+        );
+      },
     );
   }
 }

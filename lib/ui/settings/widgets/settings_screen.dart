@@ -1,4 +1,5 @@
 import 'package:emombti/app_state/app_config.dart';
+import 'package:emombti/data/repositories/content/content_repository.dart';
 import 'package:emombti/ui/core/themes/theme.dart';
 import 'package:emombti/ui/core/ui/widgets/app_bar.dart';
 import 'package:emombti/ui/core/ui/widgets/policy.dart';
@@ -203,7 +204,12 @@ class _SettingsScreenContent extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Divider(),
-            Expanded(child: PolicyWebView(policyType: type)),
+            Expanded(
+              child: PolicyNativeView(
+                policyType: type,
+                contentRepository: context.read<ContentRepository>(),
+              ),
+            ),
           ],
         ),
       ),

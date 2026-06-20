@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter/services.dart';
-import '../../../../domain/models/quiz/survey_models.dart';
+
 import '../../../../config/assets.dart';
+import '../../../../domain/models/quiz/survey_models.dart';
 
 class LocalStorageFile {
   final String projectName = 'emombti';
@@ -52,10 +54,9 @@ class LocalStorageFile {
   Future<List<Survey>> getQuizzes() async {
     final dir = await _getSurveyDir();
     final List<Survey> surveys = [];
-    final files = dir
-        .listSync()
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.json'));
+    final files = dir.listSync().whereType<File>().where(
+      (f) => f.path.endsWith('.json'),
+    );
 
     if (files.isEmpty) {
       final assetJson = await _loadStringAsset(AppAssets.quizzesJson);
@@ -71,6 +72,20 @@ class LocalStorageFile {
       }
     }
     return surveys;
+  }
+
+  Future<String> loadPolicy(String policyType) async {
+    try {
+      if (policyType == 'privacy') {
+        return await rootBundle.loadString(AppAssets.privacyHtml);
+      }
+      if (policyType == 'terms') {
+        return await rootBundle.loadString(AppAssets.termsHtml);
+      }
+      return '';
+    } catch (e) {
+      return "<html><body><h1>Error</h1><p>$policyType not found.</p></body></html>";
+    }
   }
 
   Future<List<Map<String, dynamic>>> _loadStringAsset(String asset) async {

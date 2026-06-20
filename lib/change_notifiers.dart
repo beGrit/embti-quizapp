@@ -5,11 +5,6 @@ import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
-import 'package:emombti/data/services/common/advertising_service.dart';
-import 'package:emombti/data/services/common/notification_service.dart';
-import 'package:emombti/data/services/common/notification_service_local.dart';
-import 'package:emombti/data/services/common/policy_service.dart';
-import 'package:emombti/data/services/common/policy_service_local.dart';
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
 import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
 import 'package:emombti/data/services/persistence/local/local_storage.dart';
@@ -83,22 +78,6 @@ class MainAppChangeNotifers extends StatelessWidget {
                     ),
                     Provider<QuizRepository>.value(
                       value: repositoryManager.quizRepository,
-                    ),
-                    Provider<PolicyService>(
-                      create: (context) => LocalPolicyService(),
-                    ),
-                    Provider<NotificationService>(
-                      create: (context) {
-                        LocalNotificationService service =
-                            LocalNotificationService();
-                        service.init().then((_) {
-                          service.requestPermissions();
-                        });
-                        return service as NotificationService;
-                      },
-                    ),
-                    Provider<AdvertisingService>(
-                      create: (context) => AdvertisingService(),
                     ),
                     Provider<UserAvatarUpdateUseCase>(
                       lazy: true,

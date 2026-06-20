@@ -84,4 +84,7 @@ class LocalStorageFacade implements LocalStorage {
   @override
   Future<void> saveSubmission(AssessmentResult result) =>
       sqlite.saveSubmission(result);
+
+  @override
+  Future<String> loadPolicy(String policyType) => file.loadPolicy(policyType);
 }

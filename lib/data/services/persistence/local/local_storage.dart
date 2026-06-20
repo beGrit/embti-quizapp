@@ -26,4 +26,7 @@ abstract class LocalStorage {
   Future<AssessmentResult?> getAssessmentResult(String surveyFlowId);
   Future<void> clearAssessmentHistory();
   Future<void> saveSubmission(AssessmentResult result);
+
+  // Policy
+  Future<String> loadPolicy(String policyType);
 }

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:emombti/ui/advertising/widgets/advertising_fullscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -7,9 +5,7 @@ class AdvertisingService {
   bool _isAdShowing = false;
 
   void showAd(BuildContext context) {
-    Timer(const Duration(seconds: 3), () {
-      _showAd(context);
-    });
+    _showAd(context);
   }
 
   void _showAd(BuildContext context) {

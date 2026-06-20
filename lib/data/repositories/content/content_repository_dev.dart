@@ -68,4 +68,9 @@ class ContentRepositoryDev extends ContentRepository {
       return Result.error(e);
     }
   }
+
+  @override
+  Future<String> getPolicyHtml(String policyType) async {
+    return localStorage.loadPolicy(policyType);
+  }
 }

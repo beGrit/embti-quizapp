@@ -37,6 +37,7 @@ class QuizState extends ChangeNotifier {
     final index = _surveyFlows.indexWhere((f) => f.id == flow.id);
     if (index != -1) {
       _surveyFlows[index] = flow;
+      _setUpLatest();
       notifyListeners();
     }
   }

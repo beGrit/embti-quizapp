@@ -5,7 +5,11 @@ class AppAssets {
   static const String bannersJson = 'assets/json/mock_banners.json';
 
   static const String quizzesJson = 'assets/json/mock_quiz.json';
-  static const String assessmentResultsJson = 'assets/json/mock_assessment_result.json';
+  static const String assessmentResultsJson =
+      'assets/json/mock_assessment_result.json';
+
+  static const String privacyHtml = 'assets/policies/privacy.html';
+  static const String termsHtml = 'assets/policies/terms.html';
 
   // Icons for Content Type C (Knowledge)
   static const String iconBook = 'assets/icons/book_icon.svg';

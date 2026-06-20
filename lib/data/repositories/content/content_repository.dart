@@ -11,4 +11,6 @@ abstract class ContentRepository {
 
   Future<Result<List<VideoContent>>> getAllVideo();
   Future<Result<VideoContent?>> getVideoById(String id);
+
+  Future<String> getPolicyHtml(String policyType);
 }

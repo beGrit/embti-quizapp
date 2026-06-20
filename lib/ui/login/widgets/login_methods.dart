@@ -1,7 +1,9 @@
+import 'package:emombti/data/repositories/content/content_repository.dart';
 import 'package:emombti/ui/core/ui/widgets/policy.dart';
 import 'package:emombti/ui/login/view_models/login_viewmodel.dart';
 import 'package:emombti/ui/login/widgets/login_basic_form.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginMethods extends StatefulWidget {
   const LoginMethods({super.key, required this.viewModel});
@@ -313,7 +315,12 @@ class _LoginMethodsState extends State<LoginMethods> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const Divider(),
-            Expanded(child: PolicyWebView(policyType: type)),
+            Expanded(
+              child: PolicyNativeView(
+                policyType: type,
+                contentRepository: context.read<ContentRepository>(),
+              ),
+            ),
           ],
         ),
       ),
