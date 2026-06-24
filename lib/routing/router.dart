@@ -1,7 +1,9 @@
 import 'package:emombti/app_state/auth.dart';
-import 'package:emombti/domain/models/chat/chat.dart';
+import 'package:emombti/app_state/chat.dart';
+import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/routing/navigation_config.dart';
-import 'package:emombti/ui/chat/widgets/room_detail_screen.dart';
+import 'package:emombti/ui/chat/view_models/chat_cloud_viewmodel.dart';
+import 'package:emombti/ui/chat/widgets/chat_cloud.dart';
 import 'package:emombti/ui/chat/widgets/rooms_screen.dart';
 import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
@@ -151,8 +153,19 @@ GoRouter router(AuthState authState) => GoRouter(
     GoRoute(
       path: '${Routes.chatRooms}/:id',
       builder: (context, state) {
-        final room = state.extra as Room;
-        return RoomDetailScreen(room: room);
+        String? roomId = state.pathParameters['id'];
+        if (roomId == null) {
+          return SizedBox.shrink();
+        } else {
+          return ChatCloud(
+            viewModel: ChatCloudViewModel(
+              chatId: roomId,
+              authState: context.read<AuthState>(),
+              chatState: context.read<ChatState>(),
+              chatRepository: context.read<ChatRepository>(),
+            ),
+          );
+        }
       },
     ),
     StatefulShellRoute.indexedStack(

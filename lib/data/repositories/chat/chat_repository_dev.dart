@@ -1,48 +1,31 @@
 import 'dart:async';
 
-import 'package:emombti/data/services/persistence/api/pocketbase_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:emombti/data/repositories/chat/chat_repository.dart';
+import 'package:emombti/data/services/persistence/api/firestore_service.dart';
+import 'package:emombti/data/services/persistence/api/model/chat/chat_api_model.dart';
+import 'package:emombti/domain/constants/db.dart';
+import 'package:emombti/domain/constants/status.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/utils/result.dart';
+import 'package:uuid/uuid.dart';
 
-import 'chat_repository.dart';
+class ChatRepositoryDevV2 implements ChatRepository {
+  ChatRepositoryDevV2({required FirestoreService firestoreService})
+    : _firestoreService = firestoreService;
 
-class ChatRepositoryDev implements ChatRepository {
-  ChatRepositoryDev({required PocketBaseService pbService})
-    : _pbService = pbService;
-
-  final PocketBaseService _pbService;
+  final FirestoreService _firestoreService;
+  final Map<String, DocumentSnapshot> _messageSnapshotCache = {};
 
   @override
-  Future<Result<List<Room>>> getRooms(String userId) async {
+  Future<Result<List<Chat>>> getChats(String userId) async {
     try {
-      final memberRecords = await _pbService.client
-          .collection('room_members')
-          .getFullList(filter: 'user_id = "$userId"');
-
-      if (memberRecords.isEmpty) {
+      final userChats = await _firestoreService.getUserChats(userId);
+      if (userChats.isEmpty) {
         return const Result.ok([]);
       }
 
-      final roomIds = memberRecords
-          .map((record) => record.getStringValue('room_id'))
-          .where((id) => id.isNotEmpty)
-          .toSet()
-          .toList();
-
-      if (roomIds.isEmpty) {
-        return const Result.ok([]);
-      }
-
-      final filterExpression = roomIds.map((id) => 'id = "$id"').join(' || ');
-
-      final roomRecords = await _pbService.client
-          .collection('rooms')
-          .getFullList(filter: filterExpression);
-
-      final rooms = roomRecords
-          .map((record) => Room.fromJson(record.toJson()))
-          .toList();
-
+      final rooms = await _buildChats(userChats);
       return Result.ok(rooms);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -50,85 +33,34 @@ class ChatRepositoryDev implements ChatRepository {
   }
 
   @override
-  Future<Result<Room>> getRoomById(String id) async {
-    try {
-      final record = await _pbService.client.collection('rooms').getOne(id);
-      return Result.ok(Room.fromJson(record.toJson()));
-    } catch (e) {
-      return Result.error(e is Exception ? e : Exception(e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<List<Room>>> getRoomsPaginated({
-    required String userId,
-    required int page,
-    required int perPage,
+  Future<Result<List<Message>>> getMessagesLimit(
+    String roomId, {
+    PaginationDirection direction = PaginationDirection.next,
+    int? limit,
+    String? messageId,
   }) async {
     try {
-      final result = await _pbService.client
-          .collection('rooms')
-          .getList(
-            page: page,
-            perPage: perPage,
-            sort: '-updated',
-            filter: 'room_members_via_room_id.user_id = "$userId"',
-            expand: 'room_members_via_room_id.user_id,messages_via_room_id',
-          );
-      final rooms = result.items
-          .map((record) => Room.fromJson(record.toJson()))
-          .toList();
-      return Result.ok(rooms);
-    } catch (e) {
-      return Result.error(e is Exception ? e : Exception(e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<Message?>> getLatestMessageForRoom(String roomId) async {
-    try {
-      final result = await _pbService.client
-          .collection('messages')
-          .getList(
-            page: 1,
-            perPage: 1,
-            filter: 'room_id = "$roomId"',
-            sort: '-created',
-          );
-      if (result.items.isEmpty) {
-        return const Result.ok(null);
+      DocumentSnapshot? lastDocument;
+      if (messageId != null) {
+        // if (!_messageSnapshotCache.containsKey(messageId)) {
+        _messageSnapshotCache[messageId] = await _firestoreService
+            .getChatMessageSnapshot(roomId, messageId);
+        // }
+        lastDocument = _messageSnapshotCache[messageId];
       }
-      return Result.ok(Message.fromJson(result.items.first.toJson()));
-    } catch (e) {
-      return Result.error(e is Exception ? e : Exception(e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<List<RoomMember>>> getRoomMembers(String roomId) async {
-    try {
-      final records = await _pbService.client
-          .collection('room_members')
-          .getFullList(filter: 'room_id = "$roomId"', expand: 'user_id');
-      final members = records
-          .map((record) => RoomMember.fromJson(record.toJson()))
+      var messages = await _firestoreService.getChatMessages(
+        roomId,
+        limit: limit,
+        lastDocument: lastDocument,
+        desc: direction == PaginationDirection.next ? false : true,
+      );
+      if (direction == PaginationDirection.prev) {
+        messages = messages.reversed.toList();
+      }
+      final domainMessages = messages
+          .map((message) => _mapMessageToDomain(message, roomId))
           .toList();
-      return Result.ok(members);
-    } catch (e) {
-      return Result.error(e is Exception ? e : Exception(e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<List<Message>>> getMessages(String roomId) async {
-    try {
-      final records = await _pbService.client
-          .collection('messages')
-          .getFullList(filter: 'room_id = "$roomId"', sort: '-created');
-      final messages = records
-          .map((record) => Message.fromJson(record.toJson()))
-          .toList();
-      return Result.ok(messages);
+      return Result.ok(domainMessages);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
@@ -137,116 +69,253 @@ class ChatRepositoryDev implements ChatRepository {
   @override
   Future<Result<Message>> sendMessage(Message message) async {
     try {
-      final Map<String, dynamic> body = message.toJson();
+      final roomId = message.chatId;
+      final senderId = message.sendBy;
+      final content = message.message;
 
-      body.remove('id');
-      body.remove('created');
-      body.remove('updated');
+      if (roomId == null || roomId.isEmpty) {
+        return Result.error(Exception('Message roomId is required'));
+      }
+      if (senderId == null || senderId.isEmpty) {
+        return Result.error(Exception('Message sender is required'));
+      }
+      if (content == null || content.trim().isEmpty) {
+        return Result.error(Exception('Message content is required'));
+      }
 
-      body['createdAt'] ??= DateTime.now().toIso8601String();
+      final sentAt = message.createdAt ?? DateTime.now();
+      final apiMessage = ChatMessageFirestoreApiModel(
+        messageId: message.id,
+        senderId: senderId,
+        type: message.messageType ?? 'text',
+        content: content,
+        sentAt: sentAt,
+        status: 'sent',
+      );
 
-      final record = await _pbService.client
-          .collection('messages')
-          .create(body: body);
-      return Result.ok(Message.fromJson(record.toJson()));
+      final savedMessage = await _firestoreService.sendChatMessage(
+        chatId: roomId,
+        message: apiMessage,
+      );
+
+      if (savedMessage.status != null && savedMessage.status == 'error') {
+        return Result.ok(_mapMessageToDomain(savedMessage, roomId));
+      } else {
+        await _firestoreService.updateChatMetaAndUserChats(
+          chatId: roomId,
+          message: apiMessage,
+        );
+        return Result.ok(_mapMessageToDomain(savedMessage, roomId));
+      }
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
   }
 
   @override
-  Stream<Message> subscribeToMessages(String roomId) {
-    final controller = StreamController<Message>();
-
-    _pbService.client.collection('messages').subscribe('*', (e) {
-      if (e.action == 'create') {
-        final message = Message.fromJson(e.record!.toJson());
-        if (message.roomId == roomId) {
-          controller.add(message);
-        }
-      }
-    }, filter: 'room_id = "$roomId"');
-
-    controller.onCancel = () {
-      _pbService.client.collection('messages').unsubscribe('*');
-    };
-
-    return controller.stream;
-  }
-
-  @override
   Stream<Message> subscribeToMessagesInUserScope(String userId) {
-    final controller = StreamController<Message>();
-
-    _pbService.client.collection('messages').subscribe('*', (e) {
-      if (e.action == 'create') {
-        final message = Message.fromJson(e.record!.toJson());
-        controller.add(message);
-      }
-    }, filter: 'room_id.room_members_via_room_id.user_id ?= "$userId"');
-
-    controller.onCancel = () {
-      _pbService.client.collection('messages').unsubscribe('*');
-    };
-
-    return controller.stream;
+    throw UnimplementedError();
   }
 
   @override
-  Future<Result<Room>> createDirectChat({
+  Future<Result<Chat>> createDirectChat({
     required String currentUserId,
     required String otherUserId,
     String? otherUserName,
-  }) {
-    return Future.value(Result.error(Exception('Use ChatRepositoryDevV2')));
+  }) async {
+    try {
+      final room = await _firestoreService.findDirectChat(
+        currentUserId: currentUserId,
+        otherUserId: otherUserId,
+      );
+
+      if (room != null) {
+        final userChat = await _firestoreService.getUserChatByChatId(
+          currentUserId,
+          room.chatId,
+        );
+        return Result.ok(_mapApiChatToChat(room, userChat: userChat));
+      }
+
+      final ChatFirestoreApiModel chatApiModel = await _firestoreService
+          .createChat(
+            ChatFirestoreApiModel(
+              chatId: Uuid().v4(),
+              createdAt: DateTime.now(),
+              isGroup: false,
+              members: [currentUserId, otherUserId],
+            ),
+          );
+      var userChatMap = await _firestoreService.addChatToUsers(chatApiModel);
+
+      return Result.ok(
+        _mapApiChatToChat(chatApiModel, userChat: userChatMap[currentUserId]),
+      );
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
   }
 
   @override
   Future<Result<void>> deleteRoom({
     required String userId,
     required String roomId,
-  }) {
-    return Future.value(Result.error(Exception('Use ChatRepositoryDevV2')));
+  }) async {
+    try {
+      final chat = await _firestoreService.getChat(roomId);
+      if (chat == null) {
+        return Result.error(Exception('Chat not found'));
+      }
+
+      if (!chat.isGroup) {
+        await _firestoreService.deleteChat(
+          chatId: roomId,
+          members: chat.members,
+        );
+      } else {
+        await _firestoreService.deleteUserChat(userId: userId, chatId: roomId);
+      }
+      return const Result.ok(null);
+    } catch (e) {
+      return Result.error(e is Exception ? e : Exception(e.toString()));
+    }
   }
 
-  @override
-  Stream<ChatSystemStatus> get connectionStatusStream => Stream.value(
-    const ChatSystemStatus(
-      isNetworkConnected: true,
-      isFirestoreConnected: true,
-    ),
-  );
+  Future<List<Chat>> _buildChats(
+    List<UserChatFirestoreApiModel> userChats,
+  ) async {
+    final chatIds = userChats.map((chat) => chat.chatId).toList();
+    final chats = await _firestoreService.getChatsByIds(chatIds);
+    final chatsById = {for (final chat in chats) chat.chatId: chat};
 
-  @override
-  ChatSystemStatus get currentConnectionStatus => const ChatSystemStatus(
-    isNetworkConnected: true,
-    isFirestoreConnected: true,
-  );
+    final rooms = <Chat>[];
+    for (final userChat in userChats) {
+      final chat = chatsById[userChat.chatId];
+      if (chat == null) {
+        continue;
+      }
+      rooms.add(_mapApiChatToChat(chat, userChat: userChat));
+    }
 
-  @override
-  void dispose() {}
+    return rooms;
+  }
+
+  Chat _mapApiChatToChat(
+    ChatFirestoreApiModel chat, {
+    UserChatFirestoreApiModel? userChat,
+  }) {
+    final lastMessageAt =
+        userChat?.lastMessageSentAt ??
+        chat.lastMessage?.sentAt ??
+        chat.createdAt;
+    final lastMessageText = userChat?.lastMessageText ?? chat.lastMessage?.text;
+
+    return Chat(
+      id: chat.chatId,
+      name: userChat?.name != null ? userChat!.name : chat.chatName,
+      image: userChat?.image != null ? userChat!.image : chat.chatImage,
+      created: chat.createdAt,
+      updated: lastMessageAt,
+      isGroup: chat.isGroup,
+      lastMessage: lastMessageText,
+      lastMessageAt: lastMessageAt,
+    );
+  }
+
+  Message _mapMessageToDomain(
+    ChatMessageFirestoreApiModel message,
+    String chatId,
+  ) {
+    final sentAt = message.sentAt;
+    return Message(
+      id: message.messageId,
+      chatId: chatId,
+      sendBy: message.senderId,
+      message: message.content,
+      messageType: message.type,
+      createdAt: sentAt,
+      created: sentAt,
+      updated: sentAt,
+      status: message.status,
+    );
+  }
 
   @override
   Future<Result<Robot>> addRobot({
     required String userId,
     required String robotTemplate,
   }) {
-    // TODO: implement addRobot
     throw UnimplementedError();
   }
 
   @override
-  Future<Result<Room>> addRobotChatRoom({
+  Future<Result<Chat>> addRobotChat({
     required String userId,
     required String robotId,
   }) {
-    // TODO: implement addRobotChatRoom
     throw UnimplementedError();
   }
 
   @override
   Future<Result<List<Robot>>> getRobots({required String userId}) {
-    // TODO: implement getRobots
     throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<MessageChange>> subscribeToChat(String roomId) {
+    return _firestoreService.subscribeToChatMessages(roomId).map((apiChanges) {
+      return apiChanges.map((apiChange) {
+        MessageChangeType domainChangeType;
+        switch (apiChange.type) {
+          case MessageChangeApiType.added:
+            domainChangeType = MessageChangeType.added;
+            break;
+          case MessageChangeApiType.modified:
+            domainChangeType = MessageChangeType.modified;
+            break;
+          case MessageChangeApiType.removed:
+            domainChangeType = MessageChangeType.removed;
+            break;
+        }
+
+        final apiMessage = apiChange.message;
+        final domainMessage = Message(
+          id: apiMessage.id ?? apiMessage.messageId,
+          message: apiMessage.content,
+          sendBy: apiMessage.senderId,
+          messageType: apiMessage.type,
+          chatId: roomId,
+          createdAt: apiMessage.sentAt,
+          created: apiMessage.sentAt,
+          updated: apiMessage.sentAt,
+        );
+
+        return MessageChange(type: domainChangeType, message: domainMessage);
+      }).toList();
+    });
+  }
+
+  @override
+  Stream<ChatConnectionStatus> subscribeChatConnectionStatus(String roomId) {
+    final controller = StreamController<ChatConnectionStatus>();
+    _firestoreService
+        .monitorChatConnection(roomId)
+        .listen(
+          (item) {
+            if (!controller.isClosed) {
+              if (item.isConnected) {
+                controller.add(ChatConnectionStatus.connected);
+              } else {
+                controller.add(ChatConnectionStatus.disconnected);
+              }
+            }
+          },
+          onError: (error) {
+            if (!controller.isClosed) {
+              controller.addError(error);
+            }
+          },
+        );
+    return controller.stream;
   }
 }

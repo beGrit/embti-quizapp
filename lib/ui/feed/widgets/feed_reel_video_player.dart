@@ -6,15 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class FeedReelVideoPlayer extends StatefulWidget {
-  const FeedReelVideoPlayer({
-    super.key,
-    required this.feedReel,
-    required this.socialViewModel,
-  });
+  const FeedReelVideoPlayer({super.key, required this.feedReel});
 
   final Reel feedReel;
-
-  final SocialViewModel socialViewModel;
 
   @override
   State<FeedReelVideoPlayer> createState() => _FeedReelVideoPlayerState();
@@ -263,22 +257,21 @@ class _FeedReelVideoPlayerState extends State<FeedReelVideoPlayer> {
                 ),
               ),
             ),
-          if (!cleanMode)
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: _FeedReelVideoPlayerActions(
-                  onCommentsToggle: enterCleanMode,
-                ),
-              ),
-            ),
+          // if (!cleanMode)
+          //   Positioned.fill(
+          //     child: Align(
+          //       alignment: Alignment.bottomRight,
+          //       child: _FeedReelVideoPlayerActions(
+          //         onCommentsToggle: enterCleanMode,
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );
   }
 
   Widget _buildVideoLayer(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     if (_initFailed) {
       return Center(
         child: Text(
@@ -306,39 +299,39 @@ class _FeedReelVideoPlayerState extends State<FeedReelVideoPlayer> {
                   child: VideoPlayer(_controller),
                 ),
               ),
-              if (!cleanMode && isLandscape && !fullScreenMode)
-                GestureDetector(
-                  onTap: enterFullScreenMode,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      // vertical: 6,
-                    ),
-                    margin: EdgeInsets.only(top: 6),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.inverseSurface,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.fullscreen,
-                          color: theme.colorScheme.surfaceBright,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Full Screen',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.surfaceBright,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              // if (!cleanMode && isLandscape && !fullScreenMode)
+              //   GestureDetector(
+              //     onTap: enterFullScreenMode,
+              //     child: Container(
+              //       padding: const EdgeInsets.symmetric(
+              //         horizontal: 6,
+              //         // vertical: 6,
+              //       ),
+              //       margin: EdgeInsets.only(top: 6),
+              //       decoration: BoxDecoration(
+              //         color: theme.colorScheme.inverseSurface,
+              //         borderRadius: BorderRadius.circular(20),
+              //       ),
+              //       child: Row(
+              //         mainAxisSize: MainAxisSize.min,
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         children: [
+              //           Icon(
+              //             Icons.fullscreen,
+              //             color: theme.colorScheme.surfaceBright,
+              //             size: 20,
+              //           ),
+              //           const SizedBox(width: 4),
+              //           Text(
+              //             'Full Screen',
+              //             style: theme.textTheme.labelSmall?.copyWith(
+              //               color: theme.colorScheme.surfaceBright,
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
             ],
           ),
 

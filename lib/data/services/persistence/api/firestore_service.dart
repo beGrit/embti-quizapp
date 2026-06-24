@@ -35,9 +35,6 @@ class FirestoreService {
   CollectionReference<Map<String, dynamic>> _chatMessages(String chatId) =>
       _chats.doc(chatId).collection('messages');
 
-  CollectionReference<Map<String, dynamic>> _userRobot(String userId) =>
-      _users.doc(userId).collection('robots');
-
   /// Save or update user profile data at /users/{uid}
   Future<UserFirestoreApiModel> saveUser(UserFirestoreApiModel user) async {
     final docRef = _users.doc(user.id);
@@ -427,6 +424,14 @@ class FirestoreService {
     return query.docs.map(_parseUserChatDoc).toList();
   }
 
+  Future<UserChatFirestoreApiModel> getUserChatByChatId(
+    String userId,
+    String chatId,
+  ) async {
+    final query = await _userChats(userId).doc(chatId).get();
+    return _parseUserChatDoc(query);
+  }
+
   /// Paginate chat metadata for a user ordered by latest activity.
   Future<
     ({List<UserChatFirestoreApiModel> chats, DocumentSnapshot? lastDocument})
@@ -473,59 +478,92 @@ class FirestoreService {
 
   /// Find an existing 1:1 chat between two users.
   Future<ChatFirestoreApiModel?> findDirectChat({
-    required String userId1,
-    required String userId2,
+    required String currentUserId,
+    required String otherUserId,
   }) async {
+    final List<String> members = [currentUserId, otherUserId]..sort();
+
     final query = await _chats
         .where('isGroup', isEqualTo: false)
-        .where('members', arrayContains: userId1)
+        .where('members', whereIn: [members])
         .get();
-
-    for (final doc in query.docs) {
-      final chat = _parseChatDoc(doc);
-      if (chat.members.contains(userId2)) {
-        return chat;
-      }
+    if (query.docs.isNotEmpty) {
+      return _parseChatDoc(query.docs[0]);
     }
     return null;
   }
 
-  /// Creates or returns an existing 1:1 chat between two users.
-  Future<ChatFirestoreApiModel> createDirectChat({
-    required String currentUserId,
-    required String otherUserId,
-    String? otherUserName,
-  }) async {
-    final chatId = generateFirestoreId();
-    final members = [currentUserId, otherUserId];
-    final chatData = <String, dynamic>{
-      'chatId': chatId,
-      'isGroup': false,
-      'chatName': otherUserName ?? 'Chat',
-      'createdAt': FieldValue.serverTimestamp(),
-      'members': members,
-    };
+  Future<ChatFirestoreApiModel> createChat(ChatFirestoreApiModel chat) async {
+    try {
+      await _firestore
+          .runTransaction((transaction) async {
+            final docRef = _chats.doc(chat.chatId);
+            final docSnapshot = await transaction.get(docRef);
 
-    final batch = _firestore.batch();
-    batch.set(_chats.doc(chatId), chatData);
+            if (docSnapshot.exists) {
+              throw Exception('Chat room already exists');
+            }
 
-    for (final memberId in members) {
-      batch.set(_userChats(memberId).doc(chatId), {
-        'chatId': chatId,
-        'unreadCount': 0,
-        'isPinned': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+            transaction.set(docRef, chat.toJson());
+          })
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw TimeoutException('Server write timed out');
+            },
+          );
+
+      return chat;
+    } catch (e) {
+      rethrow;
     }
+  }
 
-    await batch.commit();
+  Future<Map<String, UserChatFirestoreApiModel>> addChatToUsers(
+    ChatFirestoreApiModel chat,
+  ) async {
+    Map<String, UserChatFirestoreApiModel> resultMap = {};
+    await _firestore.runTransaction((transaction) async {
+      final querySnapshot = await _users
+          .where('id', whereIn: chat.members)
+          .get();
+      final Map<String, UserFirestoreApiModel> userMap = {
+        for (var doc in querySnapshot.docs)
+          doc.id: UserFirestoreApiModel.fromJson(doc.data()),
+      };
+      for (String userId in chat.members) {
+        String name = '';
+        String image = '';
 
-    final created = await getChat(chatId);
-    if (created == null) {
-      throw Exception('Failed to create chat');
-    }
+        if (chat.isGroup) {
+          name = chat.chatName ?? 'Group Chat';
+          image = chat.chatImage ?? '';
+        } else {
+          final otherUserId = chat.members.firstWhere((id) => id != userId);
+          final otherUser = userMap[otherUserId];
 
-    return created;
+          name = otherUser?.name ?? 'User';
+          image = otherUser?.avatar ?? '';
+        }
+        var userChatApiModel = UserChatFirestoreApiModel(
+          chatId: chat.chatId,
+          name: name,
+          image: image,
+          unreadCount: 0,
+          isPinned: false,
+          createdAt: chat.createdAt,
+          lastMessageSentAt: null,
+          lastMessageText: null,
+          lastMessageSenderId: null,
+        );
+        transaction.set(
+          _userChats(userId).doc(chat.chatId),
+          userChatApiModel.toJson(),
+        );
+        resultMap[userId] = userChatApiModel;
+      }
+    });
+    return resultMap;
   }
 
   /// Delete a chat from the user's active chats subcollection and remove the user from chat members.
@@ -570,8 +608,11 @@ class FirestoreService {
     String chatId, {
     int? limit,
     DocumentSnapshot? lastDocument,
+    bool desc = false,
   }) async {
-    var query = _chatMessages(chatId).orderBy('sentAt', descending: true);
+    var query = _chatMessages(chatId)
+        // .where('status', isEqualTo: 'sent')
+        .orderBy('sentAt', descending: desc);
 
     if (limit != null) {
       query = query.limit(limit);
@@ -585,42 +626,83 @@ class FirestoreService {
     return querySnapshot.docs.map(_parseMessageDoc).toList();
   }
 
-  /// Fetch the latest message for a chat.
-  Future<ChatMessageFirestoreApiModel?> getLatestChatMessage(
+  Future<DocumentSnapshot> getChatMessageSnapshot(
     String chatId,
+    String messageId,
   ) async {
-    final messages = await getChatMessages(chatId, limit: 1);
-    if (messages.isEmpty) {
-      return null;
-    }
-    return messages.first;
+    var query = _chatMessages(chatId).doc(messageId);
+    DocumentSnapshot ds = await query.get();
+    return ds;
   }
 
-  /// Create a message and update chat/user chat metadata.
   Future<ChatMessageFirestoreApiModel> sendChatMessage({
     required String chatId,
     required ChatMessageFirestoreApiModel message,
   }) async {
     final chatRef = _chats.doc(chatId);
+
+    // Fetching the chat metadata from cache first, then server if unavailable
     final chatSnapshot = await chatRef.get();
     if (!chatSnapshot.exists || chatSnapshot.data() == null) {
       throw Exception('Chat not found');
     }
 
-    final chat = _parseChatDoc(chatSnapshot);
     final messageRef = message.messageId.isNotEmpty
         ? _chatMessages(chatId).doc(message.messageId)
         : _chatMessages(chatId).doc();
+
     final messageId = messageRef.id;
     final sentAt = message.sentAt;
 
+    // 1. Prepare data for the server attempt
     final messageData = message
-        .copyWith(messageId: messageId, sentAt: sentAt)
+        .copyWith(messageId: messageId, id: messageId, sentAt: sentAt)
         .toJson();
     messageData['sentAt'] = FieldValue.serverTimestamp();
 
+    try {
+      // 2. Attempt to save to the remote server
+      await messageRef
+          .set(messageData)
+          .timeout(
+            const Duration(seconds: 4),
+            onTimeout: () {
+              // This forces an error if the server doesn't respond in time
+              throw TimeoutException(
+                'Server write timed out (likely offline).',
+              );
+            },
+          );
+      return message.copyWith(
+        messageId: messageId,
+        id: messageId,
+        sentAt: sentAt,
+      );
+    } catch (error) {
+      // 3. Server write failed. Prepare payload with 'failed' status
+      final failedMessage = message.copyWith(status: 'error');
+
+      final failedMessageData = failedMessage.toJson();
+      messageRef.set(failedMessageData, SetOptions(merge: true));
+      return failedMessage;
+    }
+  }
+
+  Future<void> updateChatMetaAndUserChats({
+    required String chatId,
+    required ChatMessageFirestoreApiModel message,
+  }) async {
+    final chatRef = _chats.doc(chatId);
+    final chatSnapshot = await chatRef.get();
+
+    if (!chatSnapshot.exists || chatSnapshot.data() == null) {
+      throw Exception('Chat metadata not found');
+    }
+
+    final chat = _parseChatDoc(chatSnapshot);
     final batch = _firestore.batch();
-    batch.set(messageRef, messageData);
+
+    // 1. Update the main chat document's last message info
     batch.set(chatRef, {
       'lastMessage': {
         'text': message.content,
@@ -629,6 +711,7 @@ class FirestoreService {
       },
     }, SetOptions(merge: true));
 
+    // 2. Update individual user inbox feeds (userChats)
     for (final memberId in chat.members) {
       final userChatRef = _userChats(memberId).doc(chatId);
       final userChatUpdates = <String, dynamic>{
@@ -646,83 +729,42 @@ class FirestoreService {
     }
 
     await batch.commit();
-
-    return message.copyWith(
-      messageId: messageId,
-      id: messageId,
-      sentAt: sentAt,
-    );
   }
 
-  /// Subscribe to newly created messages in a chat.
-  Stream<ChatMessageFirestoreApiModel> subscribeToChatMessages(
-    String chatId,
-  ) async* {
-    var isFirstSnapshot = true;
+  Stream<List<MessageChangeApiModel>> subscribeToChatMessages(String chatId) {
+    final listenTime = DateTime.now();
+    return _chatMessages(chatId)
+        .where('sentAt', isGreaterThan: listenTime)
+        .orderBy('sentAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docChanges.map((change) {
+            final message = _parseMessageDoc(change.doc);
 
-    await for (final snapshot in _chatMessages(
-      chatId,
-    ).orderBy('sentAt', descending: true).snapshots()) {
-      if (isFirstSnapshot) {
-        isFirstSnapshot = false;
-        continue;
-      }
+            MessageChangeApiType changeType;
+            switch (change.type) {
+              case DocumentChangeType.added:
+                changeType = MessageChangeApiType.added;
+                break;
+              case DocumentChangeType.modified:
+                changeType = MessageChangeApiType.modified;
+                break;
+              case DocumentChangeType.removed:
+                changeType = MessageChangeApiType.removed;
+                break;
+            }
 
-      for (final change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.added) {
-          yield _parseMessageDoc(change.doc);
-        }
-      }
-    }
+            return MessageChangeApiModel(type: changeType, message: message);
+          }).toList();
+        });
   }
 
-  /// Subscribe to newly created messages across all chats for a user.
-  Stream<({String chatId, ChatMessageFirestoreApiModel message})>
-  subscribeToUserChatMessages(String userId) {
-    final controller =
-        StreamController<
-          ({String chatId, ChatMessageFirestoreApiModel message})
-        >();
-    final messageSubscriptions =
-        <String, StreamSubscription<ChatMessageFirestoreApiModel>>{};
-    StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-    userChatsSubscription;
-    var isFirstUserChatsSnapshot = true;
-
-    void listenToChat(String chatId) {
-      if (messageSubscriptions.containsKey(chatId)) {
-        return;
-      }
-
-      messageSubscriptions[chatId] = subscribeToChatMessages(chatId).listen(
-        (message) => controller.add((chatId: chatId, message: message)),
-        onError: controller.addError,
-      );
-    }
-
-    userChatsSubscription = _userChats(userId).snapshots().listen((snapshot) {
-      if (isFirstUserChatsSnapshot) {
-        isFirstUserChatsSnapshot = false;
-        for (final doc in snapshot.docs) {
-          listenToChat(doc.id);
-        }
-        return;
-      }
-
-      for (final change in snapshot.docChanges) {
-        if (change.type == DocumentChangeType.added) {
-          listenToChat(change.doc.id);
-        }
-      }
-    }, onError: controller.addError);
-
-    controller.onCancel = () async {
-      await userChatsSubscription?.cancel();
-      for (final subscription in messageSubscriptions.values) {
-        await subscription.cancel();
-      }
-    };
-
-    return controller.stream;
+  Stream<ChatConnectionApiModel> monitorChatConnection(String chatId) {
+    return _chatMessages(chatId).snapshots(includeMetadataChanges: true).map((
+      snapshot,
+    ) {
+      final isConnected = !snapshot.metadata.isFromCache;
+      return ChatConnectionApiModel(isConnected: isConnected);
+    }).distinct();
   }
 }

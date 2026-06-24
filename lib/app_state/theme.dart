@@ -33,7 +33,7 @@ TextTheme createTextTheme(
 class ThemeState extends ChangeNotifier {
   late final Map<String, MaterialTheme> materialThemes = {};
   late final MaterialTheme _defaultMaterialTheme;
-  Brightness _brightness;
+  final Brightness _brightness;
   Brightness get brightness => _brightness;
 
   ThemeState({required Brightness brightness}) : _brightness = brightness {

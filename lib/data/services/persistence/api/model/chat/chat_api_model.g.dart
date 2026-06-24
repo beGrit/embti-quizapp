@@ -18,6 +18,8 @@ _UserChatFirestoreApiModel _$UserChatFirestoreApiModelFromJson(
   ),
   lastMessageText: json['lastMessageText'] as String?,
   lastMessageSenderId: json['lastMessageSenderId'] as String?,
+  name: json['name'] as String?,
+  image: json['image'] as String?,
 );
 
 Map<String, dynamic> _$UserChatFirestoreApiModelToJson(
@@ -33,6 +35,8 @@ Map<String, dynamic> _$UserChatFirestoreApiModelToJson(
   ),
   'lastMessageText': instance.lastMessageText,
   'lastMessageSenderId': instance.lastMessageSenderId,
+  'name': instance.name,
+  'image': instance.image,
 };
 
 Json? _$JsonConverterToJson<Json, Value>(
@@ -62,6 +66,7 @@ _ChatFirestoreApiModel _$ChatFirestoreApiModelFromJson(
   chatId: json['chatId'] as String,
   isGroup: json['isGroup'] as bool? ?? false,
   chatName: json['chatName'] as String?,
+  chatImage: json['chatImage'] as String?,
   createdAt: const FirestoreTimestampConverter().fromJson(json['createdAt']),
   members:
       (json['members'] as List<dynamic>?)?.map((e) => e as String).toList() ??
@@ -79,6 +84,7 @@ Map<String, dynamic> _$ChatFirestoreApiModelToJson(
   'chatId': instance.chatId,
   'isGroup': instance.isGroup,
   'chatName': instance.chatName,
+  'chatImage': instance.chatImage,
   'createdAt': const FirestoreTimestampConverter().toJson(instance.createdAt),
   'members': instance.members,
   'lastMessage': instance.lastMessage,
@@ -92,6 +98,7 @@ _ChatMessageFirestoreApiModel _$ChatMessageFirestoreApiModelFromJson(
   type: json['type'] as String? ?? 'text',
   content: json['content'] as String,
   sentAt: const FirestoreTimestampConverter().fromJson(json['sentAt']),
+  status: json['status'] as String?,
 );
 
 Map<String, dynamic> _$ChatMessageFirestoreApiModelToJson(
@@ -102,6 +109,7 @@ Map<String, dynamic> _$ChatMessageFirestoreApiModelToJson(
   'type': instance.type,
   'content': instance.content,
   'sentAt': const FirestoreTimestampConverter().toJson(instance.sentAt),
+  'status': instance.status,
 };
 
 _RobotFirestoreApiModel _$RobotFirestoreApiModelFromJson(

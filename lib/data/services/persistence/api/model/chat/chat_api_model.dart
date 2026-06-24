@@ -14,6 +14,8 @@ abstract class UserChatFirestoreApiModel with _$UserChatFirestoreApiModel {
     @FirestoreTimestampConverter() DateTime? lastMessageSentAt,
     String? lastMessageText,
     String? lastMessageSenderId,
+    String? name,
+    String? image,
   }) = _UserChatFirestoreApiModel;
 
   factory UserChatFirestoreApiModel.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +40,7 @@ abstract class ChatFirestoreApiModel with _$ChatFirestoreApiModel {
     required String chatId,
     @Default(false) bool isGroup,
     String? chatName,
+    String? chatImage,
     @FirestoreTimestampConverter() required DateTime createdAt,
     @Default([]) List<String> members,
     ChatLastMessageApiModel? lastMessage,
@@ -57,10 +60,27 @@ abstract class ChatMessageFirestoreApiModel
     @Default('text') String type,
     required String content,
     @FirestoreTimestampConverter() required DateTime sentAt,
+    String? status,
   }) = _ChatMessageFirestoreApiModel;
 
   factory ChatMessageFirestoreApiModel.fromJson(Map<String, dynamic> json) =>
       _$ChatMessageFirestoreApiModelFromJson(json);
+}
+
+enum MessageChangeApiType { added, modified, removed }
+
+@freezed
+sealed class MessageChangeApiModel with _$MessageChangeApiModel {
+  const factory MessageChangeApiModel({
+    required MessageChangeApiType type,
+    required ChatMessageFirestoreApiModel message,
+  }) = _MessageChangeApiModel;
+}
+
+@freezed
+sealed class ChatConnectionApiModel with _$ChatConnectionApiModel {
+  const factory ChatConnectionApiModel({required bool isConnected}) =
+      _ChatConnectionApiModel;
 }
 
 @freezed

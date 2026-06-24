@@ -16,7 +16,7 @@ class ChatBotViewModel extends ChangeNotifier {
   late final Command0<void> chatWithAiCommand;
 
   ChatBotViewModel({required this.chatRepository, required this.authState}) {
-    chatWithAiCommand = Command0<Room>(_chatWithAi);
+    chatWithAiCommand = Command0<Chat>(_chatWithAi);
   }
 
   void switchToState(BotStatus newState) {
@@ -25,7 +25,7 @@ class ChatBotViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Result<Room>> _chatWithAi() async {
+  Future<Result<Chat>> _chatWithAi() async {
     String? userId = authState.userId;
     if (userId != null) {
       Result<List<Robot>> getListResult = await chatRepository.getRobots(
@@ -40,7 +40,7 @@ class ChatBotViewModel extends ChangeNotifier {
           );
           if (addRobotResult is Ok) {
             Robot robot = (addRobotResult as Ok).value;
-            return await chatRepository.addRobotChatRoom(
+            return await chatRepository.addRobotChat(
               userId: userId,
               robotId: robot.id ?? '',
             );

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:emombti/app_state/chat.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/routing/routes.dart';
@@ -29,7 +30,17 @@ class RoomsScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.add_comment_outlined),
                 tooltip: 'Add Chat Room',
-                onPressed: () => AddChatRoomDialog.show(context, context.read<RoomsViewModel>()),
+                onPressed: () async {
+                  String? roomIdVal = await AddChatRoomDialog.show(
+                    context,
+                    context.read<RoomsViewModel>(),
+                  );
+                  if (context.mounted) {
+                    if (roomIdVal != null) {
+                      await context.push('${Routes.chatRooms}/$roomIdVal');
+                    }
+                  }
+                },
               ),
             ],
           ),
@@ -40,14 +51,16 @@ class RoomsScreen extends StatelessWidget {
                 child: ListenableBuilder(
                   listenable: viewModel.loadRoomsCommand,
                   builder: (context, _) {
-                    final rooms = chatState.rooms;
+                    final rooms = chatState.chats;
                     return CustomScrollView(
                       physics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics(),
                       ),
                       slivers: [
                         if (viewModel.loadRoomsCommand.running)
-                          const SliverFillRemaining(child: SizedBox.shrink())
+                          const SliverFillRemaining(
+                            child: Center(child: Text('Loading')),
+                          )
                         else if (viewModel.loadRoomsCommand.error)
                           const SliverFillRemaining(
                             child: Center(child: Text('Error')),
@@ -82,7 +95,7 @@ class RoomsScreen extends StatelessWidget {
 class _RoomListTile extends StatelessWidget {
   const _RoomListTile({required this.room});
 
-  final Room room;
+  final Chat room;
 
   @override
   Widget build(BuildContext context) {
@@ -97,10 +110,7 @@ class _RoomListTile extends StatelessWidget {
         color: theme.colorScheme.error,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
-        child: Icon(
-          Icons.delete_outline,
-          color: theme.colorScheme.onError,
-        ),
+        child: Icon(Icons.delete_outline, color: theme.colorScheme.onError),
       ),
       onDismissed: (_) {
         context.read<RoomsViewModel>().deleteRoomCommand.execute(room.id);
@@ -112,20 +122,35 @@ class _RoomListTile extends StatelessWidget {
               horizontal: 16,
               vertical: 4,
             ),
-            leading: CircleAvatar(
-              radius: 28,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(
-                Icons.group,
-                color: theme.colorScheme.onPrimaryContainer,
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: CachedNetworkImage(
+                imageUrl: room.image ?? '',
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+                // What to show while loading
+                placeholder: (context, url) => Container(
+                  color: theme.colorScheme.primaryContainer,
+                  child: const Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: theme.colorScheme.primaryContainer,
+                  child: Icon(
+                    Icons.group,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
               ),
             ),
             title: Text(
               room.name ?? 'Chat Room',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: const Text(
-              'Start a conversation...',
+            subtitle: Text(
+              room.lastMessage ?? 'Start a conversation...',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -147,9 +172,7 @@ class _RoomListTile extends StatelessWidget {
               ],
             ),
             onTap: () async {
-              final chatState = context.read<ChatState>();
-              await context.push('${Routes.chatRooms}/${room.id}', extra: room);
-              chatState.setActiveRoom(null);
+              await context.push('${Routes.chatRooms}/${room.id}');
             },
           ),
           const Divider(height: 1, indent: 80),

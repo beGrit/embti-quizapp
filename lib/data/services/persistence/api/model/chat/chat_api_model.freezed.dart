@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserChatFirestoreApiModel {
 
- String get chatId; int get unreadCount; bool get isPinned;@FirestoreTimestampConverter() DateTime get createdAt;@FirestoreTimestampConverter() DateTime? get lastMessageSentAt; String? get lastMessageText; String? get lastMessageSenderId;
+ String get chatId; int get unreadCount; bool get isPinned;@FirestoreTimestampConverter() DateTime get createdAt;@FirestoreTimestampConverter() DateTime? get lastMessageSentAt; String? get lastMessageText; String? get lastMessageSenderId; String? get name; String? get image;
 /// Create a copy of UserChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserChatFirestoreApiModelCopyWith<UserChatFirestoreApiModel> get copyWith => _$
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.unreadCount, unreadCount) || other.unreadCount == unreadCount)&&(identical(other.isPinned, isPinned) || other.isPinned == isPinned)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageSentAt, lastMessageSentAt) || other.lastMessageSentAt == lastMessageSentAt)&&(identical(other.lastMessageText, lastMessageText) || other.lastMessageText == lastMessageText)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.unreadCount, unreadCount) || other.unreadCount == unreadCount)&&(identical(other.isPinned, isPinned) || other.isPinned == isPinned)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageSentAt, lastMessageSentAt) || other.lastMessageSentAt == lastMessageSentAt)&&(identical(other.lastMessageText, lastMessageText) || other.lastMessageText == lastMessageText)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,unreadCount,isPinned,createdAt,lastMessageSentAt,lastMessageText,lastMessageSenderId);
+int get hashCode => Object.hash(runtimeType,chatId,unreadCount,isPinned,createdAt,lastMessageSentAt,lastMessageText,lastMessageSenderId,name,image);
 
 @override
 String toString() {
-  return 'UserChatFirestoreApiModel(chatId: $chatId, unreadCount: $unreadCount, isPinned: $isPinned, createdAt: $createdAt, lastMessageSentAt: $lastMessageSentAt, lastMessageText: $lastMessageText, lastMessageSenderId: $lastMessageSenderId)';
+  return 'UserChatFirestoreApiModel(chatId: $chatId, unreadCount: $unreadCount, isPinned: $isPinned, createdAt: $createdAt, lastMessageSentAt: $lastMessageSentAt, lastMessageText: $lastMessageText, lastMessageSenderId: $lastMessageSenderId, name: $name, image: $image)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserChatFirestoreApiModelCopyWith<$Res>  {
   factory $UserChatFirestoreApiModelCopyWith(UserChatFirestoreApiModel value, $Res Function(UserChatFirestoreApiModel) _then) = _$UserChatFirestoreApiModelCopyWithImpl;
 @useResult
 $Res call({
- String chatId, int unreadCount, bool isPinned,@FirestoreTimestampConverter() DateTime createdAt,@FirestoreTimestampConverter() DateTime? lastMessageSentAt, String? lastMessageText, String? lastMessageSenderId
+ String chatId, int unreadCount, bool isPinned,@FirestoreTimestampConverter() DateTime createdAt,@FirestoreTimestampConverter() DateTime? lastMessageSentAt, String? lastMessageText, String? lastMessageSenderId, String? name, String? image
 });
 
 
@@ -65,7 +65,7 @@ class _$UserChatFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? unreadCount = null,Object? isPinned = null,Object? createdAt = null,Object? lastMessageSentAt = freezed,Object? lastMessageText = freezed,Object? lastMessageSenderId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? unreadCount = null,Object? isPinned = null,Object? createdAt = null,Object? lastMessageSentAt = freezed,Object? lastMessageText = freezed,Object? lastMessageSenderId = freezed,Object? name = freezed,Object? image = freezed,}) {
   return _then(_self.copyWith(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,unreadCount: null == unreadCount ? _self.unreadCount : unreadCount // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,8 @@ as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: ca
 as DateTime,lastMessageSentAt: freezed == lastMessageSentAt ? _self.lastMessageSentAt : lastMessageSentAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,lastMessageText: freezed == lastMessageText ? _self.lastMessageText : lastMessageText // ignore: cast_nullable_to_non_nullable
 as String?,lastMessageSenderId: freezed == lastMessageSenderId ? _self.lastMessageSenderId : lastMessageSenderId // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -159,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId,  String? name,  String? image)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserChatFirestoreApiModel() when $default != null:
-return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId);case _:
+return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId,_that.name,_that.image);case _:
   return orElse();
 
 }
@@ -180,10 +182,10 @@ return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId,  String? name,  String? image)  $default,) {final _that = this;
 switch (_that) {
 case _UserChatFirestoreApiModel():
-return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId);case _:
+return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId,_that.name,_that.image);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +202,10 @@ return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  int unreadCount,  bool isPinned, @FirestoreTimestampConverter()  DateTime createdAt, @FirestoreTimestampConverter()  DateTime? lastMessageSentAt,  String? lastMessageText,  String? lastMessageSenderId,  String? name,  String? image)?  $default,) {final _that = this;
 switch (_that) {
 case _UserChatFirestoreApiModel() when $default != null:
-return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId);case _:
+return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_that.lastMessageSentAt,_that.lastMessageText,_that.lastMessageSenderId,_that.name,_that.image);case _:
   return null;
 
 }
@@ -215,7 +217,7 @@ return $default(_that.chatId,_that.unreadCount,_that.isPinned,_that.createdAt,_t
 @JsonSerializable()
 
 class _UserChatFirestoreApiModel implements UserChatFirestoreApiModel {
-  const _UserChatFirestoreApiModel({required this.chatId, this.unreadCount = 0, this.isPinned = false, @FirestoreTimestampConverter() required this.createdAt, @FirestoreTimestampConverter() this.lastMessageSentAt, this.lastMessageText, this.lastMessageSenderId});
+  const _UserChatFirestoreApiModel({required this.chatId, this.unreadCount = 0, this.isPinned = false, @FirestoreTimestampConverter() required this.createdAt, @FirestoreTimestampConverter() this.lastMessageSentAt, this.lastMessageText, this.lastMessageSenderId, this.name, this.image});
   factory _UserChatFirestoreApiModel.fromJson(Map<String, dynamic> json) => _$UserChatFirestoreApiModelFromJson(json);
 
 @override final  String chatId;
@@ -225,6 +227,8 @@ class _UserChatFirestoreApiModel implements UserChatFirestoreApiModel {
 @override@FirestoreTimestampConverter() final  DateTime? lastMessageSentAt;
 @override final  String? lastMessageText;
 @override final  String? lastMessageSenderId;
+@override final  String? name;
+@override final  String? image;
 
 /// Create a copy of UserChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.unreadCount, unreadCount) || other.unreadCount == unreadCount)&&(identical(other.isPinned, isPinned) || other.isPinned == isPinned)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageSentAt, lastMessageSentAt) || other.lastMessageSentAt == lastMessageSentAt)&&(identical(other.lastMessageText, lastMessageText) || other.lastMessageText == lastMessageText)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.unreadCount, unreadCount) || other.unreadCount == unreadCount)&&(identical(other.isPinned, isPinned) || other.isPinned == isPinned)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageSentAt, lastMessageSentAt) || other.lastMessageSentAt == lastMessageSentAt)&&(identical(other.lastMessageText, lastMessageText) || other.lastMessageText == lastMessageText)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,unreadCount,isPinned,createdAt,lastMessageSentAt,lastMessageText,lastMessageSenderId);
+int get hashCode => Object.hash(runtimeType,chatId,unreadCount,isPinned,createdAt,lastMessageSentAt,lastMessageText,lastMessageSenderId,name,image);
 
 @override
 String toString() {
-  return 'UserChatFirestoreApiModel(chatId: $chatId, unreadCount: $unreadCount, isPinned: $isPinned, createdAt: $createdAt, lastMessageSentAt: $lastMessageSentAt, lastMessageText: $lastMessageText, lastMessageSenderId: $lastMessageSenderId)';
+  return 'UserChatFirestoreApiModel(chatId: $chatId, unreadCount: $unreadCount, isPinned: $isPinned, createdAt: $createdAt, lastMessageSentAt: $lastMessageSentAt, lastMessageText: $lastMessageText, lastMessageSenderId: $lastMessageSenderId, name: $name, image: $image)';
 }
 
 
@@ -259,7 +263,7 @@ abstract mixin class _$UserChatFirestoreApiModelCopyWith<$Res> implements $UserC
   factory _$UserChatFirestoreApiModelCopyWith(_UserChatFirestoreApiModel value, $Res Function(_UserChatFirestoreApiModel) _then) = __$UserChatFirestoreApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- String chatId, int unreadCount, bool isPinned,@FirestoreTimestampConverter() DateTime createdAt,@FirestoreTimestampConverter() DateTime? lastMessageSentAt, String? lastMessageText, String? lastMessageSenderId
+ String chatId, int unreadCount, bool isPinned,@FirestoreTimestampConverter() DateTime createdAt,@FirestoreTimestampConverter() DateTime? lastMessageSentAt, String? lastMessageText, String? lastMessageSenderId, String? name, String? image
 });
 
 
@@ -276,7 +280,7 @@ class __$UserChatFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of UserChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? unreadCount = null,Object? isPinned = null,Object? createdAt = null,Object? lastMessageSentAt = freezed,Object? lastMessageText = freezed,Object? lastMessageSenderId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? unreadCount = null,Object? isPinned = null,Object? createdAt = null,Object? lastMessageSentAt = freezed,Object? lastMessageText = freezed,Object? lastMessageSenderId = freezed,Object? name = freezed,Object? image = freezed,}) {
   return _then(_UserChatFirestoreApiModel(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,unreadCount: null == unreadCount ? _self.unreadCount : unreadCount // ignore: cast_nullable_to_non_nullable
@@ -285,6 +289,8 @@ as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: ca
 as DateTime,lastMessageSentAt: freezed == lastMessageSentAt ? _self.lastMessageSentAt : lastMessageSentAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,lastMessageText: freezed == lastMessageText ? _self.lastMessageText : lastMessageText // ignore: cast_nullable_to_non_nullable
 as String?,lastMessageSenderId: freezed == lastMessageSenderId ? _self.lastMessageSenderId : lastMessageSenderId // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -565,7 +571,7 @@ as DateTime,
 /// @nodoc
 mixin _$ChatFirestoreApiModel {
 
- String get chatId; bool get isGroup; String? get chatName;@FirestoreTimestampConverter() DateTime get createdAt; List<String> get members; ChatLastMessageApiModel? get lastMessage;
+ String get chatId; bool get isGroup; String? get chatName; String? get chatImage;@FirestoreTimestampConverter() DateTime get createdAt; List<String> get members; ChatLastMessageApiModel? get lastMessage;
 /// Create a copy of ChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -578,16 +584,16 @@ $ChatFirestoreApiModelCopyWith<ChatFirestoreApiModel> get copyWith => _$ChatFire
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.isGroup, isGroup) || other.isGroup == isGroup)&&(identical(other.chatName, chatName) || other.chatName == chatName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.members, members)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.isGroup, isGroup) || other.isGroup == isGroup)&&(identical(other.chatName, chatName) || other.chatName == chatName)&&(identical(other.chatImage, chatImage) || other.chatImage == chatImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.members, members)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,isGroup,chatName,createdAt,const DeepCollectionEquality().hash(members),lastMessage);
+int get hashCode => Object.hash(runtimeType,chatId,isGroup,chatName,chatImage,createdAt,const DeepCollectionEquality().hash(members),lastMessage);
 
 @override
 String toString() {
-  return 'ChatFirestoreApiModel(chatId: $chatId, isGroup: $isGroup, chatName: $chatName, createdAt: $createdAt, members: $members, lastMessage: $lastMessage)';
+  return 'ChatFirestoreApiModel(chatId: $chatId, isGroup: $isGroup, chatName: $chatName, chatImage: $chatImage, createdAt: $createdAt, members: $members, lastMessage: $lastMessage)';
 }
 
 
@@ -598,7 +604,7 @@ abstract mixin class $ChatFirestoreApiModelCopyWith<$Res>  {
   factory $ChatFirestoreApiModelCopyWith(ChatFirestoreApiModel value, $Res Function(ChatFirestoreApiModel) _then) = _$ChatFirestoreApiModelCopyWithImpl;
 @useResult
 $Res call({
- String chatId, bool isGroup, String? chatName,@FirestoreTimestampConverter() DateTime createdAt, List<String> members, ChatLastMessageApiModel? lastMessage
+ String chatId, bool isGroup, String? chatName, String? chatImage,@FirestoreTimestampConverter() DateTime createdAt, List<String> members, ChatLastMessageApiModel? lastMessage
 });
 
 
@@ -615,11 +621,12 @@ class _$ChatFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? isGroup = null,Object? chatName = freezed,Object? createdAt = null,Object? members = null,Object? lastMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? chatId = null,Object? isGroup = null,Object? chatName = freezed,Object? chatImage = freezed,Object? createdAt = null,Object? members = null,Object? lastMessage = freezed,}) {
   return _then(_self.copyWith(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,isGroup: null == isGroup ? _self.isGroup : isGroup // ignore: cast_nullable_to_non_nullable
 as bool,chatName: freezed == chatName ? _self.chatName : chatName // ignore: cast_nullable_to_non_nullable
+as String?,chatImage: freezed == chatImage ? _self.chatImage : chatImage // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,members: null == members ? _self.members : members // ignore: cast_nullable_to_non_nullable
 as List<String>,lastMessage: freezed == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
@@ -720,10 +727,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  bool isGroup,  String? chatName, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String chatId,  bool isGroup,  String? chatName,  String? chatImage, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatFirestoreApiModel() when $default != null:
-return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.members,_that.lastMessage);case _:
+return $default(_that.chatId,_that.isGroup,_that.chatName,_that.chatImage,_that.createdAt,_that.members,_that.lastMessage);case _:
   return orElse();
 
 }
@@ -741,10 +748,10 @@ return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  bool isGroup,  String? chatName, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String chatId,  bool isGroup,  String? chatName,  String? chatImage, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)  $default,) {final _that = this;
 switch (_that) {
 case _ChatFirestoreApiModel():
-return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.members,_that.lastMessage);case _:
+return $default(_that.chatId,_that.isGroup,_that.chatName,_that.chatImage,_that.createdAt,_that.members,_that.lastMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -761,10 +768,10 @@ return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  bool isGroup,  String? chatName, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String chatId,  bool isGroup,  String? chatName,  String? chatImage, @FirestoreTimestampConverter()  DateTime createdAt,  List<String> members,  ChatLastMessageApiModel? lastMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatFirestoreApiModel() when $default != null:
-return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.members,_that.lastMessage);case _:
+return $default(_that.chatId,_that.isGroup,_that.chatName,_that.chatImage,_that.createdAt,_that.members,_that.lastMessage);case _:
   return null;
 
 }
@@ -776,12 +783,13 @@ return $default(_that.chatId,_that.isGroup,_that.chatName,_that.createdAt,_that.
 @JsonSerializable()
 
 class _ChatFirestoreApiModel implements ChatFirestoreApiModel {
-  const _ChatFirestoreApiModel({required this.chatId, this.isGroup = false, this.chatName, @FirestoreTimestampConverter() required this.createdAt, final  List<String> members = const [], this.lastMessage}): _members = members;
+  const _ChatFirestoreApiModel({required this.chatId, this.isGroup = false, this.chatName, this.chatImage, @FirestoreTimestampConverter() required this.createdAt, final  List<String> members = const [], this.lastMessage}): _members = members;
   factory _ChatFirestoreApiModel.fromJson(Map<String, dynamic> json) => _$ChatFirestoreApiModelFromJson(json);
 
 @override final  String chatId;
 @override@JsonKey() final  bool isGroup;
 @override final  String? chatName;
+@override final  String? chatImage;
 @override@FirestoreTimestampConverter() final  DateTime createdAt;
  final  List<String> _members;
 @override@JsonKey() List<String> get members {
@@ -805,16 +813,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.isGroup, isGroup) || other.isGroup == isGroup)&&(identical(other.chatName, chatName) || other.chatName == chatName)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._members, _members)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatFirestoreApiModel&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.isGroup, isGroup) || other.isGroup == isGroup)&&(identical(other.chatName, chatName) || other.chatName == chatName)&&(identical(other.chatImage, chatImage) || other.chatImage == chatImage)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._members, _members)&&(identical(other.lastMessage, lastMessage) || other.lastMessage == lastMessage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,chatId,isGroup,chatName,createdAt,const DeepCollectionEquality().hash(_members),lastMessage);
+int get hashCode => Object.hash(runtimeType,chatId,isGroup,chatName,chatImage,createdAt,const DeepCollectionEquality().hash(_members),lastMessage);
 
 @override
 String toString() {
-  return 'ChatFirestoreApiModel(chatId: $chatId, isGroup: $isGroup, chatName: $chatName, createdAt: $createdAt, members: $members, lastMessage: $lastMessage)';
+  return 'ChatFirestoreApiModel(chatId: $chatId, isGroup: $isGroup, chatName: $chatName, chatImage: $chatImage, createdAt: $createdAt, members: $members, lastMessage: $lastMessage)';
 }
 
 
@@ -825,7 +833,7 @@ abstract mixin class _$ChatFirestoreApiModelCopyWith<$Res> implements $ChatFires
   factory _$ChatFirestoreApiModelCopyWith(_ChatFirestoreApiModel value, $Res Function(_ChatFirestoreApiModel) _then) = __$ChatFirestoreApiModelCopyWithImpl;
 @override @useResult
 $Res call({
- String chatId, bool isGroup, String? chatName,@FirestoreTimestampConverter() DateTime createdAt, List<String> members, ChatLastMessageApiModel? lastMessage
+ String chatId, bool isGroup, String? chatName, String? chatImage,@FirestoreTimestampConverter() DateTime createdAt, List<String> members, ChatLastMessageApiModel? lastMessage
 });
 
 
@@ -842,11 +850,12 @@ class __$ChatFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? isGroup = null,Object? chatName = freezed,Object? createdAt = null,Object? members = null,Object? lastMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? chatId = null,Object? isGroup = null,Object? chatName = freezed,Object? chatImage = freezed,Object? createdAt = null,Object? members = null,Object? lastMessage = freezed,}) {
   return _then(_ChatFirestoreApiModel(
 chatId: null == chatId ? _self.chatId : chatId // ignore: cast_nullable_to_non_nullable
 as String,isGroup: null == isGroup ? _self.isGroup : isGroup // ignore: cast_nullable_to_non_nullable
 as bool,chatName: freezed == chatName ? _self.chatName : chatName // ignore: cast_nullable_to_non_nullable
+as String?,chatImage: freezed == chatImage ? _self.chatImage : chatImage // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,members: null == members ? _self._members : members // ignore: cast_nullable_to_non_nullable
 as List<String>,lastMessage: freezed == lastMessage ? _self.lastMessage : lastMessage // ignore: cast_nullable_to_non_nullable
@@ -873,7 +882,7 @@ $ChatLastMessageApiModelCopyWith<$Res>? get lastMessage {
 /// @nodoc
 mixin _$ChatMessageFirestoreApiModel {
 
-@JsonKey(includeFromJson: false, includeToJson: false) String? get id; String get messageId; String get senderId; String get type; String get content;@FirestoreTimestampConverter() DateTime get sentAt;
+@JsonKey(includeFromJson: false, includeToJson: false) String? get id; String get messageId; String get senderId; String get type; String get content;@FirestoreTimestampConverter() DateTime get sentAt; String? get status;
 /// Create a copy of ChatMessageFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -886,16 +895,16 @@ $ChatMessageFirestoreApiModelCopyWith<ChatMessageFirestoreApiModel> get copyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageFirestoreApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.type, type) || other.type == type)&&(identical(other.content, content) || other.content == content)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageFirestoreApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.type, type) || other.type == type)&&(identical(other.content, content) || other.content == content)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,messageId,senderId,type,content,sentAt);
+int get hashCode => Object.hash(runtimeType,id,messageId,senderId,type,content,sentAt,status);
 
 @override
 String toString() {
-  return 'ChatMessageFirestoreApiModel(id: $id, messageId: $messageId, senderId: $senderId, type: $type, content: $content, sentAt: $sentAt)';
+  return 'ChatMessageFirestoreApiModel(id: $id, messageId: $messageId, senderId: $senderId, type: $type, content: $content, sentAt: $sentAt, status: $status)';
 }
 
 
@@ -906,7 +915,7 @@ abstract mixin class $ChatMessageFirestoreApiModelCopyWith<$Res>  {
   factory $ChatMessageFirestoreApiModelCopyWith(ChatMessageFirestoreApiModel value, $Res Function(ChatMessageFirestoreApiModel) _then) = _$ChatMessageFirestoreApiModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeFromJson: false, includeToJson: false) String? id, String messageId, String senderId, String type, String content,@FirestoreTimestampConverter() DateTime sentAt
+@JsonKey(includeFromJson: false, includeToJson: false) String? id, String messageId, String senderId, String type, String content,@FirestoreTimestampConverter() DateTime sentAt, String? status
 });
 
 
@@ -923,7 +932,7 @@ class _$ChatMessageFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? messageId = null,Object? senderId = null,Object? type = null,Object? content = null,Object? sentAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? messageId = null,Object? senderId = null,Object? type = null,Object? content = null,Object? sentAt = null,Object? status = freezed,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,messageId: null == messageId ? _self.messageId : messageId // ignore: cast_nullable_to_non_nullable
@@ -931,7 +940,8 @@ as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,sentAt: null == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1016,10 +1026,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt,  String? status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatMessageFirestoreApiModel() when $default != null:
-return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt);case _:
+return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt,_that.status);case _:
   return orElse();
 
 }
@@ -1037,10 +1047,10 @@ return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt,  String? status)  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageFirestoreApiModel():
-return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt);case _:
+return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1057,10 +1067,10 @@ return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeFromJson: false, includeToJson: false)  String? id,  String messageId,  String senderId,  String type,  String content, @FirestoreTimestampConverter()  DateTime sentAt,  String? status)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageFirestoreApiModel() when $default != null:
-return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt);case _:
+return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content,_that.sentAt,_that.status);case _:
   return null;
 
 }
@@ -1072,7 +1082,7 @@ return $default(_that.id,_that.messageId,_that.senderId,_that.type,_that.content
 @JsonSerializable()
 
 class _ChatMessageFirestoreApiModel implements ChatMessageFirestoreApiModel {
-  const _ChatMessageFirestoreApiModel({@JsonKey(includeFromJson: false, includeToJson: false) this.id, required this.messageId, required this.senderId, this.type = 'text', required this.content, @FirestoreTimestampConverter() required this.sentAt});
+  const _ChatMessageFirestoreApiModel({@JsonKey(includeFromJson: false, includeToJson: false) this.id, required this.messageId, required this.senderId, this.type = 'text', required this.content, @FirestoreTimestampConverter() required this.sentAt, this.status});
   factory _ChatMessageFirestoreApiModel.fromJson(Map<String, dynamic> json) => _$ChatMessageFirestoreApiModelFromJson(json);
 
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  String? id;
@@ -1081,6 +1091,7 @@ class _ChatMessageFirestoreApiModel implements ChatMessageFirestoreApiModel {
 @override@JsonKey() final  String type;
 @override final  String content;
 @override@FirestoreTimestampConverter() final  DateTime sentAt;
+@override final  String? status;
 
 /// Create a copy of ChatMessageFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
@@ -1095,16 +1106,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageFirestoreApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.type, type) || other.type == type)&&(identical(other.content, content) || other.content == content)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageFirestoreApiModel&&(identical(other.id, id) || other.id == id)&&(identical(other.messageId, messageId) || other.messageId == messageId)&&(identical(other.senderId, senderId) || other.senderId == senderId)&&(identical(other.type, type) || other.type == type)&&(identical(other.content, content) || other.content == content)&&(identical(other.sentAt, sentAt) || other.sentAt == sentAt)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,messageId,senderId,type,content,sentAt);
+int get hashCode => Object.hash(runtimeType,id,messageId,senderId,type,content,sentAt,status);
 
 @override
 String toString() {
-  return 'ChatMessageFirestoreApiModel(id: $id, messageId: $messageId, senderId: $senderId, type: $type, content: $content, sentAt: $sentAt)';
+  return 'ChatMessageFirestoreApiModel(id: $id, messageId: $messageId, senderId: $senderId, type: $type, content: $content, sentAt: $sentAt, status: $status)';
 }
 
 
@@ -1115,7 +1126,7 @@ abstract mixin class _$ChatMessageFirestoreApiModelCopyWith<$Res> implements $Ch
   factory _$ChatMessageFirestoreApiModelCopyWith(_ChatMessageFirestoreApiModel value, $Res Function(_ChatMessageFirestoreApiModel) _then) = __$ChatMessageFirestoreApiModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeFromJson: false, includeToJson: false) String? id, String messageId, String senderId, String type, String content,@FirestoreTimestampConverter() DateTime sentAt
+@JsonKey(includeFromJson: false, includeToJson: false) String? id, String messageId, String senderId, String type, String content,@FirestoreTimestampConverter() DateTime sentAt, String? status
 });
 
 
@@ -1132,7 +1143,7 @@ class __$ChatMessageFirestoreApiModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageFirestoreApiModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? messageId = null,Object? senderId = null,Object? type = null,Object? content = null,Object? sentAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? messageId = null,Object? senderId = null,Object? type = null,Object? content = null,Object? sentAt = null,Object? status = freezed,}) {
   return _then(_ChatMessageFirestoreApiModel(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,messageId: null == messageId ? _self.messageId : messageId // ignore: cast_nullable_to_non_nullable
@@ -1140,7 +1151,531 @@ as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,content: null == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String,sentAt: null == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$MessageChangeApiModel {
+
+ MessageChangeApiType get type; ChatMessageFirestoreApiModel get message;
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MessageChangeApiModelCopyWith<MessageChangeApiModel> get copyWith => _$MessageChangeApiModelCopyWithImpl<MessageChangeApiModel>(this as MessageChangeApiModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MessageChangeApiModel&&(identical(other.type, type) || other.type == type)&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,type,message);
+
+@override
+String toString() {
+  return 'MessageChangeApiModel(type: $type, message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MessageChangeApiModelCopyWith<$Res>  {
+  factory $MessageChangeApiModelCopyWith(MessageChangeApiModel value, $Res Function(MessageChangeApiModel) _then) = _$MessageChangeApiModelCopyWithImpl;
+@useResult
+$Res call({
+ MessageChangeApiType type, ChatMessageFirestoreApiModel message
+});
+
+
+$ChatMessageFirestoreApiModelCopyWith<$Res> get message;
+
+}
+/// @nodoc
+class _$MessageChangeApiModelCopyWithImpl<$Res>
+    implements $MessageChangeApiModelCopyWith<$Res> {
+  _$MessageChangeApiModelCopyWithImpl(this._self, this._then);
+
+  final MessageChangeApiModel _self;
+  final $Res Function(MessageChangeApiModel) _then;
+
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? type = null,Object? message = null,}) {
+  return _then(_self.copyWith(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as MessageChangeApiType,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as ChatMessageFirestoreApiModel,
+  ));
+}
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChatMessageFirestoreApiModelCopyWith<$Res> get message {
+  
+  return $ChatMessageFirestoreApiModelCopyWith<$Res>(_self.message, (value) {
+    return _then(_self.copyWith(message: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [MessageChangeApiModel].
+extension MessageChangeApiModelPatterns on MessageChangeApiModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MessageChangeApiModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _MessageChangeApiModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MessageChangeApiModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _MessageChangeApiModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MessageChangeApiModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _MessageChangeApiModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( MessageChangeApiType type,  ChatMessageFirestoreApiModel message)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _MessageChangeApiModel() when $default != null:
+return $default(_that.type,_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( MessageChangeApiType type,  ChatMessageFirestoreApiModel message)  $default,) {final _that = this;
+switch (_that) {
+case _MessageChangeApiModel():
+return $default(_that.type,_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( MessageChangeApiType type,  ChatMessageFirestoreApiModel message)?  $default,) {final _that = this;
+switch (_that) {
+case _MessageChangeApiModel() when $default != null:
+return $default(_that.type,_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _MessageChangeApiModel implements MessageChangeApiModel {
+  const _MessageChangeApiModel({required this.type, required this.message});
+  
+
+@override final  MessageChangeApiType type;
+@override final  ChatMessageFirestoreApiModel message;
+
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$MessageChangeApiModelCopyWith<_MessageChangeApiModel> get copyWith => __$MessageChangeApiModelCopyWithImpl<_MessageChangeApiModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MessageChangeApiModel&&(identical(other.type, type) || other.type == type)&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,type,message);
+
+@override
+String toString() {
+  return 'MessageChangeApiModel(type: $type, message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$MessageChangeApiModelCopyWith<$Res> implements $MessageChangeApiModelCopyWith<$Res> {
+  factory _$MessageChangeApiModelCopyWith(_MessageChangeApiModel value, $Res Function(_MessageChangeApiModel) _then) = __$MessageChangeApiModelCopyWithImpl;
+@override @useResult
+$Res call({
+ MessageChangeApiType type, ChatMessageFirestoreApiModel message
+});
+
+
+@override $ChatMessageFirestoreApiModelCopyWith<$Res> get message;
+
+}
+/// @nodoc
+class __$MessageChangeApiModelCopyWithImpl<$Res>
+    implements _$MessageChangeApiModelCopyWith<$Res> {
+  __$MessageChangeApiModelCopyWithImpl(this._self, this._then);
+
+  final _MessageChangeApiModel _self;
+  final $Res Function(_MessageChangeApiModel) _then;
+
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? type = null,Object? message = null,}) {
+  return _then(_MessageChangeApiModel(
+type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as MessageChangeApiType,message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as ChatMessageFirestoreApiModel,
+  ));
+}
+
+/// Create a copy of MessageChangeApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ChatMessageFirestoreApiModelCopyWith<$Res> get message {
+  
+  return $ChatMessageFirestoreApiModelCopyWith<$Res>(_self.message, (value) {
+    return _then(_self.copyWith(message: value));
+  });
+}
+}
+
+/// @nodoc
+mixin _$ChatConnectionApiModel {
+
+ bool get isConnected;
+/// Create a copy of ChatConnectionApiModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ChatConnectionApiModelCopyWith<ChatConnectionApiModel> get copyWith => _$ChatConnectionApiModelCopyWithImpl<ChatConnectionApiModel>(this as ChatConnectionApiModel, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatConnectionApiModel&&(identical(other.isConnected, isConnected) || other.isConnected == isConnected));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isConnected);
+
+@override
+String toString() {
+  return 'ChatConnectionApiModel(isConnected: $isConnected)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ChatConnectionApiModelCopyWith<$Res>  {
+  factory $ChatConnectionApiModelCopyWith(ChatConnectionApiModel value, $Res Function(ChatConnectionApiModel) _then) = _$ChatConnectionApiModelCopyWithImpl;
+@useResult
+$Res call({
+ bool isConnected
+});
+
+
+
+
+}
+/// @nodoc
+class _$ChatConnectionApiModelCopyWithImpl<$Res>
+    implements $ChatConnectionApiModelCopyWith<$Res> {
+  _$ChatConnectionApiModelCopyWithImpl(this._self, this._then);
+
+  final ChatConnectionApiModel _self;
+  final $Res Function(ChatConnectionApiModel) _then;
+
+/// Create a copy of ChatConnectionApiModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? isConnected = null,}) {
+  return _then(_self.copyWith(
+isConnected: null == isConnected ? _self.isConnected : isConnected // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [ChatConnectionApiModel].
+extension ChatConnectionApiModelPatterns on ChatConnectionApiModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ChatConnectionApiModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ChatConnectionApiModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ChatConnectionApiModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isConnected)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel() when $default != null:
+return $default(_that.isConnected);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isConnected)  $default,) {final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel():
+return $default(_that.isConnected);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isConnected)?  $default,) {final _that = this;
+switch (_that) {
+case _ChatConnectionApiModel() when $default != null:
+return $default(_that.isConnected);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _ChatConnectionApiModel implements ChatConnectionApiModel {
+  const _ChatConnectionApiModel({required this.isConnected});
+  
+
+@override final  bool isConnected;
+
+/// Create a copy of ChatConnectionApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ChatConnectionApiModelCopyWith<_ChatConnectionApiModel> get copyWith => __$ChatConnectionApiModelCopyWithImpl<_ChatConnectionApiModel>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatConnectionApiModel&&(identical(other.isConnected, isConnected) || other.isConnected == isConnected));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,isConnected);
+
+@override
+String toString() {
+  return 'ChatConnectionApiModel(isConnected: $isConnected)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ChatConnectionApiModelCopyWith<$Res> implements $ChatConnectionApiModelCopyWith<$Res> {
+  factory _$ChatConnectionApiModelCopyWith(_ChatConnectionApiModel value, $Res Function(_ChatConnectionApiModel) _then) = __$ChatConnectionApiModelCopyWithImpl;
+@override @useResult
+$Res call({
+ bool isConnected
+});
+
+
+
+
+}
+/// @nodoc
+class __$ChatConnectionApiModelCopyWithImpl<$Res>
+    implements _$ChatConnectionApiModelCopyWith<$Res> {
+  __$ChatConnectionApiModelCopyWithImpl(this._self, this._then);
+
+  final _ChatConnectionApiModel _self;
+  final $Res Function(_ChatConnectionApiModel) _then;
+
+/// Create a copy of ChatConnectionApiModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? isConnected = null,}) {
+  return _then(_ChatConnectionApiModel(
+isConnected: null == isConnected ? _self.isConnected : isConnected // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

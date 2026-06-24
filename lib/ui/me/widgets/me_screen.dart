@@ -41,12 +41,8 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MeViewModel>(
-          create: (context) => MeViewModel(
-            context.read(),
-            context.read(),
-            context.read(),
-            context.read(),
-          ),
+          create: (context) =>
+              MeViewModel(context.read(), context.read(), context.read()),
         ),
       ],
       builder: (context, _) {
@@ -276,7 +272,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
   ) {
     return SliverMainAxisGroup(
       slivers: [
-        // 1. 头部过滤按钮：使用 SliverToBoxAdapter 承载普通组件
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 4.0),
@@ -307,7 +302,6 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
           ),
         ),
 
-        // 2. 原有的 Grid 列表
         SliverPadding(
           padding: const EdgeInsets.all(16.0),
           sliver: SliverGrid(
@@ -349,7 +343,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
                   ],
                 ),
               );
-            }, childCount: 8),
+            }, childCount: 0),
           ),
         ),
       ],
@@ -379,7 +373,7 @@ class _MeScreenState extends State<MeScreen> with TickerProviderStateMixin {
             trailing: const Icon(Icons.chevron_right, size: 18),
             onTap: () {},
           );
-        }, childCount: 5),
+        }, childCount: 0),
       ),
     );
   }

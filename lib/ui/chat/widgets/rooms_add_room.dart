@@ -1,5 +1,7 @@
+import 'package:emombti/domain/models/chat/chat.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/ui/chat/view_models/rooms_viewmodel.dart';
+import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 
 class AddChatRoomDialog extends StatefulWidget {
@@ -7,8 +9,8 @@ class AddChatRoomDialog extends StatefulWidget {
 
   final RoomsViewModel viewModel;
 
-  static Future<void> show(BuildContext context, RoomsViewModel viewModel) {
-    return showDialog<void>(
+  static Future<String?> show(BuildContext context, RoomsViewModel viewModel) {
+    return showDialog<String>(
       context: context,
       barrierDismissible: true,
       builder: (context) => AddChatRoomDialog(viewModel: viewModel),
@@ -132,8 +134,11 @@ class _AddChatRoomDialogState extends State<AddChatRoomDialog> {
     }
 
     if (widget.viewModel.createChatRoomCommand.completed) {
-      widget.viewModel.clearSearch();
-      Navigator.of(context).pop();
+      if (widget.viewModel.createChatRoomCommand.result is Ok) {
+        Chat room = (widget.viewModel.createChatRoomCommand.result as Ok).value;
+        widget.viewModel.clearSearch();
+        Navigator.of(context).pop(room.id);
+      }
     }
   }
 }

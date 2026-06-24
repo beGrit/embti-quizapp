@@ -21,7 +21,7 @@ class RoomsViewModel extends ChangeNotifier {
        _userRepository = userRepository,
        _chatState = chatState {
     loadRoomsCommand = Command0<void>(_loadRoomsInternal);
-    createChatRoomCommand = Command1<Room, User>(_createChatRoomInternal);
+    createChatRoomCommand = Command1<Chat, User>(_createChatRoomInternal);
     deleteRoomCommand = Command1<void, String>(_deleteRoomInternal);
   }
 
@@ -31,7 +31,7 @@ class RoomsViewModel extends ChangeNotifier {
   final ChatState _chatState;
 
   late final Command0<void> loadRoomsCommand;
-  late final Command1<Room, User> createChatRoomCommand;
+  late final Command1<Chat, User> createChatRoomCommand;
   late final Command1<void, String> deleteRoomCommand;
 
   List<User> _searchResults = [];
@@ -99,7 +99,7 @@ class RoomsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Result<Room>> _createChatRoomInternal(User selectedUser) async {
+  Future<Result<Chat>> _createChatRoomInternal(User selectedUser) async {
     final currentUser = _authState.user;
     final currentUserId = currentUser?.id;
     final otherUserId = selectedUser.id;
@@ -117,15 +117,15 @@ class RoomsViewModel extends ChangeNotifier {
       otherUserName: selectedUser.name ?? selectedUser.email,
     );
 
-    if (result is Ok<Room>) {
+    if (result is Ok<Chat>) {
       final room = result.value;
-      final existingIndex = _chatState.rooms.indexWhere((r) => r.id == room.id);
+      final existingIndex = _chatState.chats.indexWhere((r) => r.id == room.id);
       if (existingIndex >= 0) {
-        final updatedRooms = List<Room>.from(_chatState.rooms);
+        final updatedRooms = List<Chat>.from(_chatState.chats);
         updatedRooms[existingIndex] = room;
-        _chatState.setRooms(updatedRooms);
+        _chatState.setChats(updatedRooms);
       } else {
-        _chatState.addRoom(room);
+        _chatState.addChat(room);
       }
     }
 
@@ -138,10 +138,10 @@ class RoomsViewModel extends ChangeNotifier {
       return Result.error(Exception('User not authenticated'));
     }
 
-    final result = await _chatRepository.getRooms(user.id ?? '');
+    final result = await _chatRepository.getChats(user.id ?? '');
 
-    if (result is Ok<List<Room>>) {
-      _chatState.setRooms(result.value);
+    if (result is Ok<List<Chat>>) {
+      _chatState.setChats(result.value);
       return Result.ok(null);
     }
     return Result.error((result as Error).error);
@@ -153,8 +153,8 @@ class RoomsViewModel extends ChangeNotifier {
       return Result.error(Exception('User not authenticated'));
     }
 
-    final previousRooms = List<Room>.from(_chatState.rooms);
-    _chatState.removeRoom(roomId);
+    final previousRooms = List<Chat>.from(_chatState.chats);
+    _chatState.removeChat(roomId);
 
     final result = await _chatRepository.deleteRoom(
       userId: user.id ?? '',
@@ -162,7 +162,7 @@ class RoomsViewModel extends ChangeNotifier {
     );
 
     if (result is! Ok<void>) {
-      _chatState.setRooms(previousRooms);
+      _chatState.setChats(previousRooms);
     }
 
     return result;

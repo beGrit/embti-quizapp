@@ -73,7 +73,7 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
   void _handleChatWithAi() async {
     if (widget.viewModel.chatWithAiCommand.completed &&
         widget.viewModel.chatWithAiCommand.result is Ok) {
-      Room room = (widget.viewModel.chatWithAiCommand.result as Ok).value;
+      Chat room = (widget.viewModel.chatWithAiCommand.result as Ok).value;
       await context.push('${Routes.chatRooms}/${room.id}', extra: room);
     }
   }

@@ -8,75 +8,65 @@ part of 'chat.dart';
 
 _Chat _$ChatFromJson(Map<String, dynamic> json) => _Chat(
   id: json['id'] as String,
-  title: json['title'] as String?,
+  name: json['name'] as String?,
+  image: json['image'] as String?,
+  isGroup: json['isGroup'] as bool? ?? false,
   created: DateTime.parse(json['created'] as String),
   updated: DateTime.parse(json['updated'] as String),
+  lastMessage: json['lastMessage'] as String?,
+  lastMessageAt: json['lastMessageAt'] == null
+      ? null
+      : DateTime.parse(json['lastMessageAt'] as String),
+  roomMembers:
+      (json['roomMembers'] as List<dynamic>?)
+          ?.map((e) => ChatMember.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  messages:
+      (json['messages'] as List<dynamic>?)
+          ?.map((e) => Message.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$ChatToJson(_Chat instance) => <String, dynamic>{
   'id': instance.id,
-  'title': instance.title,
-  'created': instance.created.toIso8601String(),
-  'updated': instance.updated.toIso8601String(),
-};
-
-_Room _$RoomFromJson(Map<String, dynamic> json) => _Room(
-  id: json['id'] as String,
-  name: json['name'] as String?,
-  createdBy: json['created_by'] as String?,
-  chatId: json['chat_id'] as String?,
-  created: DateTime.parse(json['created'] as String),
-  updated: DateTime.parse(json['updated'] as String),
-  lastMessage: json['last_message'] as String?,
-  lastMessageAt: json['last_message_at'] == null
-      ? null
-      : DateTime.parse(json['last_message_at'] as String),
-);
-
-Map<String, dynamic> _$RoomToJson(_Room instance) => <String, dynamic>{
-  'id': instance.id,
   'name': instance.name,
-  'created_by': instance.createdBy,
-  'chat_id': instance.chatId,
+  'image': instance.image,
+  'isGroup': instance.isGroup,
   'created': instance.created.toIso8601String(),
   'updated': instance.updated.toIso8601String(),
-  'last_message': instance.lastMessage,
-  'last_message_at': instance.lastMessageAt?.toIso8601String(),
+  'lastMessage': instance.lastMessage,
+  'lastMessageAt': instance.lastMessageAt?.toIso8601String(),
+  'roomMembers': instance.roomMembers,
+  'messages': instance.messages,
 };
 
-_RoomMember _$RoomMemberFromJson(Map<String, dynamic> json) => _RoomMember(
-  id: json['id'] as String,
-  roomId: json['room_id'] as String,
-  userId: json['user_id'] as String,
-  created: DateTime.parse(json['created'] as String),
-  updated: DateTime.parse(json['updated'] as String),
+_ChatMember _$ChatMemberFromJson(Map<String, dynamic> json) => _ChatMember(
+  roomId: json['roomId'] as String,
+  userId: json['userId'] as String,
 );
 
-Map<String, dynamic> _$RoomMemberToJson(_RoomMember instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'room_id': instance.roomId,
-      'user_id': instance.userId,
-      'created': instance.created.toIso8601String(),
-      'updated': instance.updated.toIso8601String(),
-    };
+Map<String, dynamic> _$ChatMemberToJson(_ChatMember instance) =>
+    <String, dynamic>{'roomId': instance.roomId, 'userId': instance.userId};
 
 _Message _$MessageFromJson(Map<String, dynamic> json) => _Message(
   id: json['id'] as String,
   message: json['message'] as String?,
   sendBy: json['sendBy'] as String?,
-  messageType: json['message_type'] as String?,
-  voiceMessageDuration: (json['voice_message_duration'] as num?)?.toDouble(),
+  messageType: json['messageType'] as String?,
+  voiceMessageDuration: (json['voiceMessageDuration'] as num?)?.toDouble(),
   replyBy: json['replyBy'] as String?,
   replyTo: json['replyTo'] as String?,
+  status: json['status'] as String?,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
-  replyMessage: json['reply_message'] as String?,
-  replyMessageType: json['reply_message_type'] as String?,
-  replyId: json['reply_id'] as String?,
-  roomId: json['room_id'] as String?,
-  messageFile: json['message_file'] as String?,
+  replyMessage: json['replyMessage'] as String?,
+  replyMessageType: json['replyMessageType'] as String?,
+  replyId: json['replyId'] as String?,
+  chatId: json['chatId'] as String?,
+  messageFile: json['messageFile'] as String?,
   created: DateTime.parse(json['created'] as String),
   updated: DateTime.parse(json['updated'] as String),
 );
@@ -85,16 +75,17 @@ Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
   'id': instance.id,
   'message': instance.message,
   'sendBy': instance.sendBy,
-  'message_type': instance.messageType,
-  'voice_message_duration': instance.voiceMessageDuration,
+  'messageType': instance.messageType,
+  'voiceMessageDuration': instance.voiceMessageDuration,
   'replyBy': instance.replyBy,
   'replyTo': instance.replyTo,
+  'status': instance.status,
   'createdAt': instance.createdAt?.toIso8601String(),
-  'reply_message': instance.replyMessage,
-  'reply_message_type': instance.replyMessageType,
-  'reply_id': instance.replyId,
-  'room_id': instance.roomId,
-  'message_file': instance.messageFile,
+  'replyMessage': instance.replyMessage,
+  'replyMessageType': instance.replyMessageType,
+  'replyId': instance.replyId,
+  'chatId': instance.chatId,
+  'messageFile': instance.messageFile,
   'created': instance.created.toIso8601String(),
   'updated': instance.updated.toIso8601String(),
 };

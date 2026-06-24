@@ -1,0 +1,1 @@
+enum PaginationDirection { prev, next }

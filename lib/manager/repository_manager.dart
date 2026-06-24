@@ -1,7 +1,7 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/auth/auth_repository_firebase.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
-import 'package:emombti/data/repositories/chat/chat_repository_dev_v2.dart';
+import 'package:emombti/data/repositories/chat/chat_repository_dev.dart';
 import 'package:emombti/data/repositories/content/content_repository.dart';
 import 'package:emombti/data/repositories/content/content_repository_dev.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';

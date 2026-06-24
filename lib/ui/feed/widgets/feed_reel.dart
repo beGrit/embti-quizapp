@@ -1,7 +1,6 @@
 import 'package:emombti/ui/feed/models/feed_reel_model.dart';
 import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
 import 'package:emombti/ui/feed/widgets/feed_reel_video_player.dart';
-import 'package:emombti/ui/social/view_models/social_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -47,14 +46,7 @@ class _FeedReelState extends State<FeedReel> {
             childrenDelegate: SliverChildBuilderDelegate(
               (context, index) {
                 final item = model.items[index];
-                return FeedReelChewie(
-                  feedReel: item,
-                  socialViewModel: SocialViewModel(
-                    repository: context.read(),
-                    authState: context.read(),
-                    relatedId: item.id ?? '',
-                  ),
-                );
+                return FeedReelVideoPlayer(feedReel: item);
               },
               childCount: model.items.length,
               addAutomaticKeepAlives: false,
