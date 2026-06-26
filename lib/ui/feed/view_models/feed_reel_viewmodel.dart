@@ -1,6 +1,3 @@
-import 'package:emombti/domain/models/common/common.dart';
-import 'package:emombti/domain/models/feed/feed.dart';
-import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/ui/feed/models/feed_reel_model.dart';
 import 'package:flutter/foundation.dart';
 
@@ -24,48 +21,7 @@ class FeedReelItem {
 class FeedReelViewModel extends ChangeNotifier {
   FeedReelViewModel() {
     model = FeedReelModel();
-    model.setItems([
-      Reel(
-        id: '1',
-        title: 'Test Reel',
-        subTitle: 'This is a test reel',
-        author: User(id: '1', name: 'Test User'),
-        videoUrl: AppFile(
-          name: 'test.mp4',
-          uri: Uri.parse(
-            'https://cdn.pixabay.com/video/2026/04/08/345377_large.mp4',
-          ),
-        ),
-        created: DateTime.now(),
-        updated: DateTime.now(),
-      ),
-      Reel(
-        id: '2',
-        title: 'Test Reel',
-        subTitle: 'This is a test reel',
-        author: User(id: '1', name: 'Test User'),
-        videoUrl: AppFile(
-          name: 'test.mp4',
-          uri: Uri.parse(
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-          ),
-        ),
-        created: DateTime.now(),
-        updated: DateTime.now(),
-      ),
-      Reel(
-        id: '3',
-        title: 'Test Reel',
-        subTitle: 'This is a test reel',
-        author: User(id: '1', name: 'Test User'),
-        videoUrl: AppFile(
-          name: 'test.mp4',
-          uri: Uri.parse('https://storage.grit-soft.com/71565-538962840.mp4'),
-        ),
-        created: DateTime.now(),
-        updated: DateTime.now(),
-      ),
-    ]);
+    model.setItems([]);
   }
 
   late final FeedReelModel model;

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emombti/data/services/persistence/api/model/chat/chat_api_model.dart';
+import 'package:emombti/data/services/persistence/api/model/feed/feed_api_model.dart';
 import 'package:emombti/data/services/persistence/api/model/quiz/quiz_api_model.dart';
+import 'package:emombti/domain/models/feed/feed.dart';
 
 import 'model/social/social_meta_api_model.dart';
 import 'model/user/user_api_model.dart';
@@ -34,6 +36,107 @@ class FirestoreService {
 
   CollectionReference<Map<String, dynamic>> _chatMessages(String chatId) =>
       _chats.doc(chatId).collection('messages');
+
+  CollectionReference<Map<String, dynamic>> get _feed =>
+      _firestore.collection('feed');
+
+  CollectionReference<Map<String, dynamic>> _feedActivityCollection(
+    String userId,
+    String relationType,
+  ) {
+    if (relationType == RelationType.owner.name) {
+      return _users.doc(userId).collection('owns');
+    } else if (relationType == RelationType.history.name) {
+      return _users.doc(userId).collection('histories');
+    } else if (relationType == RelationType.share.name) {
+      return _users.doc(userId).collection('shares');
+    }
+    throw ArgumentError('Invalid relationType: $relationType');
+  }
+
+  /// Save or update a Post to /feed/{feedId}
+  Future<void> savePost(PostApiModel post) async {
+    await _feed.doc(post.id).set(post.toJson());
+  }
+
+  Future<List<PostApiModel>> getPosts({
+    int? limit,
+    DocumentSnapshot? lastDocument,
+    bool desc = false,
+  }) async {
+    var query = _feed.orderBy('created', descending: desc);
+
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    final querySnapshot = await query.get();
+    return querySnapshot.docs
+        .map((doc) => PostApiModel.fromJson(doc.data()))
+        .toList();
+  }
+
+  /// Load a Post from /feed/{feedId}
+  Future<PostApiModel?> getPost(String feedId) async {
+    final doc = await _feed.doc(feedId).get();
+    if (!doc.exists || doc.data() == null) return null;
+    return PostApiModel.fromJson(doc.data()!);
+  }
+
+  Future<DocumentSnapshot> getPostSnapshot(String feedId) async {
+    final doc = await _feed.doc(feedId).get();
+    return doc;
+  }
+
+  /// Save or update a Reel to /feed/{feedId}
+  Future<void> saveReel(ReelApiModel reel) async {
+    await _feed.doc(reel.id).set(reel.toJson());
+  }
+
+  /// Load a Reel from /feed/{feedId}
+  Future<ReelApiModel?> getReel(String feedId) async {
+    final doc = await _feed.doc(feedId).get();
+    if (!doc.exists || doc.data() == null) return null;
+    return ReelApiModel.fromJson(doc.data()!);
+  }
+
+  /// Save or update a FeedActivity depending on its relationType
+  /// Saved to /users/{userId}/owns, /users/{userId}/histories, or /users/{userId}/shares
+  Future<void> saveFeedActivity({
+    required String userId,
+    required FeedActivityApiModel activity,
+  }) async {
+    final collection = _feedActivityCollection(userId, activity.relationType);
+    await collection.doc(activity.id).set(activity.toJson());
+  }
+
+  /// Load a FeedActivity from a specific user and relation collection
+  Future<FeedActivityApiModel?> getFeedActivity({
+    required String userId,
+    required String activityId,
+    required RelationType relationType,
+  }) async {
+    final collection = _feedActivityCollection(userId, relationType.name);
+    final doc = await collection.doc(activityId).get();
+    if (!doc.exists || doc.data() == null) return null;
+    return FeedActivityApiModel.fromJson(doc.data()!);
+  }
+
+  /// Load all FeedActivities of a specific relation type for a user
+  Future<List<FeedActivityApiModel>> getFeedActivities({
+    required String userId,
+    required RelationType relationType,
+  }) async {
+    final collection = _feedActivityCollection(userId, relationType.name);
+    final query = await collection.get();
+    return query.docs
+        .map((doc) => FeedActivityApiModel.fromJson(doc.data()))
+        .toList();
+  }
 
   /// Save or update user profile data at /users/{uid}
   Future<UserFirestoreApiModel> saveUser(UserFirestoreApiModel user) async {

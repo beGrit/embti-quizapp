@@ -5,7 +5,7 @@ import 'package:emombti/data/repositories/chat/chat_repository_dev.dart';
 import 'package:emombti/data/repositories/content/content_repository.dart';
 import 'package:emombti/data/repositories/content/content_repository_dev.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
-import 'package:emombti/data/repositories/feed/feed_repository_dev.dart';
+import 'package:emombti/data/repositories/feed/feed_repository_firestore.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository.dart';
 import 'package:emombti/data/repositories/quiz/quiz_repository_dev.dart';
 import 'package:emombti/data/repositories/social/social_repository.dart';
@@ -41,8 +41,7 @@ class RepositoryManager extends ChangeNotifier {
     userRepository = UserRepositoryDev(
       apiStorage: storageManager.firestoreService,
     );
-    feedRepository = FeedRepositoryDev(
-      pbService: storageManager.pocketBaseService,
+    feedRepository = FeedRepositoryFirestore(
       firestoreService: storageManager.firestoreService,
       fileService: storageManager.fileServiceCloudFlare,
     );

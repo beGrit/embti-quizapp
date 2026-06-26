@@ -21,7 +21,6 @@ class FeedPostViewModel extends ChangeNotifier {
   List<Post> _posts = [];
   List<Post> get posts => _posts;
 
-  int _currentPage = 1;
   static const int _perPage = 5;
   bool _hasMore = true;
   bool get hasMore => _hasMore;
@@ -30,13 +29,9 @@ class FeedPostViewModel extends ChangeNotifier {
   late final Command0<List<Post>> loadMorePostsCommand;
 
   Future<Result<List<Post>>> _loadPostsInternal() async {
-    _currentPage = 1;
     _hasMore = true;
     // Fetches the first page of posts (paginated)
-    final result = await _feedRepository.getPostsPaginated(
-      page: _currentPage,
-      perPage: _perPage,
-    );
+    final result = await _feedRepository.getPostsLimit(_perPage, null, null);
 
     switch (result) {
       case Ok<List<Post>>():
@@ -54,10 +49,10 @@ class FeedPostViewModel extends ChangeNotifier {
   Future<Result<List<Post>>> _loadMorePostsInternal() async {
     if (!_hasMore) return Result.ok([]);
 
-    final nextPage = _currentPage + 1;
-    final result = await _feedRepository.getPostsPaginated(
-      page: nextPage,
-      perPage: _perPage,
+    final result = await _feedRepository.getPostsLimit(
+      _perPage,
+      posts[posts.length - 1].id,
+      null,
     );
 
     switch (result) {
@@ -67,7 +62,6 @@ class FeedPostViewModel extends ChangeNotifier {
           _hasMore = false;
         } else {
           _posts.addAll(newPosts);
-          _currentPage = nextPage;
           if (newPosts.length < _perPage) {
             _hasMore = false;
           }

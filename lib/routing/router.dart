@@ -9,6 +9,7 @@ import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/explore/widgets/explore_screen.dart';
+import 'package:emombti/ui/feed/widgets/feed_post_detail.dart';
 import 'package:emombti/ui/feed/widgets/feed_post_editor.dart';
 import 'package:emombti/ui/feed/widgets/feed_viewer_photo.dart';
 import 'package:emombti/ui/knowledge/view_models/knowledge_contents_artile_detail_viewmodel.dart';
@@ -148,6 +149,12 @@ GoRouter router(AuthState authState) => GoRouter(
           fullscreenDialog: true,
           child: const FeedPostEditor(),
         );
+      },
+    ),
+    GoRoute(
+      path: '${Routes.feedPost}/:id',
+      builder: (context, state) {
+        return FeedPostDetail();
       },
     ),
     GoRoute(

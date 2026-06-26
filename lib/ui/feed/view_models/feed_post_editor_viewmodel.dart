@@ -35,16 +35,36 @@ class FeedPostEditorViewModel extends ChangeNotifier {
       return Result.error(Exception('User not authenticated'));
     }
 
-    final newPost = Post(
+    var now = DateTime.now();
+    var newPost = Post(
       id: '',
+      feedType: FeedType.post,
       author: user,
-      created: DateTime.now(),
+      created: now,
+      updated: now,
       title: params.title,
       body: jsonEncode(params.body),
       photos: params.photos
           .map((f) => AppFile(uri: Uri.file(f.path), name: f.name))
           .toList(),
     );
+    try {
+      if (params.photos.isNotEmpty) {
+        List<AppFile> fileTempList = [];
+        for (XFile file in params.photos) {
+          Result<AppFile> result = await _feedRepository.uploadImageForPost(
+            file.name,
+            await file.readAsBytes(),
+          );
+          if (result is Ok) {
+            fileTempList.add((result as Ok).value);
+          }
+        }
+        newPost = newPost.copyWith(photos: fileTempList);
+      }
+    } catch (e) {
+      return Result.error(Exception('Failed to upload file.'));
+    }
 
     final result = await _feedRepository.createPost(newPost);
 

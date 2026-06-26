@@ -396,7 +396,9 @@ class _PostListTile extends StatelessWidget {
                 spacing: 2,
                 children: [
                   FilledButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push('${Routes.feedPost}/${post.id}');
+                    },
                     child: const Text('View post'),
                   ),
                   TextButton(

@@ -1,3 +1,4 @@
+import 'package:cloudflare_r2/cloudflare_r2.dart';
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/data/services/persistence/api/file_service_cloudflare.dart';
 import 'package:emombti/data/services/persistence/api/firestore_service.dart';
@@ -10,6 +11,7 @@ import 'package:emombti/data/services/persistence/local/local_storage_file.dart'
 import 'package:emombti/data/services/persistence/local/local_storage_sqlite.dart';
 import 'package:emombti/domain/constants/status.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class StorageManager extends ChangeNotifier {
   final AuthState authState;
@@ -50,6 +52,11 @@ class StorageManager extends ChangeNotifier {
       localStorage = LocalStorageFacade(
         sqlite: LocalStorageSqlite(),
         file: LocalStorageFile(),
+      );
+      CloudFlareR2.init(
+        accountId: dotenv.get('R2_ACCOUNT_ID'),
+        accessKeyId: dotenv.get('R2_ACCESS_KEY_ID'),
+        secretAccessKey: dotenv.get('R2_SECRET_ACCESS_KEY'),
       );
       status = InitializationStatus.success;
     } catch (e) {
