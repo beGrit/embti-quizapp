@@ -20,6 +20,7 @@ class _QRCodeScannerState extends State<QRCodeScanner> {
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
       torchEnabled: false,
+      autoStart: false,
     );
     controller.start();
   }
