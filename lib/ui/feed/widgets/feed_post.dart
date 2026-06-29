@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../view_models/feed_post_viewmodel.dart';
-import 'feed_post_viewer_body_preview.dart';
+import 'feed_post_quill_viewer_body_preview.dart';
 
 class FeedPostScreen extends StatelessWidget {
   const FeedPostScreen({super.key});
@@ -188,7 +188,7 @@ class _PostListTile extends StatelessWidget {
                           children: [
                             Flexible(
                               child: Text(
-                                post.author.name!,
+                                post.author.name ?? 'Unknown User',
                                 style: theme.textTheme.labelMedium,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -265,8 +265,7 @@ class _PostListTile extends StatelessWidget {
               if (post.body != null) ...[
                 const SizedBox(height: 4),
                 FeedPostViewerBodyPreview(
-                  initialJson: post.body,
-                  viewModel: viewModel,
+                  text: viewModel.paraseBody(post.body),
                   maxLines: 2,
                 ),
               ],

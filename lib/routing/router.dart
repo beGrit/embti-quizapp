@@ -1,6 +1,8 @@
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/chat.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
+import 'package:emombti/data/repositories/feed/feed_repository.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/routing/navigation_config.dart';
 import 'package:emombti/ui/chat/view_models/chat_cloud_viewmodel.dart';
 import 'package:emombti/ui/chat/widgets/chat_cloud.dart';
@@ -9,8 +11,12 @@ import 'package:emombti/ui/core/ui/widgets/layout.dart';
 import 'package:emombti/ui/core/ui/widgets/under_development.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
 import 'package:emombti/ui/explore/widgets/explore_screen.dart';
+import 'package:emombti/ui/feed/view_models/feed_post_detail_viewmodel.dart';
+import 'package:emombti/ui/feed/view_models/feed_post_editor_viewmodel.dart';
+import 'package:emombti/ui/feed/view_models/feed_reel_editor_viewmodel.dart';
 import 'package:emombti/ui/feed/widgets/feed_post_detail.dart';
-import 'package:emombti/ui/feed/widgets/feed_post_editor.dart';
+import 'package:emombti/ui/feed/widgets/feed_post_editor_quill.dart';
+import 'package:emombti/ui/feed/widgets/feed_reel_editor.dart';
 import 'package:emombti/ui/feed/widgets/feed_viewer_photo.dart';
 import 'package:emombti/ui/knowledge/view_models/knowledge_contents_artile_detail_viewmodel.dart';
 import 'package:emombti/ui/knowledge/widgets/knowledge_contents_article.dart';
@@ -147,14 +153,47 @@ GoRouter router(AuthState authState) => GoRouter(
         return MaterialPage(
           key: state.pageKey,
           fullscreenDialog: true,
-          child: const FeedPostEditor(),
+          child: FeedPostEditorQuill(
+            viewModel: FeedPostEditorViewModel(
+              authState: context.read<AuthState>(),
+              feedRepository: context.read<FeedRepository>(),
+            ),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: Routes.feedReelEditor,
+      pageBuilder: (context, state) {
+        return MaterialPage(
+          key: state.pageKey,
+          fullscreenDialog: true,
+          child: FeedReelEditor(
+            viewModel: FeedReelEditorViewModel(
+              authState: context.read(),
+              feedRepository: context.read(),
+            ),
+          ),
         );
       },
     ),
     GoRoute(
       path: '${Routes.feedPost}/:id',
       builder: (context, state) {
-        return FeedPostDetail();
+        final postId = state.pathParameters['id'] ?? '';
+
+        return ChangeNotifierProvider(
+          create: (context) => FeedPostDetailViewmodel(
+            feedPostId: postId,
+            feedRepository: context.read(),
+            userRepository: context.read(),
+          )..loadPostCommand.execute(),
+
+          child: Consumer<FeedPostDetailViewmodel>(
+            builder: (context, viewModel, child) =>
+                FeedPostDetail(viewModel: viewModel),
+          ),
+        );
       },
     ),
     GoRoute(
@@ -170,6 +209,7 @@ GoRouter router(AuthState authState) => GoRouter(
               authState: context.read<AuthState>(),
               chatState: context.read<ChatState>(),
               chatRepository: context.read<ChatRepository>(),
+              userRepository: context.read<UserRepository>(),
             ),
           );
         }

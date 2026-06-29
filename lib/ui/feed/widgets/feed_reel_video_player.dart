@@ -166,108 +166,105 @@ class _FeedReelVideoPlayerState extends State<FeedReelVideoPlayer> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return ColoredBox(
-      color: Colors.black,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Positioned.fill(
-            child: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) => Column(
-                  children: [
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.fastOutSlowIn,
-                      height: cleanMode
-                          ? constraints.maxHeight * 0.3
-                          : constraints.maxHeight,
-                      width: constraints.maxWidth,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          if (playMode) {
-                            playOrPause();
-                          } else {
-                            setState(() {
-                              cleanMode = false;
-                            });
-                          }
-                        },
-                        child: _buildVideoLayer(context),
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned.fill(
+          child: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) => Column(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.fastOutSlowIn,
+                    height: cleanMode
+                        ? constraints.maxHeight * 0.3
+                        : constraints.maxHeight,
+                    width: constraints.maxWidth,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (playMode) {
+                          playOrPause();
+                        } else {
+                          setState(() {
+                            cleanMode = false;
+                          });
+                        }
+                      },
+                      child: _buildVideoLayer(context),
+                    ),
+                  ),
+                  if (cleanMode)
+                    Expanded(
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.fastOutSlowIn,
+                        child: _FeedReelComments(onClose: quitCleanMode),
                       ),
                     ),
-                    if (cleanMode)
-                      Expanded(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.fastOutSlowIn,
-                          child: _FeedReelComments(onClose: quitCleanMode),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (!cleanMode)
+          // Title & Subtitle
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.75),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (widget.feedReel.title != null)
+                        Text(
+                          widget.feedReel.title!,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                  ],
+                      if (widget.feedReel.subTitle != null) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          widget.feedReel.subTitle!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          if (!cleanMode)
-            // Title & Subtitle
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.75),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(16, 48, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.feedReel.title != null)
-                          Text(
-                            widget.feedReel.title!,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        if (widget.feedReel.subTitle != null) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            widget.feedReel.subTitle!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          // if (!cleanMode)
-          //   Positioned.fill(
-          //     child: Align(
-          //       alignment: Alignment.bottomRight,
-          //       child: _FeedReelVideoPlayerActions(
-          //         onCommentsToggle: enterCleanMode,
-          //       ),
-          //     ),
-          //   ),
-        ],
-      ),
+        // if (!cleanMode)
+        //   Positioned.fill(
+        //     child: Align(
+        //       alignment: Alignment.bottomRight,
+        //       child: _FeedReelVideoPlayerActions(
+        //         onCommentsToggle: enterCleanMode,
+        //       ),
+        //     ),
+        //   ),
+      ],
     );
   }
 

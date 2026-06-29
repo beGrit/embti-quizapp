@@ -53,12 +53,6 @@ class ExploreViewModel extends ChangeNotifier {
           type: ExploreTabType.videos,
           themeMode: ThemeMode.dark,
         ),
-        ExploreTab(
-          id: ExploreTabIds.friends,
-          label: 'Friends',
-          type: ExploreTabType.friends,
-          themeMode: ThemeMode.light,
-        ),
       ];
 
   final List<ExploreTab> tabs;

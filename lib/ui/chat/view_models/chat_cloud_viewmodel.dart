@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/chat.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/domain/constants/db.dart';
 import 'package:emombti/domain/constants/status.dart';
 import 'package:emombti/domain/models/chat/chat.dart';
+import 'package:emombti/domain/models/user/user.dart' as user_domain;
 import 'package:emombti/utils/result.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart' as fcc;
@@ -21,19 +23,39 @@ class ChatCloudViewModel extends ChangeNotifier {
   late final InMemoryChatController chatController;
   late final AuthState authState;
   late final ChatState chatState;
+
   late final ChatRepository chatRepository;
+  late final UserRepository userRepository;
 
   ChatCloudViewModel({
     required this.chatId,
     required this.authState,
     required this.chatState,
     required this.chatRepository,
+    required this.userRepository,
   }) {
     chatController = InMemoryChatController();
     var stateChat = chatState.getChat(chatId);
     if (stateChat != null) {
       chat = stateChat;
-      if (chat.roomMembers.isEmpty) {}
+      if (chat.roomMembers.isNotEmpty) {
+        userRepository
+            .getUsersByIds(chat.roomMembers.map((e) => e.userId).toList())
+            .then((res) {
+              if (res is Ok) {
+                List<user_domain.User> usersList = (res as Ok).value;
+                for (var domainUser in usersList) {
+                  if (domainUser.id != null) {
+                    users[domainUser.id!] = fcc.User(
+                      id: domainUser.id!,
+                      name: domainUser.name,
+                      imageSource: domainUser.avatar?.uri.toString(),
+                    );
+                  }
+                }
+              }
+            });
+      }
     } else {
       chat = Chat(id: '', created: DateTime.now(), updated: DateTime.now());
     }

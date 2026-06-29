@@ -1,4 +1,3 @@
-import 'package:appflowy_editor/appflowy_editor.dart';
 import 'package:emombti/app_state/app_config.dart';
 import 'package:emombti/app_state/auth.dart';
 import 'package:emombti/app_state/theme.dart';
@@ -12,6 +11,7 @@ import 'package:emombti/routing/router.dart';
 import 'package:emombti/ui/core/ui/widgets/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -91,7 +91,7 @@ class _MainAppState extends State<MainApp> {
           themeMode: appConfig.themeMode,
           localizationsDelegates: const [
             AppLocalizations.delegate,
-            AppFlowyEditorLocalizations.delegate,
+            FlutterQuillLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,

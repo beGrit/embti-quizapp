@@ -28,9 +28,13 @@ class FeedRepositoryFirestore extends FeedRepository {
   }
 
   @override
-  Future<Result<Post>> getPostById(String id) {
-    // TODO: implement getPostById
-    throw UnimplementedError();
+  Future<Result<Post>> getPostById(String id) async {
+    var apiModel = await firestoreService.getPost(id);
+    if (apiModel == null) {
+      return Result.error(Exception('Post not found.'));
+    } else {
+      return Result.ok(_mapPostApiModelToDomain(apiModel));
+    }
   }
 
   @override
@@ -39,38 +43,45 @@ class FeedRepositoryFirestore extends FeedRepository {
     String? postId,
     String? userId,
   ) async {
-    DocumentSnapshot? lastDocument;
-    if (postId != null) {
-      if (!_snapshotCache.containsKey(postId)) {
-        _snapshotCache[postId] = await firestoreService.getPostSnapshot(postId);
+    try {
+      DocumentSnapshot? lastDocument;
+      if (postId != null) {
+        if (!_snapshotCache.containsKey(postId)) {
+          _snapshotCache[postId] = await firestoreService.getFeedSnapshot(
+            postId,
+          );
+        }
+        lastDocument = _snapshotCache[postId];
       }
-      lastDocument = _snapshotCache[postId];
+      List<PostApiModel> apiModels = await firestoreService.getPosts(
+        limit: limit,
+        lastDocument: lastDocument,
+        desc: true,
+      );
+      return Result.ok(
+        apiModels.map((e) => _mapPostApiModelToDomain(e)).toList(),
+      );
+    } catch (e) {
+      return Result.error(Exception('Failed to load posts.'));
     }
-    List<PostApiModel> apiModels = await firestoreService.getPosts(
-      limit: limit,
-      lastDocument: lastDocument,
-      desc: true,
-    );
-    return Result.ok(
-      apiModels.map((e) => _mapPostApiModelToDomain(e)).toList(),
-    );
   }
 
   @override
-  Future<Result<List<Post>>> getPostsPaginated({
-    required int page,
-    required int perPage,
-    String? filter,
-    String? sort = '-created',
-  }) {
-    // TODO: implement getPostsPaginated
-    throw UnimplementedError();
+  Future<Result<Reel>> createReel(Reel reel) async {
+    DateTime now = DateTime.now();
+    reel = reel.copyWith(id: Uuid().v4(), created: now, updated: now);
+    await firestoreService.saveReel(_mapReelDomainToApiModel(reel));
+    return Result.ok(reel);
   }
 
   @override
-  Future<Result<Reel>> getReelById(String id) {
-    // TODO: implement getReelById
-    throw UnimplementedError();
+  Future<Result<Reel>> getReelById(String id) async {
+    var apiModel = await firestoreService.getReel(id);
+    if (apiModel == null) {
+      return Result.error(Exception('Reel not found.'));
+    } else {
+      return Result.ok(_mapReelApiModelToDomain(apiModel));
+    }
   }
 
   @override
@@ -78,9 +89,58 @@ class FeedRepositoryFirestore extends FeedRepository {
     int? limit,
     String? reelId,
     String? userId,
-  ) {
-    // TODO: implement getReelsLimit
-    throw UnimplementedError();
+  ) async {
+    try {
+      DocumentSnapshot? lastDocument;
+      if (reelId != null) {
+        if (!_snapshotCache.containsKey(reelId)) {
+          _snapshotCache[reelId] = await firestoreService.getFeedSnapshot(
+            reelId,
+          );
+        }
+        lastDocument = _snapshotCache[reelId];
+      }
+      List<ReelApiModel> apiModels = await firestoreService.getReels(
+        limit: limit,
+        lastDocument: lastDocument,
+        desc: true,
+      );
+      return Result.ok(
+        apiModels.map((e) => _mapReelApiModelToDomain(e)).toList(),
+      );
+    } catch (e) {
+      return Result.error(Exception('Failed to load reels.'));
+    }
+  }
+
+  @override
+  Future<Result<AppFile>> uploadImageForPost(
+    String name,
+    List<int> bytes,
+  ) async {
+    try {
+      String objectName = 'feed/posts/$name';
+      await fileService.saveFile(objectName, bytes, name);
+      Uri uri = fileService.getUri(objectName);
+      return Result.ok(AppFile(uri: uri, name: name));
+    } catch (e) {
+      return Result.error(Exception('Upload failed.'));
+    }
+  }
+
+  @override
+  Future<Result<AppFile>> uploadVideoForReel(
+    String name,
+    List<int> bytes,
+  ) async {
+    try {
+      String objectName = 'feed/reels/$name';
+      await fileService.saveFile(objectName, bytes, name);
+      Uri uri = fileService.getUri(objectName);
+      return Result.ok(AppFile(uri: uri, name: name));
+    } catch (e) {
+      return Result.error(Exception('Upload failed.'));
+    }
   }
 
   PostApiModel _mapPostDomainToApiModel(Post post) {
@@ -103,29 +163,35 @@ class FeedRepositoryFirestore extends FeedRepository {
       title: apiModel.title,
       body: apiModel.body,
       photos: apiModel.photos.map((e) => AppFile.fromJson(e)).toList(),
-      author: User(name: 'Unknown'),
+      author: User(id: apiModel.author),
       created: apiModel.created,
       updated: apiModel.updated,
     );
   }
 
-  @override
-  Future<Result<AppFile>> uploadImageForPost(
-    String name,
-    List<int> bytes,
-  ) async {
-    try {
-      String objectName = 'feed/posts/$name';
-      await fileService.saveFile(objectName, bytes, name);
-      Uri uri = fileService.getUri(objectName);
-      return Result.ok(AppFile(uri: uri, name: name));
-    } catch (e) {
-      return Result.error(Exception('Upload failed.'));
-    }
+  ReelApiModel _mapReelDomainToApiModel(Reel post) {
+    return ReelApiModel(
+      id: post.id ?? '',
+      title: post.title ?? '',
+      subTitle: post.subTitle ?? '',
+      author: post.author.id ?? '',
+      feedType: post.feedType.name,
+      video: post.videoUrl.toJson(),
+      created: post.created,
+      updated: post.updated,
+    );
   }
 
-  @override
-  Future<Result<AppFile>> uploadVideoForReel(String name, List<int> bytes) {
-    throw UnimplementedError();
+  Reel _mapReelApiModelToDomain(ReelApiModel apiModel) {
+    return Reel(
+      id: apiModel.id,
+      title: apiModel.title,
+      subTitle: apiModel.subTitle,
+      feedType: FeedType.reel,
+      videoUrl: AppFile.fromJson(apiModel.video),
+      author: User(id: apiModel.author),
+      created: apiModel.created,
+      updated: apiModel.updated,
+    );
   }
 }

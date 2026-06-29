@@ -15,6 +15,8 @@ abstract class UserRepository {
     String? excludeUserId,
   });
 
+  Future<Result<List<User>>> getUsersByIds(List<String> ids);
+
   /// Saves or updates core user information.
   Future<Result<void>> saveUser(User user);
 

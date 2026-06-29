@@ -14,6 +14,11 @@ class FeedReelModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addItems(List<Reel> newItems) {
+    items.addAll(newItems);
+    notifyListeners();
+  }
+
   void removeItem(Reel item) {
     items.remove(item);
     notifyListeners();

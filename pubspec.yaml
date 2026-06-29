@@ -27,6 +27,7 @@ dependencies:
   mobile_scanner: ^7.2.0
   path: ^1.9.1
   flutter_dotenv: ^6.0.1
+  quiver: ^3.2.2
 
   url_launcher: ^6.3.2
   flutter_local_notifications: ^17.0.0
@@ -63,7 +64,7 @@ dependencies:
   flyer_chat_system_message: ^2.2.0
   flyer_chat_text_message: ^2.6.0
   flyer_chat_text_stream_message: ^2.3.0
-  appflowy_editor: ^6.2.0
+  flutter_quill: ^11.5.0
   google_generative_ai: ^0.4.7
 
   cloudflare_r2: ^0.0.14

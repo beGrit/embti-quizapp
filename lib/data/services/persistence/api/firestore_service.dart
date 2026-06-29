@@ -5,15 +5,20 @@ import 'package:emombti/data/services/persistence/api/model/chat/chat_api_model.
 import 'package:emombti/data/services/persistence/api/model/feed/feed_api_model.dart';
 import 'package:emombti/data/services/persistence/api/model/quiz/quiz_api_model.dart';
 import 'package:emombti/domain/models/feed/feed.dart';
+import 'package:logging/logging.dart';
 
 import 'model/social/social_meta_api_model.dart';
 import 'model/user/user_api_model.dart';
 
 class FirestoreService {
+  final _log = Logger('FirestoreService');
+
   FirestoreService({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _firestore;
+
+  FirebaseFirestore get firestore => _firestore;
 
   String generateFirestoreId() {
     return _firestore.collection('any_collection').doc().id;
@@ -54,6 +59,11 @@ class FirestoreService {
     throw ArgumentError('Invalid relationType: $relationType');
   }
 
+  Future<DocumentSnapshot> getFeedSnapshot(String feedId) async {
+    final doc = await _feed.doc(feedId).get();
+    return doc;
+  }
+
   /// Save or update a Post to /feed/{feedId}
   Future<void> savePost(PostApiModel post) async {
     await _feed.doc(post.id).set(post.toJson());
@@ -64,7 +74,9 @@ class FirestoreService {
     DocumentSnapshot? lastDocument,
     bool desc = false,
   }) async {
-    var query = _feed.orderBy('created', descending: desc);
+    var query = _feed
+        .where('feedType', isEqualTo: 'post')
+        .orderBy('created', descending: desc);
 
     if (limit != null) {
       query = query.limit(limit);
@@ -87,11 +99,6 @@ class FirestoreService {
     return PostApiModel.fromJson(doc.data()!);
   }
 
-  Future<DocumentSnapshot> getPostSnapshot(String feedId) async {
-    final doc = await _feed.doc(feedId).get();
-    return doc;
-  }
-
   /// Save or update a Reel to /feed/{feedId}
   Future<void> saveReel(ReelApiModel reel) async {
     await _feed.doc(reel.id).set(reel.toJson());
@@ -102,6 +109,29 @@ class FirestoreService {
     final doc = await _feed.doc(feedId).get();
     if (!doc.exists || doc.data() == null) return null;
     return ReelApiModel.fromJson(doc.data()!);
+  }
+
+  Future<List<ReelApiModel>> getReels({
+    int? limit,
+    DocumentSnapshot? lastDocument,
+    bool desc = false,
+  }) async {
+    var query = _feed
+        .where('feedType', isEqualTo: 'reel')
+        .orderBy('created', descending: desc);
+
+    if (limit != null) {
+      query = query.limit(limit);
+    }
+
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    final querySnapshot = await query.get();
+    return querySnapshot.docs
+        .map((doc) => ReelApiModel.fromJson(doc.data()))
+        .toList();
   }
 
   /// Save or update a FeedActivity depending on its relationType
@@ -219,6 +249,62 @@ class FirestoreService {
     } catch (_) {
       return null;
     }
+  }
+
+  Future<List<UserFirestoreApiModel>> getUsersByIds(List<String> ids) async {
+    if (ids.isEmpty) {
+      return [];
+    }
+    final List<DocumentSnapshot<Map<String, dynamic>>> results = [];
+    final List<String> missingFromServerIds = [];
+
+    // load from local cache.
+    for (String id in ids) {
+      try {
+        final doc = await _users
+            .doc(id)
+            .get(const GetOptions(source: Source.cache));
+
+        if (doc.exists && doc.data() != null) {
+          results.add(doc);
+        } else {
+          missingFromServerIds.add(id);
+        }
+      } catch (e) {
+        missingFromServerIds.add(id);
+      }
+    }
+
+    if (missingFromServerIds.isNotEmpty) {
+      const int chunkSize = 30;
+      for (var i = 0; i < missingFromServerIds.length; i += chunkSize) {
+        final chunk = missingFromServerIds.sublist(
+          i,
+          i + chunkSize > missingFromServerIds.length
+              ? missingFromServerIds.length
+              : i + chunkSize,
+        );
+
+        try {
+          final querySnapshot = await _users
+              .where(FieldPath.documentId, whereIn: chunk)
+              .get(const GetOptions(source: Source.server));
+
+          results.addAll(querySnapshot.docs);
+        } catch (e) {
+          _log.severe('Firestore line fetch error for chunk $chunk: $e');
+        }
+      }
+    }
+
+    return results
+        .map((e) {
+          final data = e.data();
+          if (data == null) return null;
+          return UserFirestoreApiModel.fromJson(data);
+        })
+        .whereType<UserFirestoreApiModel>()
+        .toList();
   }
 
   /// Get social meta by related ID (e.g., PocketBase post ID)

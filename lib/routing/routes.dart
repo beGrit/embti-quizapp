@@ -18,6 +18,7 @@ abstract final class Routes {
   static const String article = '/content/article';
   static const String video = '/content/video';
   static const String feedPostEditor = '/feed/post/editor';
+  static const String feedReelEditor = '/feed/reel/editor';
   static const String feedPhotoView = '/feed_photo_view';
   static const String feedPost = '/feed/post';
   static const String feedback = '/me/feedback';

@@ -1,6 +1,8 @@
 import 'package:emombti/data/repositories/auth/auth_repository.dart';
 import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
+import 'package:emombti/data/repositories/user/user_repository.dart';
+import 'package:emombti/routing/routes.dart';
 import 'package:emombti/ui/chat/view_models/robot_viewmodel.dart';
 import 'package:emombti/ui/chat/widgets/robot.dart';
 import 'package:emombti/ui/explore/view_models/explore_viewmodel.dart';
@@ -9,6 +11,7 @@ import 'package:emombti/ui/feed/view_models/feed_reel_viewmodel.dart';
 import 'package:emombti/ui/feed/widgets/feed_post.dart';
 import 'package:emombti/ui/feed/widgets/feed_reel.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -88,9 +91,15 @@ class _ExploreScreenState extends State<ExploreScreen>
           create: (context) => FeedPostViewModel(
             authRepository: context.read<AuthRepository>(),
             feedRepository: context.read<FeedRepository>(),
+            userRepository: context.read<UserRepository>(),
           )..loadPostsCommand.execute(),
         ),
-        ChangeNotifierProvider(create: (context) => FeedReelViewModel()),
+        ChangeNotifierProvider(
+          create: (context) => FeedReelViewModel(
+            feedRepository: context.read<FeedRepository>(),
+            userRepository: context.read<UserRepository>(),
+          )..loadReelsCommand.execute(),
+        ),
       ],
       child: Builder(
         builder: (context) {
@@ -118,10 +127,29 @@ class _ExploreScreenState extends State<ExploreScreen>
                     child: Row(
                       children: [
                         const SizedBox(width: 8.0), // Padding before the button
-                        IconButton(
-                          color: theme.colorScheme.primary,
-                          icon: const Icon(Icons.add),
-                          onPressed: () {},
+                        ListenableBuilder(
+                          listenable: vm,
+                          builder: (context, _) {
+                            final currentType =
+                                vm.tabs[vm.selectedTabIndex].type;
+                            final isVideosTab =
+                                currentType == ExploreTabType.videos;
+                            return IconButton(
+                              color: theme.colorScheme.primary,
+                              icon: const Icon(Icons.add),
+                              onPressed: isVideosTab
+                                  ? () async {
+                                      var feedViewModel = context
+                                          .read<FeedReelViewModel>();
+                                      await context.push(Routes.feedReelEditor);
+                                      if (mounted) {
+                                        feedViewModel.loadReelsCommand
+                                            .execute();
+                                      }
+                                    }
+                                  : null,
+                            );
+                          },
                         ),
                         Expanded(
                           child: TabBar(

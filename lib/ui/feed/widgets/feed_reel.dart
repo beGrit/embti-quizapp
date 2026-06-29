@@ -31,30 +31,33 @@ class _FeedReelState extends State<FeedReel> {
   Widget build(BuildContext context) {
     FeedReelViewModel viewModel = context.read<FeedReelViewModel>();
     FeedReelModel model = viewModel.model;
-    return ListenableBuilder(
-      listenable: Listenable.merge([viewModel, model]),
-      builder: (context, _) {
-        if (model.items.isEmpty) {
-          return const Center(child: Text('No videos'));
-        } else {
-          return PageView.custom(
-            controller: _pageController,
-            scrollDirection: Axis.vertical,
-            allowImplicitScrolling: false,
-            onPageChanged: viewModel.onPageChanged,
-            key: const PageStorageKey('feed-reel-page-view'),
-            childrenDelegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final item = model.items[index];
-                return FeedReelVideoPlayer(feedReel: item);
-              },
-              childCount: model.items.length,
-              addAutomaticKeepAlives: false,
-              addRepaintBoundaries: true,
-            ),
-          );
-        }
-      },
+    return ColoredBox(
+      color: Colors.black,
+      child: ListenableBuilder(
+        listenable: Listenable.merge([viewModel, model]),
+        builder: (context, _) {
+          if (model.items.isEmpty) {
+            return const Center(child: Text('No videos'));
+          } else {
+            return PageView.custom(
+              controller: _pageController,
+              scrollDirection: Axis.vertical,
+              allowImplicitScrolling: false,
+              onPageChanged: viewModel.onPageChanged,
+              key: const PageStorageKey('feed-reel-page-view'),
+              childrenDelegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final item = model.items[index];
+                  return FeedReelVideoPlayer(feedReel: item);
+                },
+                childCount: model.items.length,
+                addAutomaticKeepAlives: false,
+                addRepaintBoundaries: true,
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

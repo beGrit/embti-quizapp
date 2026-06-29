@@ -3,15 +3,20 @@ import 'package:emombti/data/services/persistence/api/model/user/user_api_model.
 import 'package:emombti/domain/models/common/common.dart';
 import 'package:emombti/domain/models/user/user.dart';
 import 'package:emombti/utils/result.dart';
+import 'package:quiver/collection.dart';
 
 import 'user_repository.dart';
 
 /// [UserRepository] implementation using PocketBase.
 class UserRepositoryDev implements UserRepository {
-  UserRepositoryDev({required FirestoreService apiStorage})
-    : _apiStorage = apiStorage;
+  final LruMap<String, User> _memoryCache = LruMap<String, User>(
+    maximumSize: 200,
+  );
 
-  final FirestoreService _apiStorage;
+  UserRepositoryDev({required FirestoreService firestore})
+    : _firestore = firestore;
+
+  final FirestoreService _firestore;
 
   @override
   Future<Result<void>> createUserUsingEmailPassword({
@@ -25,20 +30,11 @@ class UserRepositoryDev implements UserRepository {
   @override
   Future<Result<User>> getUser(String id) async {
     try {
-      UserFirestoreApiModel? apiModel = await _apiStorage.getUser(id);
+      UserFirestoreApiModel? apiModel = await _firestore.getUser(id);
       if (apiModel == null) {
         throw Exception('User not found');
       }
-      User user = User(
-        id: apiModel.id,
-        email: apiModel.email,
-        name: apiModel.name,
-        mbtiType: apiModel.mbtiType,
-        introduce: apiModel.introduce,
-        avatar: apiModel.avatar != null
-            ? AppFile(uri: Uri.parse(apiModel.avatar ?? ''), name: '')
-            : null,
-      );
+      User user = _mapUserApiModelToDomain(apiModel);
       return Result.ok(user);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -56,30 +52,62 @@ class UserRepositoryDev implements UserRepository {
     String? excludeUserId,
   }) async {
     try {
-      final apiModels = await _apiStorage.searchUsers(
+      final apiModels = await _firestore.searchUsers(
         keyword,
         excludeUserId: excludeUserId,
       );
 
-      final users = apiModels
-          .map(
-            (apiModel) => User(
-              id: apiModel.id,
-              email: apiModel.email,
-              name: apiModel.name,
-              mbtiType: apiModel.mbtiType,
-              introduce: apiModel.introduce,
-              avatar: apiModel.avatar != null
-                  ? AppFile(uri: Uri.parse(apiModel.avatar ?? ''), name: '')
-                  : null,
-            ),
-          )
-          .toList();
+      final users = apiModels.map(_mapUserApiModelToDomain).toList();
 
       return Result.ok(users);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
     }
+  }
+
+  @override
+  Future<Result<List<User>>> getUsersByIds(List<String> ids) async {
+    if (ids.isEmpty) return Result.ok([]);
+
+    final uniqueIds = ids.toSet().toList();
+    final List<User> cachedUsers = [];
+    final List<String> missingIds = [];
+
+    for (final id in uniqueIds) {
+      if (_memoryCache.containsKey(id)) {
+        cachedUsers.add(_memoryCache[id]!);
+      } else {
+        missingIds.add(id);
+      }
+    }
+
+    if (missingIds.isEmpty) {
+      return Result.ok(_alignAndSortResults(ids, cachedUsers));
+    }
+
+    try {
+      final List<UserFirestoreApiModel> apiModels = await _firestore
+          .getUsersByIds(missingIds);
+
+      final List<User> fetchedUsers = apiModels.map((apiModel) {
+        final domainUser = _mapUserApiModelToDomain(apiModel);
+        String domainUserId = domainUser.id ?? '';
+        if (domainUserId.isNotEmpty) {
+          _memoryCache[domainUserId] = domainUser;
+        }
+        return domainUser;
+      }).toList();
+
+      final List<User> allCombinedUsers = [...cachedUsers, ...fetchedUsers];
+      return Result.ok(_alignAndSortResults(ids, allCombinedUsers));
+    } catch (e) {
+      return Result.error(Exception('Failed to load users.'));
+    }
+  }
+
+  List<User> _alignAndSortResults(List<String> originalIds, List<User> users) {
+    final idToUserMap = {for (var user in users) user.id: user};
+    return originalIds.map((id) => idToUserMap[id]).whereType<User>().toList();
   }
 
   @override
@@ -93,7 +121,7 @@ class UserRepositoryDev implements UserRepository {
         introduce: user.introduce,
         updated: DateTime.now(),
       );
-      await _apiStorage.saveUser(apiModel);
+      await _firestore.saveUser(apiModel);
       return const Result.ok(null);
     } catch (e) {
       return Result.error(e is Exception ? e : Exception(e.toString()));
@@ -107,5 +135,18 @@ class UserRepositoryDev implements UserRepository {
     String filename,
   ) {
     throw UnimplementedError();
+  }
+
+  User _mapUserApiModelToDomain(UserFirestoreApiModel apiModel) {
+    return User(
+      id: apiModel.id,
+      email: apiModel.email,
+      name: apiModel.name,
+      mbtiType: apiModel.mbtiType,
+      introduce: apiModel.introduce,
+      avatar: apiModel.avatar != null
+          ? AppFile(uri: Uri.parse(apiModel.avatar ?? ''), name: '')
+          : null,
+    );
   }
 }
