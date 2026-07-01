@@ -45,7 +45,6 @@ class _ExploreScreenState extends State<ExploreScreen>
   }
 
   void _onTabControllerChanged() {
-    // 这里只负责处理最终的状态同步
     if (!_tabController.indexIsChanging) {
       widget.viewModel.selectTab(_tabController.index);
     }
@@ -59,17 +58,11 @@ class _ExploreScreenState extends State<ExploreScreen>
 
   @override
   void dispose() {
-    debugPrint('Dispose: _ExploreScreenState.');
     widget.viewModel.removeListener(_onViewModelChanged);
     _tabController.animation?.removeListener(_onTabAnimation);
     _tabController.removeListener(_onTabControllerChanged);
     _tabController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant ExploreScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -111,7 +104,8 @@ class _ExploreScreenState extends State<ExploreScreen>
                 TabBarView(
                   controller: _tabController,
                   children: [
-                    for (final tab in vm.tabs) _ExploreTabBody(tab: tab),
+                    for (final tab in vm.tabs)
+                      _ExploreTabBody(tab: tab, tabController: _tabController),
                   ],
                 ),
 
@@ -143,6 +137,9 @@ class _ExploreScreenState extends State<ExploreScreen>
                                           .read<FeedReelViewModel>();
                                       await context.push(Routes.feedReelEditor);
                                       if (mounted) {
+                                        debugPrint(
+                                          'feedViewModel.loadReelsCommand',
+                                        );
                                         feedViewModel.loadReelsCommand
                                             .execute();
                                       }
@@ -188,7 +185,8 @@ class _ExploreScreenState extends State<ExploreScreen>
 }
 
 class _ExploreTabBody extends StatelessWidget {
-  const _ExploreTabBody({required this.tab});
+  final TabController tabController;
+  const _ExploreTabBody({required this.tab, required this.tabController});
 
   final ExploreTab tab;
 
@@ -201,7 +199,7 @@ class _ExploreTabBody extends StatelessWidget {
         return const FeedPostScreen();
 
       case ExploreTabType.videos:
-        return const FeedReel();
+        return FeedReel(tabController: tabController, tabIndex: 2);
       case ExploreTabType.chatAiMbti:
         return Consumer<ChatBotViewModel>(
           builder: (context, __, child) => ChatBot(viewModel: __),

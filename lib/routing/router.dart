@@ -4,7 +4,9 @@ import 'package:emombti/data/repositories/chat/chat_repository.dart';
 import 'package:emombti/data/repositories/feed/feed_repository.dart';
 import 'package:emombti/data/repositories/user/user_repository.dart';
 import 'package:emombti/routing/navigation_config.dart';
+import 'package:emombti/ui/chat/view_models/chat_ai_viewmodel.dart';
 import 'package:emombti/ui/chat/view_models/chat_cloud_viewmodel.dart';
+import 'package:emombti/ui/chat/widgets/chat_ai.dart';
 import 'package:emombti/ui/chat/widgets/chat_cloud.dart';
 import 'package:emombti/ui/chat/widgets/rooms_screen.dart';
 import 'package:emombti/ui/core/ui/widgets/layout.dart';
@@ -213,6 +215,15 @@ GoRouter router(AuthState authState) => GoRouter(
             ),
           );
         }
+      },
+    ),
+    GoRoute(
+      path: Routes.chatRoomRobot,
+      builder: (context, state) {
+        return Consumer<ChatAiViewModel>(
+          builder: (context, viewModel, child) =>
+              ChatAiPage(viewModel: viewModel),
+        );
       },
     ),
     StatefulShellRoute.indexedStack(

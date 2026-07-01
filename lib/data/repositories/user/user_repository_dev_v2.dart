@@ -149,4 +149,9 @@ class UserRepositoryDev implements UserRepository {
           : null,
     );
   }
+
+  @override
+  Future<Result<User>> getRobot(String id) {
+    throw UnimplementedError();
+  }
 }

@@ -6,7 +6,14 @@ import 'package:provider/provider.dart';
 
 /// Vertical, full-viewport paging feed of videos (TikTok / Instagram Reels style).
 class FeedReel extends StatefulWidget {
-  const FeedReel({super.key});
+  final TabController tabController;
+  final int tabIndex;
+
+  const FeedReel({
+    super.key,
+    required this.tabController,
+    required this.tabIndex,
+  });
 
   @override
   State<FeedReel> createState() => _FeedReelState();
@@ -15,16 +22,36 @@ class FeedReel extends StatefulWidget {
 class _FeedReelState extends State<FeedReel> {
   late final PageController _pageController;
 
+  bool isPause = false;
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    isPause = false;
+    widget.tabController.animation?.addListener(_onTabAnimation);
   }
 
   @override
   void dispose() {
+    widget.tabController.animation?.removeListener(_onTabAnimation);
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _onTabAnimation() {
+    final animation = widget.tabController.animation;
+    if (animation == null) return;
+    final shouldPlay = animation.value == widget.tabIndex;
+    if (shouldPlay && isPause) {
+      setState(() {
+        isPause = false;
+      });
+    } else if (!shouldPlay && !isPause) {
+      setState(() {
+        isPause = true;
+      });
+    }
   }
 
   @override
@@ -48,7 +75,10 @@ class _FeedReelState extends State<FeedReel> {
               childrenDelegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final item = model.items[index];
-                  return FeedReelVideoPlayer(feedReel: item);
+                  return FeedReelVideoPlayer(
+                    feedReel: item,
+                    pauseControlFromParent: isPause,
+                  );
                 },
                 childCount: model.items.length,
                 addAutomaticKeepAlives: false,

@@ -10,6 +10,7 @@ class AppAssets {
 
   static const String privacyHtml = 'assets/policies/privacy.html';
   static const String termsHtml = 'assets/policies/terms.html';
+  static const String policyAiHtml = 'assets/policies/policy_ai.html';
 
   // Icons for Content Type C (Knowledge)
   static const String iconBook = 'assets/icons/book_icon.svg';

@@ -261,14 +261,29 @@ class _PostListTile extends StatelessWidget {
               const SizedBox(height: 12),
 
               // Row 2: Post content (Title, Body, Photos)
-              Text(post.title ?? '', style: theme.textTheme.titleMedium),
-              if (post.body != null) ...[
-                const SizedBox(height: 4),
-                FeedPostViewerBodyPreview(
-                  text: viewModel.paraseBody(post.body),
-                  maxLines: 2,
+              GestureDetector(
+                onTap: () {
+                  context.push('${Routes.feedPost}/${post.id}');
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (post.title != null && post.title!.isNotEmpty)
+                      Text(
+                        post.title ?? '',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    if (post.body != null) ...[
+                      const SizedBox(height: 4),
+                      FeedPostViewerBodyPreview(
+                        text: viewModel.paraseBody(post.body),
+                        maxLines: 2,
+                      ),
+                    ],
+                  ],
                 ),
-              ],
+              ),
+
               if (post.photos.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 SizedBox(

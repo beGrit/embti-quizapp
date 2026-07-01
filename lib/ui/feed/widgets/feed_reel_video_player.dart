@@ -6,9 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class FeedReelVideoPlayer extends StatefulWidget {
-  const FeedReelVideoPlayer({super.key, required this.feedReel});
-
+  final bool pauseControlFromParent;
   final Reel feedReel;
+
+  const FeedReelVideoPlayer({
+    super.key,
+    required this.feedReel,
+    required this.pauseControlFromParent,
+  });
 
   @override
   State<FeedReelVideoPlayer> createState() => _FeedReelVideoPlayerState();
@@ -41,6 +46,16 @@ class _FeedReelVideoPlayerState extends State<FeedReelVideoPlayer> {
     } else {
       _controller.play();
     }
+  }
+
+  void play() {
+    if (!_isInitialized) return;
+    _controller.play();
+  }
+
+  void pause() {
+    if (!_isInitialized) return;
+    _controller.pause();
   }
 
   void enterCleanMode() {
@@ -95,6 +110,12 @@ class _FeedReelVideoPlayerState extends State<FeedReelVideoPlayer> {
       debugPrint(error.toString());
       setState(() => _initFailed = true);
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant FeedReelVideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.pauseControlFromParent ? pause() : play();
   }
 
   @override

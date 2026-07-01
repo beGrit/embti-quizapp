@@ -14,6 +14,7 @@ import 'package:emombti/manager/connectivity_manager.dart';
 import 'package:emombti/manager/repository_manager.dart';
 import 'package:emombti/manager/storage_manager.dart';
 import 'package:emombti/manager/sync_manager.dart';
+import 'package:emombti/ui/chat/view_models/chat_ai_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -106,6 +107,15 @@ class MainAppChangeNotifers extends StatelessWidget {
                             ),
                             ChangeNotifierProvider.value(
                               value: appStateManager.chatState,
+                            ),
+                            ChangeNotifierProvider<ChatAiViewModel>(
+                              create: (context) => ChatAiViewModel(
+                                authState: appStateManager.authState,
+                                chatRepository:
+                                    repositoryManager.chatRepository,
+                                userRepository:
+                                    repositoryManager.userRepository,
+                              ),
                             ),
                           ],
                           child: MultiProvider(

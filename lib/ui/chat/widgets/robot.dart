@@ -153,7 +153,9 @@ class ChatBotState extends State<ChatBot> with TickerProviderStateMixin {
                             letterSpacing: -0.2,
                           ),
                         ),
-                        onPressed: widget.viewModel.chatWithAiCommand.execute,
+                        onPressed: () {
+                          context.push(Routes.chatRoomRobot);
+                        },
                         child: const Text('Chat with AI Expert'),
                       ),
                     ],

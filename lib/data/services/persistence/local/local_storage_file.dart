@@ -82,6 +82,9 @@ class LocalStorageFile {
       if (policyType == 'terms') {
         return await rootBundle.loadString(AppAssets.termsHtml);
       }
+      if (policyType == 'policy_ai') {
+        return await rootBundle.loadString(AppAssets.policyAiHtml);
+      }
       return '';
     } catch (e) {
       return "<html><body><h1>Error</h1><p>$policyType not found.</p></body></html>";

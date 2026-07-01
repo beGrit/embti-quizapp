@@ -6,6 +6,8 @@ abstract class UserRepository {
   /// Fetches basic user information for a specific ID.
   Future<Result<User>> getUser(String id);
 
+  Future<Result<User>> getRobot(String id);
+
   /// Fetches a user by their email address. Returns null if no user is found.
   Future<Result<User?>> getUserByEmail(String email);
 

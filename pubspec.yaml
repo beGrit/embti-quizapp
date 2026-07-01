@@ -49,6 +49,7 @@ dependencies:
   firebase_core: ^4.9.0
   cloud_firestore: ^6.4.1
   firebase_auth: ^6.4.0
+  firebase_ai: ^3.13.1
   google_sign_in: ^7.2.0
   sign_in_with_apple: ^8.1.0
 
@@ -65,7 +66,6 @@ dependencies:
   flyer_chat_text_message: ^2.6.0
   flyer_chat_text_stream_message: ^2.3.0
   flutter_quill: ^11.5.0
-  google_generative_ai: ^0.4.7
 
   cloudflare_r2: ^0.0.14
   shared_preferences: ^2.3.5

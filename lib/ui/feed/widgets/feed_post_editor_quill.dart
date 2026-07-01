@@ -344,7 +344,9 @@ class _FeedPostEditorQuillState extends State<FeedPostEditorQuill> {
                     child: QuillEditor.basic(
                       controller: _bodyController,
                       focusNode: _bodyFocusNode,
-                      config: QuillEditorConfig(),
+                      config: QuillEditorConfig(
+                        placeholder: 'Please input your post body...',
+                      ),
                     ),
                   ),
                 ),
